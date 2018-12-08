@@ -1,0 +1,58 @@
+{{ define "main" }}
+  <main>
+    <section class="heading">
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+      <h1>{{ .Title }}</h1>
+      {{ if .Description }}
+        <h2>{{ .Description }}</h2>
+      {{ end }}
+    </section>
+    <hr>
+    <section>
+      <div class="media-container">
+        <video
+          src="{{ replace .Params.video.url "s3/" $.Site.Params.mediaRoot }}"
+          alt="{{ .Params.video.caption }}"
+          {{ if .Params.video.poster }}poster="{{ replace .Params.video.poster "s3/" $.Site.Params.mediaRoot }}"{{ end }}
+          {{ if .Params.video.controls }} controls {{ end }}
+          {{ if .Params.video.muted }} muted {{ end }}
+          {{ if .Params.video.autoplay }} autoplay {{ end }}
+          {{ if .Params.video.loop }} loop {{ end }}
+          {{ if .Params.video.loop }} loop {{ end }}
+        >
+        </video>
+
+        {{ if .Params.video.created }}
+          <small class="exif left">
+            {{ dateFormat "January 2, 2006" .Params.video.created }}
+          </small>
+        {{ end }}
+
+        {{ if .Params.video.exif }}
+          <small class="exif right">
+            {{ .Params.video.exif.make }}
+            {{ replace .Params.video.exif.model .Params.video.exif.make "" }}
+          </small>
+        {{ end }}
+      </div>
+      <p class="caption">
+        {{ .Params.video.caption | markdownify }}
+      </p>
+    </section>
+    <section>
+      {{ .Content }}
+    </section>
+    <hr>
+    <section class="links">
+      {{ partial "links" . }}
+    </section>
+    <section>
+      {{ partial "categories" . }}
+      {{ partial "tags" . }}
+    </section>
+  </main>
+{{ end }}
+
+{{ define "title" }}
+  {{ .Page.Title }} | {{ .Site.Title }}
+{{ end }}

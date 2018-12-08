@@ -1,0 +1,45 @@
+{{ define "main" }}
+  <main>
+    <h1>{{ with .Site.GetPage "section" "collections" }}{{ .Title }}{{ end }}</h1>
+    <p>
+      Pictures, videos, sounds and words, all rolled up into tidy little bundles.
+    </p>
+    <hr>
+    {{ range .Paginator.Pages }}
+      <section>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+        <h2>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        </h2>
+        <h3>
+          {{ .Description }}
+        </h3>
+        {{ if eq .Params.featured.type "photo" }}
+          <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+            <img src="{{ replace .Params.featured.url "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.featured.caption }}">
+          </a>
+        {{ end }}
+        {{ if eq .Params.featured.type "video" }}
+          <video src="{{ .Params.featured.url }}" alt="{{ .Params.featured.caption }}" controls></video>
+        {{ end }}
+        <p class="item-count">
+          <i class="fas fa-images"></i>
+          {{ len .Params.items }} things
+        </p>
+        {{ partial "tags" . }}
+      </section>
+      <hr>
+    {{ end }}
+  </main>
+{{ end }}
+
+{{ define "title" }}
+  {{ title .Section }} | {{ .Site.Title }}
+{{ end }}
+
+{{ define "rss" }}
+  {{ if .RSSLink }}
+  <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+  <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
+  {{ end }}
+{{ end }}

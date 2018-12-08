@@ -1,0 +1,43 @@
+{{ define "main" }}
+  <main>
+    <h1>{{ with .Site.GetPage "section" "photos" }}{{ .Title }}{{ end }}</h1>
+    <p>
+      I take a lot of pictures &mdash; with my phone, of course, but also with my
+      <a href="https://www.usa.canon.com/internet/portal/us/home/products/details/cameras/dslr/eos-70d">Canon 70D</a>,
+      which I lug around with me just about everywhere I go.
+    </p>
+    <hr>
+    {{ range .Paginator.Pages }}
+      <section>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+        <h2>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        </h2>
+        <h3>
+          {{ .Description }}
+        </h3>
+        {{ if .Params.photo.url }}
+          <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+            <img src="{{ replace .Params.photo.url "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.photo.caption }}">
+          </a>
+        {{ end }}
+        <p class="item-count">
+          <i class="fas fa-camera"></i>
+          1 photo
+        </p>
+      </section>
+      <hr>
+    {{ end }}
+  </main>
+{{ end }}
+
+{{ define "title" }}
+  {{ title .Section }} | {{ .Site.Title }}
+{{ end }}
+
+{{ define "rss" }}
+  {{ if .RSSLink }}
+  <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+  <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
+  {{ end }}
+{{ end }}

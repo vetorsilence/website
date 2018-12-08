@@ -1,0 +1,14 @@
+languageCode = "en-us"
+title = "Christian Nunciato"
+sectionPagesMenu = "main"
+
+[params]
+mediaRoot = "https://s3.amazonaws.com/nunciato-media/"
+
+[mediaTypes."application/rss"]
+suffix = "xml"
+
+[outputFormats.RSS]
+mediaType = "application/rss"
+baseName = "index"
+isPlainText = false

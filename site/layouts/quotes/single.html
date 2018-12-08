@@ -1,0 +1,21 @@
+{{ define "main" }}
+  <main>
+    <section>
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+      <h1>{{ .Title }}</h1>
+    </section>
+    <section>
+      {{ .Content }}
+      &mdash; {{ .Params.quotee }}
+    </section>
+    <section>
+      {{ partial "categories" . }}
+      {{ partial "tags" . }}
+      {{ partial "links" . }}
+    </section>
+  </main>
+{{ end }}
+
+{{ define "title" }}
+  {{ .Page.Title }} | {{ .Site.Title }}
+{{ end }}

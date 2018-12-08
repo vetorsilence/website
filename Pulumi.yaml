@@ -1,0 +1,7 @@
+name: christian
+runtime: nodejs
+description: Christian's Website
+template:
+  config:
+    aws:region:
+      default: us-east-1

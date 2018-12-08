@@ -1,0 +1,44 @@
+{{ define "main" }}
+  <main>
+    <h1>{{ with .Site.GetPage "section" "sounds" }}{{ .Title }}{{ end }}</h1>
+    <p>
+      I've always felt sound was underrepresented on the web. I carry a
+      <a href="http://tascam.com/product/dr-05/">Tascam DR-05</a> around with me in
+      my gear bag, and if find I'm somewhere the sound is interesting, I'll just
+      start recording. Occasionally I pick up something worth sharing.
+    </p>
+    <hr>
+    {{ range .Paginator.Pages }}
+      <section>
+
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+        <h2>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        </h2>
+        <h3>
+          {{ .Description }}
+        </h3>
+        <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+          <img src="{{ replace .Params.sound.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.description }}">
+        </a>
+        <p class="item-count">
+          <i class="fas fa-headphones"></i>
+          {{ ((time .Params.sound.duration).Format "04:05") }}
+        </p>
+        {{ partial "categories" . }}
+      </section>
+      <hr>
+    {{ end }}
+  </main>
+{{ end }}
+
+{{ define "title" }}
+  {{ title .Section }} | {{ .Site.Title }}
+{{ end }}
+
+{{ define "rss" }}
+  {{ if .RSSLink }}
+  <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+  <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
+  {{ end }}
+{{ end }}

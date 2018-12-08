@@ -1,0 +1,30 @@
+{{ define "main" }}
+  <main>
+    <section class="heading">
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+      <h1>{{ .Title }}</h1>
+      {{ if .Description }}
+        <h2>{{ .Description }}</h2>
+      {{ end }}
+    </section>
+    <hr>
+    <section>
+      {{ .Content }}
+      <audio controls>
+        <source src="{{ replace .Params.sound.url "s3/" .Site.Params.mediaRoot }}">
+      </audio>
+    </section>
+    <hr>
+    <section class="links">
+      {{ partial "links" . }}
+    </section>
+    <section>
+      {{ partial "categories" . }}
+      {{ partial "tags" . }}
+    </section>
+  </main>
+{{ end }}
+
+{{ define "title" }}
+  {{ .Page.Title }} | {{ .Site.Title }}
+{{ end }}

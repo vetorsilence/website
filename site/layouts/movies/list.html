@@ -1,0 +1,36 @@
+{{ define "main" }}
+  <main>
+    <h1>{{ with .Site.GetPage "section" "movies" }}{{ .Title }}{{ end }}</h1>
+    <p>
+      Most people know me <a href="https://github.com/cnunciato">as a programmer</a>, and that's cool &mdash; but as it turns out, I also studied film
+      <a href="https://www.chapman.edu/dodge/index.aspx">in grad school</a>, so I see a lot of movies,
+      and I like to keep a record of what I've seen and what I think about them.
+    </p>
+    <hr>
+    {{ range .Pages }}
+      <section>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+        <h2>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        </h2>
+        <cdn-rating rating="{{ .Params.rating }}"></cdn-rating>
+        <h3>
+          {{ .Description }}
+        </h3>
+        {{ partial "categories" . }}
+      </section>
+      <hr>
+    {{ end }}
+  </main>
+{{ end }}
+
+{{ define "title" }}
+  {{ title .Section }} | {{ .Site.Title }}
+{{ end }}
+
+{{ define "rss" }}
+  {{ if .RSSLink }}
+  <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+  <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
+  {{ end }}
+{{ end }}

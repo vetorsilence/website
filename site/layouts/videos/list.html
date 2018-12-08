@@ -1,0 +1,42 @@
+{{ define "main" }}
+  <main>
+    <h1>{{ with .Site.GetPage "section" "videos" }}{{ .Title }}{{ end }}</h1>
+    <p>
+      Moments of interestingness, variably captured.
+    </p>
+    <hr>
+    {{ range .Paginator.Pages }}
+      <section>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+        <h2>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        </h2>
+        <h3>
+          {{ .Description }}
+        </h3>
+        {{ if .Params.video.preview }}
+          <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+            <img src="{{ replace .Params.video.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.video.caption }}">
+          </a>
+        {{ end }}
+        <p class="item-count">
+          <i class="fas fa-video"></i>
+          {{ ((time .Params.video.duration).Format "04:05") }}
+        </p>
+        {{ partial "tags" . }}
+      </section>
+      <hr>
+    {{ end }}
+  </main>
+{{ end }}
+
+{{ define "title" }}
+  {{ title .Section }} | {{ .Site.Title }}
+{{ end }}
+
+{{ define "rss" }}
+  {{ if .RSSLink }}
+  <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+  <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
+  {{ end }}
+{{ end }}

@@ -1,0 +1,65 @@
+$tablet-width: 768px;
+$desktop-width: 1024px;
+
+@mixin shadowed {
+  box-shadow: $default-shadow;
+}
+
+@mixin tablet-up {
+  @media (min-width: #{$tablet-width}) {
+    @content;
+  }
+}
+
+@mixin desktop-up {
+  @media (min-width: #{$desktop-width}) {
+    @content;
+  }
+}
+
+@mixin vertically-centered {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@mixin tag($color: $dark-gray, $background-color: $very-light-gray, $border-color: $very-light-gray) {
+  display: inline-block;
+  border-radius: $default-radius;
+  color: $color;
+  background-color: $background-color;
+  font-family: $sans-serif;
+
+  a {
+    text-decoration: none;
+    border-radius: $default-radius;
+    display: block;
+    color: $color;
+    padding: 2px 10px;
+    @include transition(background-color);
+
+    &:hover {
+      text-decoration: none;
+      color: $white;
+      background-color: $link-color;
+    }
+  };
+}
+
+@mixin transition($props...) {
+  transition-property: $props;
+  transition-duration: $default-transition-duration;
+}
+
+@mixin subhead {
+  font-style: italic;
+  font-family: $serif;
+  font-weight: normal;
+  color: $light-gray;
+}
+
+@mixin wide {
+  width: 132%;
+  left: -16%;
+  top: -16%;
+}

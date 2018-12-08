@@ -1,0 +1,19 @@
+[
+  {
+    "title": "Our Day Out",
+    "description": "This is the description",
+    "slug": "/photos/galleries/this-is-the-title/this-is-the-photo/",
+    "photos": [
+      {
+        "title": "This Is the Title",
+        "caption": "This is the caption.",
+        "url": "/media/images/some-photo.jpg"
+      },
+      {
+        "title": "This Is the Other Title",
+        "caption": "This is the other caption.",
+        "url": "/media/images/some-photo.jpg"
+      }
+    ]
+  }
+]
