@@ -24,7 +24,7 @@ Anyway, thanks for stopping by. You'll also find me on
 [Medium](https://medium.com/@cnunciato) (where I write infrequently on tech topics, mainly),
 [Twitter](https://twitter.com/cnunciato),
 [Flickr](https://www.flickr.com/photos/cnunciato),
-[Instagram](https://instagram.com/cnunciato),
+[Instagram](https://www.instagram.com/cnunciato),
 [Vimeo](https://vimeo.com/cnunciato),
 [GitHub](https://github.com/cnunciato),
 [CodePen](https://codepen.io/cnunciato),
