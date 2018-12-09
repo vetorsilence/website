@@ -7,7 +7,7 @@ import * as glob from 'glob';
 const siteDir = 'site/public/';
 const files = glob.sync(`${siteDir}/**/*`);
 
-const bucket = new aws.s3.Bucket('nunciato-christian', {
+const bucket = new aws.s3.Bucket('nunciato-website', {
   website: {
     indexDocument: 'index.html',
     errorDocument: '404.html'
