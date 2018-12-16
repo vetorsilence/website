@@ -6,7 +6,7 @@ sectionPagesMenu = "main"
 mediaRoot = "https://s3.amazonaws.com/nunciato-media/"
 
 [mediaTypes."application/rss"]
-suffix = "xml"
+suffixes = ["xml"]
 
 [outputFormats.RSS]
 mediaType = "application/rss"
