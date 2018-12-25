@@ -10,3 +10,6 @@ serve:
 	pushd site && \
 	hugo serve --buildDrafts false && \
 	popd
+
+process:
+	./scripts/process.sh ~/Desktop/Exports
