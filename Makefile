@@ -4,12 +4,15 @@ build:
 	hugo --baseURL https://chris.nunciato.org --source site
 
 deploy: build
-	pulumi up
+	AWS_PROFILE=personal pulumi up
 
 serve:
 	pushd site && \
 	hugo serve --buildDrafts false && \
 	popd
+
+preview:
+	AWS_PROFILE=personal pulumi preview
 
 process:
 	./scripts/process.sh ~/Desktop/Exports
