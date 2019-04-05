@@ -14,7 +14,6 @@ before_install:
   # Install Hugo
   - wget https://github.com/gohugoio/hugo/releases/download/v0.52/hugo_0.52_Linux-64bit.deb
   - sudo dpkg -i hugo*.deb
-  - pip install Pygments
 
 script:
   - make build
