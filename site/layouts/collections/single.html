@@ -20,13 +20,13 @@
               <img src="{{ replace .url "s3/" $.Site.Params.mediaRoot }}" alt="{{ .caption }}">
 
               {{ if .created }}
-                <small class="exif left">
+                <small class="left">
                   {{ dateFormat "January 2, 2006" .created }}
                 </small>
               {{ end }}
 
               {{ if .exif }}
-                <small class="exif right">
+                <small class="right">
                   {{ .exif.make }}
                   {{ replace .exif.model .exif.make "" }}
                   {{ if .exif.iso }} &bull; ISO {{ .exif.iso }}{{ end }}
@@ -52,13 +52,13 @@
               </video>
 
               {{ if .created }}
-                <small class="exif left">
+                <small class="left">
                   {{ dateFormat "January 2, 2006" .created }}
                 </small>
               {{ end }}
 
               {{ if .exif }}
-                <small class="exif right">
+                <small class="right">
                   {{ .exif.make }}
                   {{ replace .exif.model .exif.make "" }}
                   {{ if .exif.iso }} &bull; ISO {{ .exif.iso }}{{ end }}

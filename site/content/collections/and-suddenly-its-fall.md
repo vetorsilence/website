@@ -1,5 +1,5 @@
 ---
-title: How are we this far into fall already?
+title: How is it fall already?
 date: 2018-10-29T18:52:52Z
 draft: false
 description:

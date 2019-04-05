@@ -44,7 +44,7 @@ html {
 h1, h2, h3, h4, h5, h6 {
   font-family: $heading-font-family;
   margin: $default-margin 0;
-  line-height: 120%;
+  line-height: 1.2;
 
   a {
     @extend .heading-link;
@@ -61,6 +61,7 @@ h2 {
 
 h3 {
   @include subhead;
+  line-height: 1.4;
 }
 
 a {
@@ -96,6 +97,16 @@ nav {
 
   &.header {
     border-bottom: 1px solid $very-light-gray;
+
+    h1 {
+      margin-bottom: $default-margin;
+      white-space: nowrap;
+
+      &:after {
+        content: "👋";
+        margin-left: $default-margin / 2;
+      }
+    }
   }
 
   &.footer {
@@ -165,6 +176,10 @@ main {
       }
     }
 
+    .word & {
+      background-color: red;
+    }
+
     li {
       margin-bottom: $default-margin / 4;
     }
@@ -182,7 +197,13 @@ main {
         @include wide;
       }
 
-      .exif {
+      &.inline {
+        top: auto;
+        left: auto;
+        width: auto;
+      }
+
+      > small {
         margin: $default-margin / 2 0;
         font-size: $smaller-font-size;
         font-family: $sans-serif;
@@ -233,7 +254,30 @@ body {
       font-family: $sans-serif;
 
       svg {
-        margin-right: $default-margin / 4;
+        margin-right: $default-margin / 8;
+      }
+    }
+  }
+
+  &.words, &.sounds {
+
+    main {
+
+      section {
+
+        @include tablet-up {
+          > div {
+            display: flex;
+            align-items: center;
+
+            > div {
+              &:first-child {
+                max-width: 33%;
+                margin-right: $default-margin;
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -293,11 +337,49 @@ header {
     margin: 0;
     padding: 0;
     display: flex;
+    align-items: center;
     flex-wrap: wrap;
 
     li {
-      margin-right: $default-margin;
       margin-bottom: $default-margin / 2;
+
+
+    }
+  }
+
+  .links {
+
+    @include tablet-up {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    ul {
+      &:first-child {
+
+        li {
+          @include tablet-up {
+            &.about {
+              &:before {
+                content: "•";
+                margin-right: $default-margin;
+              }
+            }
+          }
+
+          &.social {
+
+            a {
+              margin-left: $default-margin / 2;
+              color: $light-gray;
+
+              &:hover {
+                color: $dark-gray;
+              }
+            }
+          }
+        }
+      }
     }
   }
 

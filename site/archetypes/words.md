@@ -1,24 +1,13 @@
 ---
 title: "{{ replace .TranslationBaseName "-" " " | title }}"
 date: {{ .Date }}
-draft: true
+draft: false
 description: This is the caption.
-video:
+photo:
   url: 's3/images/something.jpg'
   thumb: 's3/thumbs/something.jpg'
   preview: 's3/previews/something.jpg'
   created: {{ .Date }}
   title: ''
   caption: ''
-  exif:
-    make: ''
-    model: ''
-    lens: ''
-    iso: ''
-    aperture: ''
-    shutter_speed: ''
-    focal_length: ''
-  controls: true
-  duration: 0
-  poster: 's3/posters/2018-05-26-16-30-59.jpg'
 ---

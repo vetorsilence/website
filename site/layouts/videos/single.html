@@ -23,13 +23,13 @@
         </video>
 
         {{ if .Params.video.created }}
-          <small class="exif left">
+          <small class="left">
             {{ dateFormat "January 2, 2006" .Params.video.created }}
           </small>
         {{ end }}
 
         {{ if .Params.video.exif }}
-          <small class="exif right">
+          <small class="right">
             {{ .Params.video.exif.make }}
             {{ replace .Params.video.exif.model .Params.video.exif.make "" }}
           </small>

@@ -12,12 +12,12 @@
       <div class="media-container">
         <img src="{{ replace .Params.photo.url "s3/" $.Site.Params.mediaRoot }}" alt="{{ .Params.photo.caption }}">
         {{ if .Params.photo.created }}
-          <small class="exif left">
+          <small class="left">
             {{ dateFormat "January 2, 2006" .Params.photo.created }}
           </small>
         {{ end }}
         {{ if .Params.photo.exif }}
-          <small class="exif right">
+          <small class="right">
             {{ .Params.photo.exif.make }}
             {{ replace .Params.photo.exif.model .Params.photo.exif.make "" }}
             {{ if .Params.photo.exif.iso }}&bull; ISO {{ .Params.photo.exif.iso }}{{ end }}

@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hello! I'm Christian Nunciato.</title>
     <meta name="description" content="">
-    <link rel="stylesheet" href="/css/main.css">
-    <script src="/js/main.js"></script>
-    <script src="/js/app.js"></script>
+    <link rel="stylesheet" href="/css/main.css?{{ now.Unix }}">
+    <script src="/js/main.js?{{ now.Unix }}"></script>
+    <script src="/js/app.js?{{ now.Unix }}"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js" integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe" crossorigin="anonymous"></script>
     {{ if .Site.RSSLink }}
       <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
@@ -20,78 +20,95 @@
       </header>
     </nav>
     <main>
-      {{ range where .Data.Pages "Section" "not in" "movies, books, quotes" }}
-        {{ if .Section }}
-          <div class="{{ .Section }}">
-            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
-            <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+      <div class="items">
+        {{ range where .Data.Pages "Section" "not in" "movies, books, quotes" }}
+          {{ if .Section }}
+            <div class="{{ .Section }}">
+              <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+              <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
 
-            {{ if .Description }}
-              <h3>{{ .Description }}</h3>
-            {{ end }}
-
-            <!-- Photos -->
-            {{ if eq .Section "photos" }}
-              <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-                <img src="{{ replace .Params.photo.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.photo.caption }}">
-              </a>
-              <p class="item-count">
-                <i class="fas fa-camera"></i>
-                1 photo
-              </p>
-            {{ end }}
-
-            <!-- Videos -->
-            {{ if eq .Section "videos" }}
-              <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-                <img src="{{ replace .Params.video.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.video.caption }}">
-              </a>
-              <p class="item-count">
-                <i class="fas fa-video"></i>
-                {{ ((time .Params.video.duration).Format "04:05") }}
-              </p>
-            {{ end }}
-
-            <!-- Sounds -->
-            {{ if eq .Section "sounds" }}
-              <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-                <img src="{{ replace .Params.sound.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.description }}">
-              </a>
-              <p class="item-count">
-                <i class="fas fa-headphones"></i>
-                {{ ((time .Params.sound.duration).Format "04:05") }}
-              </p>
-            {{ end }}
-
-            <!-- Words -->
-            {{ if eq .Section "words" }}
-              <p class="item-count">
-                <i class="far fa-file-alt"></i>
-                {{ .WordCount }} words
-              </p>
-            {{ end }}
-
-            <!-- Sets -->
-            {{ if eq .Section "collections" }}
-              {{ if eq .Params.featured.type "photo" }}
-                <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-                  <img src="{{ replace .Params.featured.url "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.featured.caption }}">
-                </a>
+              {{ if .Description }}
+                <h3>{{ .Description }}</h3>
               {{ end }}
-              {{ if eq .Params.featured.type "video" }}
+
+              <!-- Photos -->
+              {{ if eq .Section "photos" }}
                 <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-                  <img src="{{ replace .Params.featured.url "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.featured.caption }}">
+                  <span>
+                    <img src="{{ replace .Params.photo.preview "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.photo.caption }}" alt="{{ .Params.photo.caption }}">
+                  </span>
                 </a>
+                <p class="item-count">
+                  <i class="fas fa-camera"></i>
+                  1
+                </p>
               {{ end }}
-              <p class="item-count">
-                <i class="fas fa-images"></i>
-                {{ len .Params.items }} things
-              </p>
-            {{ end }}
-          </div>
-          <hr>
+
+              <!-- Videos -->
+              {{ if eq .Section "videos" }}
+                <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+                  <span>
+                    <img src="{{ replace .Params.video.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.video.caption }}" alt="{{ .Params.video.caption }}">
+                  </span>
+                </a>
+                <p class="item-count">
+                  <i class="fas fa-video"></i>
+                  {{ ((time .Params.video.duration).Format "04:05") }}
+                </p>
+              {{ end }}
+
+              <!-- Sounds -->
+              {{ if eq .Section "sounds" }}
+                <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+                  <span>
+                    <img src="{{ replace .Params.sound.preview "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.description }}" alt="{{ .Params.description }}">
+                  </span>
+                </a>
+                <p class="item-count">
+                  <i class="fas fa-headphones"></i>
+                  {{ ((time .Params.sound.duration).Format "04:05") }}
+                </p>
+              {{ end }}
+
+              <!-- Words -->
+              {{ if eq .Section "words" }}
+                <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+                  <span>
+                    <img src="{{ replace .Params.photo.preview "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.photo.caption }}" alt="{{ .Params.photo.caption }}">
+                  </span>
+                </a>
+                <p class="item-count">
+                  <i class="far fa-file-alt"></i>
+                  {{ .WordCount }}
+                </p>
+              {{ end }}
+
+              <!-- Sets -->
+              {{ if eq .Section "collections" }}
+                {{ if eq .Params.featured.type "photo" }}
+                  <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+                    <span>
+                      <img src="{{ replace .Params.featured.url "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.featured.caption }}" alt="{{ .Params.featured.caption }}">
+                    </span>
+                  </a>
+                {{ end }}
+                {{ if eq .Params.featured.type "video" }}
+                  <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+                    <span>
+                      <img src="{{ replace .Params.featured.url "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.featured.caption }}" alt="{{ .Params.featured.caption }}">
+                    </span>
+                  </a>
+                {{ end }}
+                <p class="item-count">
+                  <i class="fas fa-images"></i>
+                  {{ len .Params.items }}
+                </p>
+              {{ end }}
+            </div>
+            <hr>
+          {{ end }}
         {{ end }}
-      {{ end }}
+      </div>
     </main>
     <nav class="footer">
       <footer>

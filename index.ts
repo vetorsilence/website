@@ -16,7 +16,7 @@ const bucket = new aws.s3.Bucket('nunciato-website', {
 
 files.forEach((path: string) => {
   if (!fs.lstatSync(path).isDirectory()) {
-    let object = new aws.s3.BucketObject(path.replace(siteDir, ''), { 
+    let object = new aws.s3.BucketObject(path.replace(siteDir, ''), {
       bucket: bucket,
       source: new pulumi.asset.FileAsset(path),
       contentType: mime.getType(path) || undefined
@@ -24,7 +24,7 @@ files.forEach((path: string) => {
   }
 });
 
-const publicReadPolicyForBucket = (name: string) => {   
+const publicReadPolicyForBucket = (name: string) => {
   return JSON.stringify({
     Version: '2012-10-17',
     Statement: [{
@@ -40,7 +40,7 @@ const publicReadPolicyForBucket = (name: string) => {
   })
 }
 
-const bucketPolicy = new aws.s3.BucketPolicy('bucketPolicy', {   
+const bucketPolicy = new aws.s3.BucketPolicy('bucketPolicy', {
   bucket: bucket.bucket,
   policy: bucket.bucket.apply(publicReadPolicyForBucket)
 });
@@ -93,10 +93,10 @@ const distributionArgs = {
   priceClass: 'PriceClass_100',
 
   customErrorResponses: [
-    { 
-      errorCode: 404, 
-      responseCode: 404, 
-      responsePagePath: '/404.html' 
+    {
+      errorCode: 404,
+      responseCode: 404,
+      responsePagePath: '/404.html'
     }
   ],
 
@@ -117,3 +117,4 @@ const cdn = new aws.cloudfront.Distribution('cdn', distributionArgs);
 export const bucketName = bucket.bucketDomainName;
 export const bucketUrl = bucket.websiteEndpoint;
 export const cloudfrontUrl = cdn.domainName;
+export const cloudfrontDistributionId = cdn.id;

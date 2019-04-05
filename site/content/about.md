@@ -7,7 +7,7 @@ layout: "about"
 <div class="media-container">
   <img src="https://s3.amazonaws.com/nunciato-media/images/2018-06-01-12-57-35.jpg" title="Hey, it's me!">
 
-  <small class="exif left">
+  <small class= left">
     Kekaha Beach, Kauai
   </small>
 </div>

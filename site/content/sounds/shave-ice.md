@@ -27,11 +27,11 @@ links:
 
 Toward the end of our first on day Kauai, we managed to find [The Fresh Shave](https://www.yelp.com/biz/the-fresh-shave-kalaheo-8), a little trailer parked in a patch of gravel alongside Highway 530 in [Kalaheo](https://www.google.com/maps/place/Kalaheo,+HI+96741/@22.0426634,-159.5858023,12.05z/data=!4m5!3m4!1s0x7c070456fd3d5f5d:0xdb44269b0af6136!8m2!3d21.9286111!4d-159.5302778) that we'd read about in [_Lonely Planet Kauai_](https://shop.lonelyplanet.com/products/kauai-travel-guide-3). It's run by a family [from California](http://www.thegardenisland.com/2017/01/04/business/local-business-expanding-to-california/), so depending on what you're looking for, it might not quite bring the island-native vibe (tending a little to the Northwest-hipstery side, with the vintage trailer and sticker-mustaches), but hey &mdash; it's amazing stuff nonetheless: made with all local and organic fruits and ingredients, an excellent treat after a day at the beach.
 
-![Slurp](https://s3.amazonaws.com/nunciato-media/previews/2018-05-29-16-06-43.jpg)
+{{< image "s3/images/2018-05-29-16-06-43.jpg" "Slurp" >}}
 
-![Slurp](https://s3.amazonaws.com/nunciato-media/previews/2018-05-29-16-07-09.jpg)
+{{< image "s3/images/2018-05-29-16-07-09.jpg" "Slurp" >}}
 
-![Slurp](https://s3.amazonaws.com/nunciato-media/previews/2018-05-29-16-06-08.jpg)
+{{< image "s3/images/2018-05-29-16-06-08.jpg" "Slurp" >}}
 
 At six bucks a pop, though, Rebecca and I chose to forgo ordering for ourselves, so as you listen to this, and gaze at these photos (or worse, scroll through [Fresh Shave on Instagram](https://www.instagram.com/thefreshshave/)), just imagine what it felt like for us, watching them dive into these with such glee, and feel our pain. Parenthood, man &mdash; it's all about the sacrifices.
 
