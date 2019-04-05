@@ -1,0 +1,15 @@
+language: node_js
+
+before_install:
+
+  # Install AWS CLI
+  - pip install --user awscli
+
+  # Install Pulumi
+  - curl -fsSL https://get.pulumi.com | sh
+  - export PATH="/home/travis/.pulumi/bin:/home/travis/bin:$PATH"
+  - pulumi version
+  - pulumi login
+
+script:
+  - ./scripts/travis_${TRAVIS_EVENT_TYPE}.sh
