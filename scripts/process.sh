@@ -107,7 +107,7 @@ do
   # Videos              #
   # # # # # # # # # # # #
 
-  if [ "$extension" = "mov" ]; then
+  if [ "$extension" = "mov" ] || [ "$extension" = "mp4" ]; then
     new_extension="mp4"
     new_filename="$target_filename.$new_extension"
     new_filepath="$path/Out/$new_filename"
