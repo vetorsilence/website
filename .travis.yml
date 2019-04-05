@@ -18,4 +18,4 @@ before_install:
 script:
   - make build
   - ./scripts/travis_${TRAVIS_EVENT_TYPE}.sh
-  - aws cloudfront create-invalidation --distribution-id $(shell pulumi stack output cloudfrontDistributionId) --paths $(shell find site/public -name "*.html" -o -name "*.css" -o -name "*.js" | sed "s/^site\/public//g")
+  # - aws cloudfront create-invalidation --distribution-id $(pulumi stack output cloudfrontDistributionId) --paths $(find site/public -name "*.html" -o -name "*.css" -o -name "*.js" | sed "s/^site\/public//g")
