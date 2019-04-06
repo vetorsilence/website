@@ -16,8 +16,6 @@ before_install:
   - sudo dpkg -i hugo*.deb
 
 script:
-  # - make build
-  - hugo --baseURL https://chris.nunciato.org --source site
-  - ./scripts/travis_${TRAVIS_EVENT_TYPE}.sh
-  # - make invalidate
-  # - aws cloudfront create-invalidation --distribution-id $(pulumi stack output cloudfrontDistributionId) --paths $(find site/public -name "*.html" -o -name "*.css" -o -name "*.js" | sed "s/^site\/public//g")
+  - make build
+  - make travis
+  - make invalidate

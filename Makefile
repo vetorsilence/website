@@ -8,13 +8,13 @@ deploy: build
 	$(MAKE) invalidate
 
 preview:
-	AWS_PROFILE=personal pulumi preview
+	pulumi preview
 
 update:
-	AWS_PROFILE=personal && pulumi up --yes --skip-preview
+	pulumi up --yes --skip-preview
 
 invalidate:
-	AWS_PROFILE=personal aws cloudfront create-invalidation \
+	aws cloudfront create-invalidation \
 		--distribution-id $(shell pulumi stack output cloudfrontDistributionId) \
 		--paths $(shell find site/public -name "*.html" -o -name "*.css" -o -name "*.js" | sed "s/^site\/public//g")
 
@@ -46,3 +46,6 @@ watch_sass:
 
 work:
 	code website.code-workspace
+
+travis:
+	./scripts/travis_push.sh
