@@ -9,7 +9,7 @@ mkdir -p $1/Out/Posters
 yaml=""
 index=-1
 
-media_bucket="nunciato-media"
+media_bucket="cnunciato-website-media"
 
 for file in $1/*.*
 do
