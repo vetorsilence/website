@@ -7,7 +7,7 @@ import * as glob from 'glob';
 const siteDir = 'site/public/';
 const files = glob.sync(`${siteDir}/**/*`);
 
-const bucket = new aws.s3.Bucket('nunciato-website', {
+const bucket = new aws.s3.Bucket('cnunciato-website', {
   website: {
     indexDocument: 'index.html',
     errorDocument: '404.html'
@@ -45,7 +45,7 @@ const bucketPolicy = new aws.s3.BucketPolicy('bucketPolicy', {
   policy: bucket.bucket.apply(publicReadPolicyForBucket)
 });
 
-const stackConfig = new pulumi.Config('static-website');
+const stackConfig = new pulumi.Config('website');
 
 const config = {
     targetDomain: stackConfig.require('targetDomain'),

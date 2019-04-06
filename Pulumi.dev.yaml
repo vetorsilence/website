@@ -1,0 +1,4 @@
+config:
+  aws:region: us-west-2
+  website:certificateArn: arn:aws:acm:us-east-1:639972025873:certificate/044552ff-3c88-46d8-af77-ddcb366af26c
+  website:targetDomain: chris.nunciato.org

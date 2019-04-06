@@ -3,7 +3,7 @@ title = "Christian Nunciato"
 sectionPagesMenu = "main"
 
 [params]
-mediaRoot = "https://s3.amazonaws.com/nunciato-media/"
+mediaRoot = "https://s3.amazonaws.com/cnunciato-website-media/"
 
 [mediaTypes."application/rss"]
 suffixes = ["xml"]
