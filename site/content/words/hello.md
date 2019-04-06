@@ -4,6 +4,12 @@ description: It's the first post! Kind of.
 date: 2018-02-11
 draft: false
 author: Christian Nunciato
+photo:
+  url: '/media/images/photos/mossyfern.jpg'
+  thumb: '/media/images/photos/mossyfern.jpg'
+  preview: '/media/images/photos/mossyfern.jpg'
+  title: ''
+  caption: ''
 ---
 
 First post! Exciting, right?
@@ -14,6 +20,6 @@ I don't have much to share yet, but I will. For now, I'll just say thanks for st
 
 In the meantime, here's a snapshot from a hike we went on recently, at the beautiful [Redmond Watershed Preserve](https://www.wta.org/go-hiking/hikes/redmond-watershed-preserve).
 
-![](/media/images/photos/mossyfern.jpg)
+{{< image "/media/images/photos/mossyfern.jpg" >}}
 
 Have a lovely day, and do come back soon.
