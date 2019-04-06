@@ -150,21 +150,21 @@ do
   exiftool -overwrite_original_in_place -tagsFromFile "$file" "$new_filepath"
 
   # Copy the new file to S3
-  aws s3 cp "$new_filepath" "s3://$media_bucket/$folder/$new_filename" --profile personal
+  aws s3 cp "$new_filepath" "s3://$media_bucket/$folder/$new_filename"
 
   # Assuming we got a preview, copy that, too
   if [ ! -z "$new_previewpath" ]; then
-    aws s3 cp "$new_previewpath" "s3://$media_bucket/previews/$new_previewname" --profile personal
+    aws s3 cp "$new_previewpath" "s3://$media_bucket/previews/$new_previewname"
   fi
 
   # Assuming we got a thumb, copy that, too
   if [ ! -z "$new_thumbpath" ]; then
-    aws s3 cp "$new_thumbpath" "s3://$media_bucket/thumbs/$new_thumbname" --profile personal
+    aws s3 cp "$new_thumbpath" "s3://$media_bucket/thumbs/$new_thumbname"
   fi
 
   # Assuming we got a poster, copy that, too
   if [ ! -z "$new_posterpath" ]; then
-    aws s3 cp "$new_posterpath" "s3://$media_bucket/posters/$new_postername" --profile personal
+    aws s3 cp "$new_posterpath" "s3://$media_bucket/posters/$new_postername"
   fi
 
   # Assemble the YAML
