@@ -42,7 +42,6 @@ items:
       focal_length: '4.0 mm'
     title: ''
     caption: 'Tendrils.'
-
   - type: photo
     url: 's3/images/2019-03-20-07-58-27.jpg'
     preview: 's3/previews/2019-03-20-07-58-27.jpg'
@@ -240,4 +239,4 @@ items:
     caption: A determined (but ultimately unsuccessful) cloud.
 ---
 
-We work hard for the sunlight in the Pacific Northwest &mdash; sure, not as hard as some, but when you spend six months of the year indoors because it's too cold and too gray to go outside, you learn to appreciate the signs of spring.
+We work hard for the sunlight in the Pacific Northwest. Not nearly as hard as some, sure &mdash; but when you spend a good six months of the year indoors because it's too cold, and too gray, to go outside, you learn to appreciate the signs of spring. A couple of weeks back, they started showing up.
