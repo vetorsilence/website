@@ -191,7 +191,7 @@ items:
       shutter_speed: '1/850'
       focal_length: '4.0 mm'
     title: ''
-    caption: 'Planging trees at [North Creek Forest](https://www.friendsnorthcreekforest.org/).'
+    caption: 'Planting trees at [North Creek Forest](https://www.friendsnorthcreekforest.org/).'
   - type: photo
     url: 's3/images/2019-03-04-11-32-52.jpg'
     preview: 's3/previews/2019-03-04-11-32-52.jpg'
@@ -221,7 +221,7 @@ items:
       shutter_speed: '1/20'
       focal_length: '121.0 mm'
     title: ''
-    caption: 'A mossy branch on a hike at [Meadowdale](https://www.alltrails.com/trail/us/washington/meadowdale-beach-trails)'
+    caption: 'A mossy branch on a hike at [Meadowdale](https://www.alltrails.com/trail/us/washington/meadowdale-beach-trails).'
   - type: photo
     url: 's3/images/2019-03-13-18-50-00.jpg'
     preview: 's3/previews/2019-03-13-18-50-00.jpg'
