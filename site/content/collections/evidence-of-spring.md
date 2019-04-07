@@ -2,7 +2,7 @@
 title: "Evidence of Spring"
 date: 2019-03-28T05:58:09-07:00
 draft: false
-description: It's happening.
+description: It's finally happening.
 featured:
   type: photo
   url: 's3/images/2019-04-01-18-21-07.jpg'
@@ -26,7 +26,7 @@ items:
       shutter_speed: '1/350'
       focal_length: '4.0 mm'
     title: ''
-    caption: ''
+    caption: They're here!
   - type: photo
     url: 's3/images/2019-03-29-08-00-46.jpg'
     preview: 's3/previews/2019-03-29-08-00-46.jpg'
@@ -41,22 +41,7 @@ items:
       shutter_speed: '1/125'
       focal_length: '4.0 mm'
     title: ''
-    caption: ''
-  - type: photo
-    url: 's3/images/2019-03-29-18-50-18.jpg'
-    preview: 's3/previews/2019-03-29-18-50-18.jpg'
-    thumb: 's3/thumbs/2019-03-29-18-50-18.jpg'
-    created: 2019-03-29 18:50:18
-    exif:
-      make: 'Apple'
-      model: 'iPhone 7'
-      lens: 'iPhone 7 back camera 3.99mm f/1.8'
-      iso: '20'
-      aperture: '1.8'
-      shutter_speed: '1/850'
-      focal_length: '4.0 mm'
-    title: ''
-    caption: ''
+    caption: 'Tendrils.'
 
   - type: photo
     url: 's3/images/2019-03-20-07-58-27.jpg'
@@ -72,7 +57,7 @@ items:
       shutter_speed: '1/60'
       focal_length: '4.0 mm'
     title: ''
-    caption: ''
+    caption: 'Little green alienheads.'
   - type: photo
     url: 's3/images/2019-03-20-07-59-28.jpg'
     preview: 's3/previews/2019-03-20-07-59-28.jpg'
@@ -87,7 +72,22 @@ items:
       shutter_speed: '1/1050'
       focal_length: '4.0 mm'
     title: ''
-    caption: ''
+    caption: 'Sky.'
+  - type: photo
+    url: 's3/images/2019-03-29-18-50-18.jpg'
+    preview: 's3/previews/2019-03-29-18-50-18.jpg'
+    thumb: 's3/thumbs/2019-03-29-18-50-18.jpg'
+    created: 2019-03-29 18:50:18
+    exif:
+      make: 'Apple'
+      model: 'iPhone 7'
+      lens: 'iPhone 7 back camera 3.99mm f/1.8'
+      iso: '20'
+      aperture: '1.8'
+      shutter_speed: '1/850'
+      focal_length: '4.0 mm'
+    title: ''
+    caption: 'Sky, I say!'
   - type: photo
     url: 's3/images/2019-03-25-07-07-18.jpg'
     preview: 's3/previews/2019-03-25-07-07-18.jpg'
@@ -147,7 +147,7 @@ items:
       shutter_speed: '1/270'
       focal_length: '4.0 mm'
     title: ''
-    caption: 'Reaching up.'
+    caption: 'Reaching.'
   - type: photo
     url: 's3/images/2019-03-23-16-18-19.jpg'
     preview: 's3/previews/2019-03-23-16-18-19.jpg'
@@ -162,7 +162,7 @@ items:
       shutter_speed: '1/240'
       focal_length: '4.2 mm'
     title: ''
-    caption: 'The fairy garden (our little strawberry patch).'
+    caption: 'The fairy garden &mdash; our little strawberry patch out back. (Photo by [Rebecca](https://www.instagram.com/rebecca.nunciato/).)'
   - type: photo
     url: 's3/images/2019-03-02-12-43-20.jpg'
     preview: 's3/previews/2019-03-02-12-43-20.jpg'
@@ -177,7 +177,7 @@ items:
       shutter_speed: '1/1150'
       focal_length: '4.0 mm'
     title: ''
-    caption: Fennel'
+    caption: Fennel. This'll grow to around six feet high within a couple of months.
   - type: photo
     url: 's3/images/2019-03-16-10-34-28.jpg'
     preview: 's3/previews/2019-03-16-10-34-28.jpg'
@@ -192,7 +192,7 @@ items:
       shutter_speed: '1/850'
       focal_length: '4.0 mm'
     title: ''
-    caption: ''
+    caption: 'Planging trees at [North Creek Forest](https://www.friendsnorthcreekforest.org/).'
   - type: photo
     url: 's3/images/2019-03-04-11-32-52.jpg'
     preview: 's3/previews/2019-03-04-11-32-52.jpg'
@@ -207,7 +207,7 @@ items:
       shutter_speed: '1/640'
       focal_length: '4.2 mm'
     title: ''
-    caption: ''
+    caption: 'More daffodils (also by Rebecca).'
   - type: photo
     url: 's3/images/2019-03-09-17-53-05.jpg'
     preview: 's3/previews/2019-03-09-17-53-05.jpg'
@@ -222,7 +222,7 @@ items:
       shutter_speed: '1/20'
       focal_length: '121.0 mm'
     title: ''
-    caption: ''
+    caption: 'A mossy branch on a hike at [Meadowdale](https://www.alltrails.com/trail/us/washington/meadowdale-beach-trails)'
   - type: photo
     url: 's3/images/2019-03-13-18-50-00.jpg'
     preview: 's3/previews/2019-03-13-18-50-00.jpg'
@@ -236,6 +236,8 @@ items:
       aperture: '22.0'
       shutter_speed: '1/80'
       focal_length: '10.0 mm'
-    title: ''
-    caption: ''
+    title:
+    caption: A determined (but ultimately unsuccessful) cloud.
 ---
+
+We work hard for the sunlight in the Pacific Northwest &mdash; sure, not as hard as some, but when you spend six months of the year indoors because it's too cold and too gray to go outside, you learn to appreciate the signs of spring.
