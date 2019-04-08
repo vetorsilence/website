@@ -17,5 +17,7 @@ photo:
         focal_length: '4.0 mm'
     title: ""
     caption: ""
+    tags:
+        - mobile
 
 ---
