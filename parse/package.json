@@ -1,0 +1,11 @@
+{
+    "name": "typescript",
+    "devDependencies": {
+        "@types/node": "latest"
+    },
+    "dependencies": {
+        "@pulumi/cloud": "^0.18.0",
+        "@pulumi/cloud-aws": "^0.18.0",
+        "@pulumi/pulumi": "latest"
+    }
+}

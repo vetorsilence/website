@@ -1,0 +1,3 @@
+name: parse
+runtime: nodejs
+description: Parse and commit things emailed to myself.

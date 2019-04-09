@@ -42,8 +42,5 @@ COPY scripts/process.sh /usr/local/bin
 # Set a working directory to be mounted at runtime.
 RUN mkdir -p media
 
-# # Install.
-# RUN npm install
-
 # And go!
 ENTRYPOINT [ "process.sh", "media" ]
