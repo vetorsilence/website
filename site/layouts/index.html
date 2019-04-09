@@ -21,7 +21,7 @@
     </nav>
     <main>
       <div class="items">
-        {{ range where .Data.Pages "Section" "not in" "movies, books, quotes" }}
+        {{ range where .Data.Pages "Section" "not in" "movies, books, quotes, mobile" }}
           {{ if .Section }}
             <div class="{{ .Section }}">
               <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
@@ -83,7 +83,7 @@
                 </p>
               {{ end }}
 
-              <!-- Sets -->
+              <!-- Collections -->
               {{ if eq .Section "collections" }}
                 {{ if eq .Params.featured.type "photo" }}
                   <a href="{{ .RelPermalink }}" title="{{ .Title }}">

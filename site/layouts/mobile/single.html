@@ -1,0 +1,50 @@
+{{ define "main" }}
+  <main>
+    <section class="heading">
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+      <h1>{{ .Title }}</h1>
+      {{ if .Description }}
+        <h2>{{ .Description }}</h2>
+      {{ end }}
+    </section>
+    <hr>
+    <section>
+      <div class="media-container">
+        <img src="{{ replace .Params.photo.url "s3/" $.Site.Params.mediaRoot }}" alt="{{ .Params.photo.caption }}">
+        {{ if .Params.photo.created }}
+          <small class="left">
+            {{ dateFormat "January 2, 2006" .Params.photo.created }}
+          </small>
+        {{ end }}
+        {{ if .Params.photo.exif }}
+          <small class="right">
+            {{ .Params.photo.exif.make }}
+            {{ replace .Params.photo.exif.model .Params.photo.exif.make "" }}
+            {{ if .Params.photo.exif.iso }}&bull; ISO {{ .Params.photo.exif.iso }}{{ end }}
+            {{ if .Params.photo.exif.aperture }}&bull; f{{ .Params.photo.exif.aperture }}{{ end }}
+            {{ if .Params.photo.exif.shutter_speed }}&bull; {{ .Params.photo.exif.shutter_speed }} sec {{ end }}
+            {{ if .Params.photo.exif.focal_length }} &bull; {{ .Params.photo.exif.focal_length }}{{ end }}
+          </small>
+        {{ end }}
+      </div>
+      <p class="caption">
+        {{ .Params.photo.caption | markdownify }}
+      </p>
+    </section>
+    <section>
+      {{ .Content }}
+    </section>
+    <hr>
+    <section class="links">
+      {{ partial "links" . }}
+    </section>
+    <section>
+      {{ partial "categories" . }}
+      {{ partial "tags" . }}
+    </section>
+  </main>
+{{ end }}
+
+{{ define "title" }}
+  {{ .Page.Title }} | {{ .Site.Title }}
+{{ end }}
