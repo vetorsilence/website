@@ -19,6 +19,9 @@ invalidate:
 		--paths $(shell find site/public -name "*.html" -o -name "*.css" -o -name "*.js" | sed "s/^site\/public//g")
 
 process:
+	docker run -it -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -v ~/Desktop/Exports:/media cnunciato/process
+
+process-local:
 	./scripts/process.sh ~/Desktop/Exports
 
 clean:
