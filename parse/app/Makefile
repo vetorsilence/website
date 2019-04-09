@@ -9,6 +9,10 @@ push:
 	docker tag $(shell docker images --format {{.ID}} | head -1) ${docker_repo} && \
 	docker push ${docker_repo}
 
+.PHONY: ngrok
+ngrok:
+	ngrok http 8080
+
 .PHONY: start
 start:
 	docker run -it --rm \
