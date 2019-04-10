@@ -101,11 +101,6 @@ do
 
     # Thumbnail
     ffmpeg -noautorotate -i "$file" -vf "scale=$thumbnail_width:-1" -metadata:s:v rotate=0 -pix_fmt yuvj422p -q:v 1 -y "$new_thumbpath"
-
-    # Unset the orientation properties.
-    exiftool -Orientation= "$new_filepath"
-    exiftool -Orientation= "$new_previewpath"
-    exiftool -Orientation= "$new_thumbpath"
   fi
 
   # # # # # # # # # # # #
@@ -143,12 +138,6 @@ do
     # Poster
     ffmpeg -i "$file" -vf "select=gte(n\,100),scale=$video_width:-1" -vframes 1 "$new_posterpath"
 
-    # Unset the orientation properties.
-    exiftool -Orientation= "$new_filepath"
-    exiftool -Orientation= "$new_previewpath"
-    exiftool -Orientation= "$new_thumbpath"
-    exiftool -Orientation= "$new_posterpath"
-
     options="$options
   poster: 's3/posters/${new_postername}'"
   fi
@@ -161,20 +150,24 @@ do
   exiftool -overwrite_original_in_place -tagsFromFile "$file" "$new_filepath"
 
   # Copy the new file to S3
+  exiftool overwrite_original_in_place -Orientation= "$new_filepath"
   aws s3 cp "$new_filepath" "s3://$media_bucket/$folder/$new_filename"
 
   # Assuming we got a preview, copy that, too
   if [ ! -z "$new_previewpath" ]; then
+    exiftool overwrite_original_in_place -Orientation= "$new_previewpath"
     aws s3 cp "$new_previewpath" "s3://$media_bucket/previews/$new_previewname"
   fi
 
   # Assuming we got a thumb, copy that, too
   if [ ! -z "$new_thumbpath" ]; then
+    exiftool overwrite_original_in_place -Orientation= "$new_thumbpath"
     aws s3 cp "$new_thumbpath" "s3://$media_bucket/thumbs/$new_thumbname"
   fi
 
   # Assuming we got a poster, copy that, too
   if [ ! -z "$new_posterpath" ]; then
+    exiftool overwrite_original_in_place -Orientation= "$new_posterpath"
     aws s3 cp "$new_posterpath" "s3://$media_bucket/posters/$new_postername"
   fi
 

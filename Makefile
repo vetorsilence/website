@@ -27,6 +27,11 @@ invalidate:
 process:
 	docker run -it -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -v ~/Desktop/Exports:/media cnunciato/process
 
+.PHONY: images
+images:
+	pushd process && $(MAKE) build push && popd
+	pushd parse/app && $(MAKE) build push && popd
+
 .PHONY: process_local
 process_local:
 	./process/process.sh ~/Desktop/Exports
