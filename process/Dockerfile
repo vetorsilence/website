@@ -37,7 +37,7 @@ RUN ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
 RUN aws --version
 
 # Copy in the processing script.
-COPY scripts/process.sh /usr/local/bin
+COPY process.sh /usr/local/bin
 
 # Set a working directory to be mounted at runtime.
 RUN mkdir -p media

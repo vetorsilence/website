@@ -94,13 +94,13 @@ do
 
     # Values range from 1 to 31, where lower means mo' betta.
     # https://superuser.com/questions/318845/improve-quality-of-ffmpeg-created-jpgs
-    ffmpeg -noautorotate -i "$file" -vf "transpose=1,scale=$video_width:-1" -pix_fmt yuvj422p -q:v 4 -y "$new_filepath"
+    ffmpeg -noautorotate -i "$file" -vf "scale=$video_width:-1" -metadata:s:v rotate=0 -pix_fmt yuvj422p -q:v 4 -y "$new_filepath"
 
     # Preview
-    ffmpeg -noautorotate -i "$file" -vf "transpose=1,scale=$preview_width:-1" -pix_fmt yuvj422p -q:v 4 -y "$new_previewpath"
+    ffmpeg -noautorotate -i "$file" -vf "scale=$preview_width:-1" -metadata:s:v rotate=0 -pix_fmt yuvj422p -q:v 4 -y "$new_previewpath"
 
     # Thumbnail
-    ffmpeg -noautorotate -i "$file" -vf "transpose=1,scale=$thumbnail_width:-1" -pix_fmt yuvj422p -q:v 1 -y "$new_thumbpath"
+    ffmpeg -noautorotate -i "$file" -vf "scale=$thumbnail_width:-1" -metadata:s:v rotate=0 -pix_fmt yuvj422p -q:v 1 -y "$new_thumbpath"
   fi
 
   # # # # # # # # # # # #
