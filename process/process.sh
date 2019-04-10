@@ -103,9 +103,9 @@ do
     ffmpeg -noautorotate -i "$file" -vf "scale=$thumbnail_width:-1" -metadata:s:v rotate=0 -pix_fmt yuvj422p -q:v 1 -y "$new_thumbpath"
 
     # Unset the orientation properties.
-    exiftool -Orientation=1 -n "$new_filepath"
-    exiftool -Orientation=1 -n "$new_previewpath"
-    exiftool -Orientation=1 -n "$new_thumbpath"
+    exiftool -Orientation= "$new_filepath"
+    exiftool -Orientation= "$new_previewpath"
+    exiftool -Orientation= "$new_thumbpath"
   fi
 
   # # # # # # # # # # # #
@@ -144,10 +144,10 @@ do
     ffmpeg -i "$file" -vf "select=gte(n\,100),scale=$video_width:-1" -vframes 1 "$new_posterpath"
 
     # Unset the orientation properties.
-    exiftool -Orientation=1 -n "$new_filepath"
-    exiftool -Orientation=1 -n "$new_previewpath"
-    exiftool -Orientation=1 -n "$new_thumbpath"
-    exiftool -Orientation=1 -n "$new_posterpath"
+    exiftool -Orientation= "$new_filepath"
+    exiftool -Orientation= "$new_previewpath"
+    exiftool -Orientation= "$new_thumbpath"
+    exiftool -Orientation= "$new_posterpath"
 
     options="$options
   poster: 's3/posters/${new_postername}'"
