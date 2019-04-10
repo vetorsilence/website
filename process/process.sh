@@ -94,13 +94,13 @@ do
 
     # Values range from 1 to 31, where lower means mo' betta.
     # https://superuser.com/questions/318845/improve-quality-of-ffmpeg-created-jpgs
-    ffmpeg -noautorotate -i "$file" -vf "scale=$video_width:-1" -metadata:s:v rotate=0 -pix_fmt yuvj422p -q:v 4 -y "$new_filepath"
+    ffmpeg -noautorotate -i "$file" -vf "scale=$video_width:-1" -pix_fmt yuvj422p -q:v 4 -y "$new_filepath"
 
     # Preview
-    ffmpeg -noautorotate -i "$file" -vf "scale=$preview_width:-1" -metadata:s:v rotate=0 -pix_fmt yuvj422p -q:v 4 -y "$new_previewpath"
+    ffmpeg -noautorotate -i "$file" -vf "scale=$preview_width:-1" -pix_fmt yuvj422p -q:v 4 -y "$new_previewpath"
 
     # Thumbnail
-    ffmpeg -noautorotate -i "$file" -vf "scale=$thumbnail_width:-1" -metadata:s:v rotate=0 -pix_fmt yuvj422p -q:v 1 -y "$new_thumbpath"
+    ffmpeg -noautorotate -i "$file" -vf "scale=$thumbnail_width:-1" -pix_fmt yuvj422p -q:v 1 -y "$new_thumbpath"
   fi
 
   # # # # # # # # # # # #
@@ -127,16 +127,16 @@ do
     options="$options
   duration: ${duration%.*}"
 
-    ffmpeg -i "$file" -vf "fade=in:0:30,fade=out:st=$duration_minus_one:d=1,scale=$video_width:-1" -af "afade=in:st=0:d=1,afade=out:st=$duration_minus_one:d=1" -vcodec h264 -acodec aac -strict -2 "$new_filepath"
+    ffmpeg-noautorotate  -i "$file" -vf "fade=in:0:30,fade=out:st=$duration_minus_one:d=1,scale=$video_width:-1" -af "afade=in:st=0:d=1,afade=out:st=$duration_minus_one:d=1" -vcodec h264 -acodec aac -strict -2 "$new_filepath"
 
     # Preview
-    ffmpeg -i "$file" -vf "select=gte(n\,100),scale=$preview_width:-1" -vframes 2 "$new_previewpath"
+    ffmpeg -noautorotate -i "$file" -vf "select=gte(n\,100),scale=$preview_width:-1" -vframes 2 "$new_previewpath"
 
     # Thumbnail
-    ffmpeg -i "$file" -vf "select=gte(n\,100),scale=$thumbnail_width:-1" -vframes 1 "$new_thumbpath"
+    ffmpeg -noautorotate -i "$file" -vf "select=gte(n\,100),scale=$thumbnail_width:-1" -vframes 1 "$new_thumbpath"
 
     # Poster
-    ffmpeg -i "$file" -vf "select=gte(n\,100),scale=$video_width:-1" -vframes 1 "$new_posterpath"
+    ffmpeg -noautorotate -i "$file" -vf "select=gte(n\,100),scale=$video_width:-1" -vframes 1 "$new_posterpath"
 
     options="$options
   poster: 's3/posters/${new_postername}'"
@@ -150,24 +150,24 @@ do
   exiftool -overwrite_original_in_place -tagsFromFile "$file" "$new_filepath"
 
   # Copy the new file to S3
-  exiftool overwrite_original_in_place -Orientation= "$new_filepath"
+  exiftool -overwrite_original_in_place -Orientation= "$new_filepath"
   aws s3 cp "$new_filepath" "s3://$media_bucket/$folder/$new_filename"
 
   # Assuming we got a preview, copy that, too
   if [ ! -z "$new_previewpath" ]; then
-    exiftool overwrite_original_in_place -Orientation= "$new_previewpath"
+    exiftool -overwrite_original_in_place -Orientation= "$new_previewpath"
     aws s3 cp "$new_previewpath" "s3://$media_bucket/previews/$new_previewname"
   fi
 
   # Assuming we got a thumb, copy that, too
   if [ ! -z "$new_thumbpath" ]; then
-    exiftool overwrite_original_in_place -Orientation= "$new_thumbpath"
+    exiftool -overwrite_original_in_place -Orientation= "$new_thumbpath"
     aws s3 cp "$new_thumbpath" "s3://$media_bucket/thumbs/$new_thumbname"
   fi
 
   # Assuming we got a poster, copy that, too
   if [ ! -z "$new_posterpath" ]; then
-    exiftool overwrite_original_in_place -Orientation= "$new_posterpath"
+    exiftool -overwrite_original_in_place -Orientation= "$new_posterpath"
     aws s3 cp "$new_posterpath" "s3://$media_bucket/posters/$new_postername"
   fi
 
