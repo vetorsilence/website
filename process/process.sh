@@ -148,6 +148,9 @@ do
 
   # Burn the tags from the old file into the new
   exiftool -overwrite_original_in_place -tagsFromFile "$file" "$new_filepath"
+  exiftool -overwrite_original_in_place -tagsFromFile "$file" "$new_previewpath"
+  exiftool -overwrite_original_in_place -tagsFromFile "$file" "$new_thumbpath"
+  # exiftool -overwrite_original_in_place -tagsFromFile "$file" "$new_posterpath"
 
   # Copy the new file to S3
   aws s3 cp "$new_filepath" "s3://$media_bucket/$folder/$new_filename"
