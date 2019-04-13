@@ -25,7 +25,7 @@ invalidate:
 
 .PHONY: process
 process:
-	docker run -it -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -v ~/Desktop/Exports:/media cnunciato/process
+	./process/process.sh ~/Desktop/Exports
 
 .PHONY: images
 images:
