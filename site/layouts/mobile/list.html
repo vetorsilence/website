@@ -14,13 +14,13 @@
         <h3>
           {{ .Description }}
         </h3>
-        {{ if .Params.photo.url }}
+        {{ if .Params.photo }}
           <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-            <img src="{{ replace .Params.photo.url "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.photo.caption }}">
+            <img src="{{ replace .Params.photo.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.photo.caption }}">
           </a>
         {{ end }}
         <p class="item-count">
-          <i class="fas fa-mobile"></i>
+          <!-- <i class="fas fa-mobile"></i> -->
         </p>
       </section>
       <hr>
