@@ -100,6 +100,10 @@ do
     # TODO: Is this necessary for videos, also?
     exiftran -a -i "$file"
 
+    echo "--- Updated source file EXIF data ----------------------------------------"
+    exiftool $file
+    echo "--- End of updated source file EXIF data ---------------------------------"
+
     # Values range from 1 to 31, where lower means mo' betta.
     # https://superuser.com/questions/318845/improve-quality-of-ffmpeg-created-jpgs
     ffmpeg -i "$file" -vf "scale=$video_width:-1" -pix_fmt yuvj422p -q:v 4 -y "$new_filepath"

@@ -14,7 +14,7 @@ ngrok:
 	ngrok http 8080
 
 .PHONY: start
-start:
+start: build
 	docker run -it --rm \
 		-p 8080:8080 \
 		-e AWS_ACCESS_KEY_ID \
