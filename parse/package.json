@@ -6,6 +6,7 @@
     "dependencies": {
         "@pulumi/cloud": "^0.18.0",
         "@pulumi/cloud-aws": "^0.18.0",
-        "@pulumi/pulumi": "latest"
+        "@pulumi/pulumi": "latest",
+        "@sindresorhus/slugify": "^0.9.1"
     }
 }

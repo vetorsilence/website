@@ -18,6 +18,7 @@ const multer  = require('multer');
 const upload = multer({ dest: UPLOADS });
 const rimraf = require("rimraf");
 const request = require("request");
+const slugify = require("@sindresorhus/slugify");
 const app = express();
 
 rimraf.sync(UPLOADS);
@@ -63,6 +64,10 @@ app.post('/', upload.any(), function (req, res, next) {
             // Clone the website repo, which gives us access to the processing scripts.
             execSync(`git clone ${remote} ${name}/website`, { stdio: "inherit" });
 
+            // TODO: Rather than clone the whole repo, just use the `contents` API to download and save it, then
+            // remove the dependency on git.
+            // https://developer.github.com/v3/repos/contents/#get-contents
+
             // Process the file, by processing all files in the media directory. Send the output to a file.
             execSync(`${name}/website/process/process.sh ${name}/media | tee ${name}/out.yaml`, { stdio: "inherit" });
 
@@ -77,17 +82,18 @@ app.post('/', upload.any(), function (req, res, next) {
                 return;
             }
 
-            // Take the output from that process and turn it into a JSON object.
+            // Take the output from that process and turn it into a JSON object,
+            // so we can manipulate it before posting to GitHub as YAML.
             const result = yaml.parse(output.substr(output.indexOf("- type: photo")));
             const photo = result[0];
 
             // Make a new post, using the subject line of the email.
-            const filepath = `site/content/mobile/${req.body.subject.toLowerCase().replace(/ /g, "-")}.md`;
+            const filepath = `site/content/mobile/${slugify(req.body.subject || "Untitled")}-${new Date(photo.created).getTime()}.md`;
 
-            // Update the frontmatter
+            // Update the frontmatter.
             const frontmatter = {
-                title: req.body.subject,
-                date: new Date(),
+                title: req.body.subject || "Untitled",
+                date: photo.created,
                 draft: false,
                 photo: {
                     url: photo.url,
@@ -100,12 +106,13 @@ app.post('/', upload.any(), function (req, res, next) {
                 }
             };
 
-            const contents = `---\n${yaml.stringify(frontmatter, 4)}\n---\n`;
+            // Now turn the JSON back into YAML, for consumption by Hugo.
+            const contents = `---\n${yaml.stringify(frontmatter, 4)}---\n`;
 
-            // Post a new file to GitHub with that output.
+            // Post a new file to GitHub with that YAML.
             request.put(`https://api.github.com/repos/cnunciato/website/contents/${filepath}`, {
                 headers: {
-                    "User-Agent": "Chris's Parser/Uploader"
+                    "User-Agent": "Christian's Parser-Uploader"
                 },
                 auth: {
                     username: "cnunciato",
