@@ -40,7 +40,8 @@ app.post('/', upload.any(), function (req, res, next) {
 
     // Much cooler would be to support video clips. NEXT!
 
-    console.log(req.files);
+    console.log("req.body:", req.body);
+    console.log("req.files:", req.files);
 
     req.files.forEach(file => {
 
@@ -128,9 +129,9 @@ app.post('/', upload.any(), function (req, res, next) {
                 },
             }, (err, res) => {
                 if (err) {
-                    console.err(err);
+                    console.err("Error putting the file to GitHub:", err);
                 }
-                console.log(res);
+                console.log("Response:", res);
             });
         }
     });
