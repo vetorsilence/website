@@ -16,6 +16,4 @@ before_install:
   - sudo dpkg -i hugo*.deb
 
 script:
-  - make build
   - make travis
-  # - make invalidate
