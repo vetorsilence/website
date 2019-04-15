@@ -1,4 +1,5 @@
 import * as pulumi from '@pulumi/pulumi';
+import * as cloud from "@pulumi/cloud";
 import * as aws from '@pulumi/aws';
 import * as fs from 'fs';
 import * as mime from 'mime';
@@ -118,3 +119,30 @@ export const bucketName = bucket.bucketDomainName;
 export const bucketUrl = bucket.websiteEndpoint;
 export const cloudfrontUrl = cdn.domainName;
 export const cloudfrontDistributionId = cdn.id;
+
+
+// Parse app.
+
+let service = new cloud.Service("parse", {
+    containers: {
+        parse: {
+            image: "cnunciato/parse:latest",
+            memory: 2048,
+            cpu: 2,
+            ports: [
+                {
+                    port: 80,
+                    targetPort: 8080,
+                }
+            ],
+            environment: {
+                AWS_ACCESS_KEY_ID: stackConfig.require("aws_access_key_id"),
+                AWS_SECRET_ACCESS_KEY: stackConfig.require("aws_secret_access_key"),
+                GITHUB_PERSONAL_ACCESS_TOKEN: stackConfig.require("github_personal_access_token"),
+            },
+        },
+    },
+    replicas: 1,
+});
+
+export const parseEndpoint = service.defaultEndpoint.apply(e => `http://${e.hostname}`);

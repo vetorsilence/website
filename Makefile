@@ -69,5 +69,5 @@ work:
 	code website.code-workspace
 
 .PHONY: travis
-travis:
-	./scripts/travis_push.sh
+travis: build
+	./ci/travis_push.sh

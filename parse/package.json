@@ -1,12 +1,20 @@
 {
-    "name": "typescript",
-    "devDependencies": {
-        "@types/node": "latest"
-    },
-    "dependencies": {
-        "@pulumi/cloud": "^0.18.0",
-        "@pulumi/cloud-aws": "^0.18.0",
-        "@pulumi/pulumi": "latest",
-        "@sindresorhus/slugify": "^0.9.1"
-    }
+  "name": "parse",
+  "version": "0.0.1",
+  "author": "Christian Nunciato <christian@nunciato.org>",
+  "description": "A thing that parses multipart messages sent from SendGrid",
+  "scripts": {
+    "start": "node index"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "@sindresorhus/slugify": "^0.9.1",
+    "express": "^4.16.4",
+    "mkdirp": "^0.5.1",
+    "multer": "^1.4.1",
+    "request": "^2.88.0",
+    "rimraf": "^2.6.3",
+    "simple-git": "^1.110.0",
+    "yamljs": "^0.3.0"
+  }
 }
