@@ -140,4 +140,4 @@ app.post('/', upload.any(), function (req, res, next) {
 })
 
 app.listen(PORT, HOST);
-console.log(`🎉 Running on http://${HOST}:${PORT}`);
+console.log(`🎉 The service is now running on http://${HOST}:${PORT}.`);
