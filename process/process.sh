@@ -50,11 +50,11 @@ do
   exif_create_date="$(exiftool -s -s -s -CreateDate -DateCreated $file | head -1)"
   hugo_formatted_date="${exif_create_date:0:4}-${exif_create_date:5:2}-${exif_create_date:8:2}${exif_create_date:10:9}"
 
-  # Extract title and caption
+  # Extract title and caption.
   title="$(exiftool -s -s -s -Title $file)"
   caption="$(exiftool -s -s -s -Description $file)"
 
-  # Extract some useful EXIF data
+  # Extract some useful EXIF data.
   exif_make="$(exiftool -s -s -s -Make $file)"
   exif_model="$(exiftool -s -s -s -Model $file)"
   exif_lens="$(exiftool -s -s -s -LensModel $file)"
@@ -63,7 +63,7 @@ do
   exif_shutter_speed="$(exiftool -s -s -s -ShutterSpeed $file)"
   exif_focal_length="$(exiftool -s -s -s -FocalLength $file)"
 
-  # Extract tags, which may or may not be present
+  # Extract tags, which may or may not be present.
   tags_string="$(exiftool -s -s -s -Subject $file)"
   IFS=', ' read -r -a tags_array <<< "$tags_string"
   if [ ${#tags_array[@]} -eq 0 ]; then
@@ -78,7 +78,7 @@ do
     done
   fi
 
-  # Set a target filename based on that date (2018-04-21-16-32-35-00)
+  # Set a target filename based on that date (2018-04-21-16-32-35-00).
   target_filename="$(echo $exif_create_date | sed -e 's/[: \.]/-/g')"
 
   # # # # # # # # # # # #
@@ -158,28 +158,28 @@ do
   # Common              #
   # # # # # # # # # # # #
 
-  # Burn the tags from the old file into the new
+  # Burn the tags from the old file into the new.
   exiftool -overwrite_original_in_place -tagsFromFile "$file" "$new_filepath"
 
-  # Copy the new file to S3
+  # Copy the new file to S3.
   aws s3 cp "$new_filepath" "s3://$media_bucket/$folder/$new_filename"
 
-  # Assuming we got a preview, copy that, too
+  # Assuming we got a preview, copy that, too.
   if [ ! -z "$new_previewpath" ]; then
     aws s3 cp "$new_previewpath" "s3://$media_bucket/previews/$new_previewname"
   fi
 
-  # Assuming we got a thumb, copy that, too
+  # Assuming we got a thumb, copy that, too.
   if [ ! -z "$new_thumbpath" ]; then
     aws s3 cp "$new_thumbpath" "s3://$media_bucket/thumbs/$new_thumbname"
   fi
 
-  # Assuming we got a poster, copy that, too
+  # Assuming we got a poster, copy that, too.
   if [ ! -z "$new_posterpath" ]; then
     aws s3 cp "$new_posterpath" "s3://$media_bucket/posters/$new_postername"
   fi
 
-  # Assemble the YAML
+  # Assemble the YAML.
   yaml="$yaml
 - type: ${type}
   url: 's3/${folder}/${new_filename}'

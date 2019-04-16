@@ -38,7 +38,7 @@ RUN ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
 # Create the app directory.
 WORKDIR /usr/src/app
 
-# Copy everything in.
+# Copy the app into the container.
 COPY package*.json index.js ./
 
 # Install.

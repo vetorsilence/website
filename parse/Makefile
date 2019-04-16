@@ -6,19 +6,19 @@ build:
 
 .PHONY: push
 push:
-	docker tag $(shell docker images --format {{.ID}} | head -1) ${docker_repo} && \
-	docker push ${docker_repo}
+	docker tag $(shell docker images --format {{.ID}} | head -1) ${docker_repo}:latest && \
+	docker push ${docker_repo}:latest
 
 .PHONY: ngrok
 ngrok:
 	ngrok http 8080
 
 .PHONY: start
-start_local:
+serve_local:
 	npm start
 
 .PHONY: start
-start: build
+serve_docker: build
 	docker run -it --rm \
 		-p 8080:8080 \
 		-e AWS_ACCESS_KEY_ID \
