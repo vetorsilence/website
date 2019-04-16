@@ -89,7 +89,7 @@ app.post('/', upload.any(), function (req, res, next) {
             const photo = result[0];
 
             // Make a new post, using the subject line of the email.
-            const filepath = `site/content/mobile/${slugify(req.body.subject || "Untitled")}-${new Date(photo.created).getTime()}.md`;
+            const filepath = `site/content/mobile/${slugify(req.body.subject || "Untitled")}-${new Date(photo.created).getTime() / 1000}.md`;
 
             // Update the frontmatter.
             const frontmatter = {

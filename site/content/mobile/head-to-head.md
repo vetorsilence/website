@@ -1,5 +1,5 @@
 ---
-title: 'Head to head'
+title: 'Head to Head'
 date: 2019-04-14T03:05:38.026Z
 draft: false
 photo:
