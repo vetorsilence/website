@@ -126,7 +126,7 @@ export const cloudfrontDistributionId = cdn.id;
 let service = new cloud.Service("parse", {
     containers: {
         parse: {
-            image: "cnunciato/parse:latest",
+            build: "cnunciato/parse",
             memory: 2048,
             cpu: 2,
             ports: [

@@ -102,13 +102,13 @@ app.post('/', upload.any(), function (req, res, next) {
                     preview: photo.preview,
                     created: photo.created,
                     exif: photo.exif,
-                    title: req.body.subject,
-                    caption: req.body.text,
+                    title: photo.title,
+                    caption: photo.caption,
                 }
             };
 
             // Now turn the JSON back into YAML, for consumption by Hugo.
-            const contents = `---\n${yaml.stringify(frontmatter, 4)}---\n\n${req.body.text || ''}`;
+            const contents = `---\n${yaml.stringify(frontmatter, 4)}---\n\n${req.body.text.trim() || ''}`;
 
             // Post a new file to GitHub with that YAML.
             request.put(`https://api.github.com/repos/cnunciato/website/contents/${filepath}`, {

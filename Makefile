@@ -7,7 +7,6 @@ build:
 .PHONY: deploy
 deploy: build
 	$(MAKE) update
-	$(MAKE) invalidate
 
 .PHONY: preview
 preview:
@@ -27,14 +26,9 @@ invalidate:
 process:
 	./process/process.sh ~/Desktop/Exports
 
-.PHONY: images
-images:
-	pushd process && $(MAKE) build push && popd
-	pushd parse/app && $(MAKE) build push && popd
-
-.PHONY: process_local
-process_local:
-	./process/process.sh ~/Desktop/Exports
+.PHONY: docker
+docker:
+	pushd parse && $(MAKE) build push && popd
 
 .PHONY: clean
 clean:
@@ -52,8 +46,8 @@ serve:
 	hugo serve && \
 	popd
 
-.PHONY: serve_public
-serve_public:
+.PHONY: serve_built
+serve_built:
 	$(MAKE) build
 	cd site/public
 	open "http://localhost:1314"
@@ -63,10 +57,6 @@ serve_public:
 .PHONY: watch_sass
 watch_sass:
 	node_modules/.bin/node-sass --include-path site/scss --output site/static/css site/scss/main.scss --watch
-
-.PHONY: work
-work:
-	code website.code-workspace
 
 .PHONY: travis
 travis: build

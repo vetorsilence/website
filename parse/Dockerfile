@@ -1,21 +1,23 @@
-FROM ubuntu:disco
-RUN apt-get update
+FROM ubuntu:latest
 
-# Install ffmpeg.
-RUN apt-get install -y ffmpeg
-RUN ffmpeg -h
+# Install various tools.
+RUN apt-get update && \
+	apt-get upgrade -y && \
+    apt-get install -y \
+	ffmpeg \
+	git-core \
+	curl \
+	wget \
+	exiftran \
+	unzip \
+	make \
+	python
 
 # Install Node and NPM.
-RUN apt-get install -y nodejs npm
-RUN node -v
-RUN npm -v
-
-# Install Git.
-RUN apt-get install -y git-core
-RUN git --version
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get install -y nodejs
 
 # Install Exiftool.
-RUN apt-get install -y wget
 ENV EXIFTOOL_VERSION=10.20
 RUN cd /tmp \
 	&& wget http://www.sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-${EXIFTOOL_VERSION}.tar.gz \
@@ -26,29 +28,22 @@ RUN cd /tmp \
 	&& make install \
 	&& cd .. \
 	&& rm -rf Image-ExifTool-${EXIFTOOL_VERSION}
-RUN exiftool -ver
-
-# Install exiftran
-RUN apt-get install -y exiftran
-RUN exiftran -h
 
 # Install the AWS CLI.
 RUN python -V
-RUN apt-get install -y unzip
 RUN wget https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
 RUN unzip awscli-bundle.zip
 RUN ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
-RUN aws --version
 
 # Create the app directory.
 WORKDIR /usr/src/app
 
 # Copy everything in.
-COPY . .
+COPY package*.json index.js ./
 
 # Install.
 RUN npm install
 
 # And go!
 EXPOSE 8080
-ENTRYPOINT [ "npm", "start" ]
+CMD [ "npm", "start" ]
