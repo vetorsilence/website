@@ -2,12 +2,11 @@ docker_repo = "cnunciato/parse"
 
 .PHONY: build
 build:
-	docker build .
+	docker build -t ${docker_repo}:$(shell date +%s) .
 
 .PHONY: push
 push:
-	docker tag $(shell docker images --format {{.ID}} | head -1) ${docker_repo}:latest && \
-	docker push ${docker_repo}:latest
+	docker push ${docker_repo}
 
 .PHONY: ngrok
 ngrok:

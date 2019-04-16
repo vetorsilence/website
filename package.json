@@ -1,5 +1,8 @@
 {
-    "name": "aws-typescript",
+    "name": "website",
+    "version": "0.0.1",
+    "author": "Christian Nunciato <christian@nunciato.org>",
+    "description": "Hey, it's my website!",
     "devDependencies": {
         "@types/glob": "^7.1.1",
         "@types/mime": "^2.0.0",
