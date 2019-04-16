@@ -28,7 +28,9 @@ process:
 
 .PHONY: docker
 docker:
-	pushd parse && $(MAKE) build push && popd
+	pushd parse && \
+		$(MAKE) build push && \
+	popd
 
 .PHONY: clean
 clean:
