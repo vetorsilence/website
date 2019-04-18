@@ -1,5 +1,5 @@
 ---
-title: 'What is the name of this building?'
+title: 'The Seaboard Building'
 date: 2019-04-15T08:48:30.000Z
 draft: false
 photo:
@@ -19,3 +19,4 @@ photo:
     caption: ""
 ---
 
+One of many [historical landmarks](https://en.wikipedia.org/wiki/List_of_Seattle_landmarks) about the city. (In fact, a bit further down that same list, you'll also find [Ward House](https://en.wikipedia.org/wiki/Ward_House_(Seattle)), which is where [Pulumi](https://pulumi.com) was headquartered when I joined last year.)
