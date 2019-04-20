@@ -1,8 +1,16 @@
 {{ define "main" }}
   <main>
-    <h1>{{ with .Site.GetPage "section" "mobile" }}{{ .Title }}{{ end }}</h1>
+    <h1>Mobiles</h1>
     <p>
-      Pictures and things taken on the go.
+      Pictures and other things taken on the go.
+    </p>
+    <p>
+      One of these days, I'll write a post about how I do this,
+      because it's actually pretty cool: I take pictures with my iPhone, send them to a special email address,
+      and a parser I wrote with <a href="https://www.pulumi.com">Pulumi</a> (and a handful of other things)
+      handles the message, makes all the thumbnails, creates a new page, commits it on
+      <a href="https://github.com/cnunciato/website">GitHub</a>,
+      and deploys everything to the cloud, all without any intervention from me. Neat, right? Computers FTW.
     </p>
     <hr>
     {{ range .Paginator.Pages }}

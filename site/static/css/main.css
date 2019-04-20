@@ -133,6 +133,16 @@ main {
           @media (min-width: 768px) {
             main section .media-container > small.right {
               display: block; } }
+  main .mobile {
+    display: flex; }
+    main .mobile a {
+      margin-bottom: 16px; }
+      main .mobile a:not(:first-child):not(:last-child) {
+        margin: 0 4px; }
+      main .mobile a:first-child {
+        margin-right: 4px; }
+      main .mobile a:last-child {
+        margin-left: 4px; }
 
 img, video, audio {
   display: block;

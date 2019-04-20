@@ -225,6 +225,26 @@ main {
       }
     }
   }
+
+  .mobile {
+    display: flex;
+
+    a {
+      margin-bottom: $default-margin;
+
+      &:not(:first-child):not(:last-child) {
+        margin: 0 $default-margin / 4;
+      }
+
+      &:first-child {
+        margin-right: 4px;
+      }
+
+      &:last-child {
+        margin-left: 4px;
+      }
+    }
+  }
 }
 
 img, video, audio {
