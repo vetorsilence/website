@@ -62,6 +62,7 @@ do
   exif_aperture="$(exiftool -s -s -s -ApertureValue $file)"
   exif_shutter_speed="$(exiftool -s -s -s -ShutterSpeed $file)"
   exif_focal_length="$(exiftool -s -s -s -FocalLength $file)"
+  exif_gps="$(exiftool -s -s -s -GPSPosition $file)"
 
   # Extract tags, which may or may not be present.
   tags_string="$(exiftool -s -s -s -Subject $file)"
@@ -194,6 +195,7 @@ do
     aperture: '${exif_aperture}'
     shutter_speed: '${exif_shutter_speed}'
     focal_length: '${exif_focal_length}'
+    gps: '${exif_gps}'
   title: '${title}'
   caption: '${caption}' ${options} ${tags}"
 done
