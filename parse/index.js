@@ -19,6 +19,8 @@ const upload = multer({ dest: UPLOADS });
 const rimraf = require("rimraf");
 const request = require("request");
 const slugify = require("@sindresorhus/slugify");
+const geolib = require("geolib");
+const moment = require("moment");
 const app = express();
 
 rimraf.sync(UPLOADS);
@@ -89,11 +91,11 @@ app.post('/', upload.any(), function (req, res, next) {
             const photo = result[0];
 
             // Make a new post, using the subject line of the email.
-            const filepath = `site/content/mobile/${slugify(req.body.subject || "Untitled")}-${new Date(photo.created).getTime() / 1000}.md`;
+            const filepath = `site/content/mobile/${slugify(req.body.subject || "")}-${moment(new Date(photo.created)).format("YYYY-MM-DD-HH-MM-SS")}.md`;
 
             // Update the frontmatter.
             const frontmatter = {
-                title: req.body.subject || "Untitled",
+                title: req.body.subject || "",
                 date: photo.created,
                 draft: false,
                 photo: {
@@ -106,6 +108,13 @@ app.post('/', upload.any(), function (req, res, next) {
                     caption: photo.caption,
                 }
             };
+
+            // If we have GPS data, use it.
+            if (photo.exif && photo.exif.gps) {
+                // 47 deg 46' 28.25" N, 122 deg 12' 22.26" W
+                const [ lat, long ] = photo.exif.gps.replace(/ deg/g, "°").split(", ");
+                frontmatter.photo.exif.gps_decimal = `${geolib.sexagesimal2decimal(lat)},${geolib.sexagesimal2decimal(long)}`
+            }
 
             // Now turn the JSON back into YAML, for consumption by Hugo.
             const contents = `---\n${yaml.stringify(frontmatter, 4)}---\n\n${req.body.text.trim() || ''}`;
