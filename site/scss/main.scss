@@ -349,12 +349,13 @@ header {
 
   .links {
 
-    @include tablet-up {
-      display: flex;
-      justify-content: space-between;
-    }
-
     ul {
+
+      @include tablet-up {
+        display: flex;
+        justify-content: space-between;
+      }
+
       &:first-child {
 
         li {
@@ -368,6 +369,10 @@ header {
           }
 
           &.social {
+
+            @include tablet-up {
+              margin-left: auto;
+            }
 
             a {
               margin-left: $default-margin / 2;

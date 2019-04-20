@@ -205,13 +205,16 @@ header {
     header ul li, header ol li {
       margin-bottom: 8px; }
   @media (min-width: 768px) {
-    header .links {
+    header .links ul {
       display: flex;
       justify-content: space-between; } }
   @media (min-width: 768px) {
     header .links ul:first-child li.about:before {
       content: "•";
       margin-right: 16px; } }
+  @media (min-width: 768px) {
+    header .links ul:first-child li.social {
+      margin-left: auto; } }
   header .links ul:first-child li.social a {
     margin-left: 8px;
     color: #888; }
