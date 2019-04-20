@@ -183,21 +183,21 @@ do
   # Assemble the YAML.
   yaml="$yaml
 - type: ${type}
-  url: 's3/${folder}/${new_filename}'
-  preview: 's3/previews/${new_previewname}'
-  thumb: 's3/thumbs/${new_thumbname}'
+  url: s3/${folder}/${new_filename}
+  preview: s3/previews/${new_previewname}
+  thumb: s3/thumbs/${new_thumbname}
   created: ${hugo_formatted_date}
   exif:
-    make: '${exif_make}'
-    model: '${exif_model}'
-    lens: '${exif_lens}'
-    iso: '${exif_iso}'
-    aperture: '${exif_aperture}'
-    shutter_speed: '${exif_shutter_speed}'
-    focal_length: '${exif_focal_length}'
-    gps: '${exif_gps}'
-  title: '${title}'
-  caption: '${caption}' ${options} ${tags}"
+    make: ${exif_make}
+    model: ${exif_model}
+    lens: ${exif_lens}
+    iso: ${exif_iso}
+    aperture: ${exif_aperture}
+    shutter_speed: ${exif_shutter_speed}
+    focal_length: ${exif_focal_length}
+    gps: ${exif_gps}
+  title: ${title}
+  caption: ${caption} ${options} ${tags}"
 done
 
 printf "$yaml
