@@ -8,7 +8,8 @@ layout: "about"
   <img src="https://s3.amazonaws.com/nunciato-media/images/2018-06-01-12-57-35.jpg" title="Hey, it's me!">
 
   <small class= left">
-    Kekaha Beach, Kauai
+    Kekaha Beach, Kauai.
+    Photo by [Rebecca](https://www.instagram.com/rebecca.nunciato/).
   </small>
 </div>
 
