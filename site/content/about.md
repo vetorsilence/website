@@ -9,7 +9,7 @@ layout: "about"
 
   <small class= left">
     Kekaha Beach, Kauai.
-    Photo by <a href="https://www.instagram.com/rebecca.nunciato/">Rebecca</a>
+    Photo by <a href="https://www.instagram.com/rebecca.nunciato/">Rebecca</a>.
   </small>
 </div>
 
