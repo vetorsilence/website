@@ -115,10 +115,10 @@ const distributionArgs = {
 const cdn = new aws.cloudfront.Distribution('cdn', distributionArgs);
 
 // Define the Parse application, which receives HTTP posts and creates new content from them.
-let service = new cloud.Service("parse", {
+let service = new cloud.Service("process", {
     containers: {
         parse: {
-            image: "cnunciato/parse:1555793534",
+            image: "cnunciato/process:1556316312",
             memory: 2048,
             cpu: 2,
             ports: [

@@ -39,7 +39,7 @@ RUN ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
 WORKDIR /usr/src/app
 
 # Copy the app into the container.
-COPY package*.json index.js ./
+COPY package*.json bin ./
 
 # Install.
 RUN npm install

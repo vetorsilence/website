@@ -28,7 +28,7 @@ process:
 
 .PHONY: docker
 docker:
-	pushd parse && \
+	pushd process && \
 		$(MAKE) build push && \
 	popd
 

@@ -1,4 +1,4 @@
-docker_repo = "cnunciato/parse"
+docker_repo = "cnunciato/process"
 
 .PHONY: build
 build:
