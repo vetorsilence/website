@@ -52,19 +52,18 @@ if (source) {
             if (file.mimetype === "image/jpeg") {
                 const path = file.path;
                 const filename = file.filename;
-                const workDir = `${filename}/media`;
+                const workDir = `${path}-work/media`;
 
-                fs.mkdirSync(filename);
-                fs.mkdirSync(workDir);
+                // fs.mkdirSync(filename);
+                mkdirp.sync(workDir);
                 fs.copyFileSync(path, `${workDir}/${filename}.jpg`);
 
-                processFiles(`${filename}/media`)
+                processFiles(workDir)
                     .then(result => {
-
                         console.log(`👏  Yay, it worked!`);
 
                         const [ photo ] = result;
-                        const filepath = `site/content/mobile/${filename}.md`;
+                        const filepath = `site/content/mobile/${photo.filename}.md`;
 
                         // So like...
                         console.log(photo, JSON.stringify(photo));
@@ -91,32 +90,35 @@ if (source) {
                         const content = `---\n${yaml.stringify(jsonFrontmatter, 4)}---\n\n${req.body.text.trim() || ''}`;
 
                         // Send the YAML to GitHub.
-                        request.put(`https://api.github.com/repos/cnunciato/website/contents/${filepath}`, {
-                            headers: {
-                                "User-Agent": "Christian's Parser-Uploader"
-                            },
-                            auth: {
-                                username,
-                                password: token,
-                            },
-                            json: {
-                                message: "Add a photo",
-                                committer: {
-                                    name: "Christian Nunciato",
-                                    email: "c@nunciato.org",
+                        request
+                            .put(`https://api.github.com/repos/cnunciato/website/contents/${filepath}`, {
+                                headers: {
+                                    "User-Agent": "Christian's Parser-Uploader"
                                 },
-                                content: Buffer.from(content).toString('base64'),
-                            },
+                                auth: {
+                                    username,
+                                    password: token,
+                                },
+                                json: {
+                                    message: "Add a photo",
+                                    committer: {
+                                        name: "Christian Nunciato",
+                                        email: "c@nunciato.org",
+                                    },
+                                    content: Buffer.from(content).toString('base64'),
+                                },
 
-                        }, (err, res) => {
+                            }, (ghErr, ghRes) => {
 
-                            if (err) {
-                                console.error("💥  Error submitting to GitHub: ", err);
-                                return;
-                            }
+                                if (ghErr) {
+                                    console.error("💥  Error submitting to GitHub: ", ghErr);
+                                    res.sendStatus(500);
+                                    return;
+                                }
 
-                            console.log("🙌  Aww yeah:", res.body.html_url);
-                        });
+                                console.log("🙌  Aww yeah:", ghRes.body);
+                                res.sendStatus(200);
+                            });
                     })
                     .catch(error => {
                         console.error("💥  Something went wrong: ", error);
@@ -203,7 +205,7 @@ function processFiles(sourceDir: string): Promise<any> {
         Promise
             .all(files.map(file => exiftool.read(file)))
             .then(results => {
-                exiftool.end();
+                // exiftool.end();
 
                 for (let i = 0; i < results.length; i++) {
                     const file = files[i];
@@ -214,14 +216,22 @@ function processFiles(sourceDir: string): Promise<any> {
 
                     console.log("⏱  Processing...");
 
+                    const date = tagsToCreated(tags);
+
+                    if (!date) {
+                        reject(new Error(`😢  No date! The tags were: ${tags}.`));
+                        return;
+                    }
+
                     const metadata = {
                         type: type,
                         title: tags.Title,
                         caption: tags.Description,
-                        created: moment.tz(tagsToCreated(tags), "America/Los_Angeles").toDate(),
+                        created: moment.tz(date.toDate(), "America/Los_Angeles").toDate(),
                         url: `s3/${type === "video" ? "video" : "images"}/${mediaFilename}`,
                         preview: `s3/previews/${filename}.jpg`,
                         thumb: `s3/thumbs/${filename}.jpg`,
+                        filename,
                         exif: {
                             make: tags.Make,
                             model: tags.Model,
