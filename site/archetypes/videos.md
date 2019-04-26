@@ -7,18 +7,18 @@ video:
   url: 's3/images/something.jpg'
   thumb: 's3/thumbs/something.jpg'
   preview: 's3/previews/something.jpg'
+  poster: s3/posters/2018-05-26-16-30-59.jpg
   created: {{ .Date }}
-  title: ''
-  caption: ''
-  exif:
-    make: ''
-    model: ''
-    lens: ''
-    iso: ''
-    aperture: ''
-    shutter_speed: ''
-    focal_length: ''
+  title:
+  caption:
   controls: true
   duration: 0
-  poster: 's3/posters/2018-05-26-16-30-59.jpg'
+  exif:
+    make:
+    model:
+    lens:
+    iso:
+    aperture:
+    shutter_speed:
+    focal_length:
 ---

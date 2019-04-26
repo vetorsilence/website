@@ -2,3 +2,6 @@ node_modules
 /site/public/
 .envrc
 website.code-workspace
+/bin
+/process/bin
+/process/uploads

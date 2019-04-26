@@ -20,7 +20,7 @@ const rimraf = require("rimraf");
 const request = require("request");
 const slugify = require("@sindresorhus/slugify");
 const geolib = require("geolib");
-const moment = require("moment");
+const moment = require("moment-timezone");
 const app = express();
 
 rimraf.sync(UPLOADS);
@@ -80,36 +80,44 @@ app.post('/', upload.any(), function (req, res, next) {
             // Read the output into a string.
             const output = fs.readFileSync(`${name}/out.yaml`, 'utf-8');
 
-            if (!output || output === "") {
-                console.error("No output!");
-                return;
-            }
-
             // Take the output from that process and turn it into a JSON object,
             // so we can manipulate it before posting to GitHub as YAML.
+
+            // Note that the YAML parser we're using will interpret the absence of timezone
+            // data (thanks to the iPhone) as meaning UTC, which is incorrect, so we'll need to tell
+            // moment that the timezone is (most likely) America/Los_Angeles.
             const result = yaml.parse(output.substr(output.indexOf("- type: photo")));
             const photo = result[0];
+            console.log("Parsed YAML: ", photo);
 
             // Make a new post, using the subject line of the email.
-            const filepath = `site/content/mobile/${slugify(req.body.subject || "")}-${moment(new Date(photo.created)).format("YYYY-MM-DD-HH-MM-SS")}.md`;
+            const momentized = moment.tz(photo.created, "America/Los_Angeles")
+
+            const filedate = momentized.format("YYYY-MM-DD-HH-m-ss")
+            const filename = `${slugify(req.body.subject ? req.body.subject + "-" : "")}${filedate}.md`
+            const filepath = `site/content/mobile/${filename}`;
+            console.log("Filename: ", filename);
+            console.log("Filepath: ", filename);
 
             // Update the frontmatter.
             const frontmatter = {
-                title: req.body.subject || "",
-                date: photo.created,
-                draft: false,
+                title: req.body.subject || "",              // Only set a title if one was passed in.
+                date: momentized.format(),           // Make the post date the same as the creation date.
+                draft: false,                               // Automatically publish.
                 photo: {
                     url: photo.url,
                     thumb: photo.thumb,
                     preview: photo.preview,
-                    created: photo.created,
+                    created: momentized.format(),
                     exif: photo.exif,
                     title: photo.title,
                     caption: photo.caption,
                 }
             };
 
-            // If we have GPS data, use it.
+            console.log("Frontmatter: ", JSON.stringify(frontmatter, null, 4));
+
+            // If we have GPS data, add it in decimal form, for easy creation of Google Maps links.
             if (photo.exif && photo.exif.gps) {
                 // 47 deg 46' 28.25" N, 122 deg 12' 22.26" W
                 const [ lat, long ] = photo.exif.gps.replace(/ deg/g, "°").split(", ");
@@ -118,6 +126,7 @@ app.post('/', upload.any(), function (req, res, next) {
 
             // Now turn the JSON back into YAML, for consumption by Hugo.
             const contents = `---\n${yaml.stringify(frontmatter, 4)}---\n\n${req.body.text.trim() || ''}`;
+            console.log("Contents: ", contents);
 
             // Post a new file to GitHub with that YAML.
             request.put(`https://api.github.com/repos/cnunciato/website/contents/${filepath}`, {
