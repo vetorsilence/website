@@ -71,7 +71,7 @@ if (source) {
 
                         const jsonFrontmatter = {
                             title: req.body.subject || "",
-                            date: photo.created.toString(),
+                            date: photo.created,
                             draft: false,
                             photo: {
                                 url: photo.url,
@@ -218,7 +218,7 @@ function processFiles(sourceDir: string): Promise<any> {
                         type: type,
                         title: tags.Title,
                         caption: tags.Description,
-                        created: moment.tz(tagsToCreated(tags), "America/Los_Angeles").toISOString(),
+                        created: moment.tz(tagsToCreated(tags), "America/Los_Angeles").toDate(),
                         url: `s3/${type === "video" ? "video" : "images"}/${mediaFilename}`,
                         preview: `s3/previews/${filename}.jpg`,
                         thumb: `s3/thumbs/${filename}.jpg`,
