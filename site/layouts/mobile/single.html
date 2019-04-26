@@ -14,9 +14,9 @@
         {{ if .Params.photo.created }}
           <small class="left">
             {{ dateFormat "January 2, 2006 ・ 3:04 PM" .Params.photo.created }}
-            {{ if .Params.photo.exif.gps_decimal }}
+            {{ if .Params.photo.exif.gps }}
               ・
-              <a href="https://www.google.com/maps/search/?api=1&query={{ .Params.photo.exif.gps_decimal }}">
+              <a href="https://www.google.com/maps/search/?api=1&query={{ replace .Params.photo.exif.gps ' ' ',' }}">
                 <i class="fas fa-map-marker-alt"></i>
               </a>
             {{ end }}
