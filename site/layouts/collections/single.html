@@ -1,7 +1,7 @@
 {{ define "main" }}
   <main>
     <section class="heading">
-      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+      <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
       <h1>{{ .Title }}</h1>
       {{ if .Description }}
         <h2>{{ .Description }}</h2>
@@ -21,7 +21,7 @@
 
               {{ if .created }}
                 <small class="left">
-                  {{ dateFormat "January 2, 2006 ・ 3:04 PM MST" (time .created).Local }}
+                  {{ dateFormat "January 2, 2006" (time .created).Local }}
                 </small>
               {{ end }}
 
@@ -53,7 +53,7 @@
 
               {{ if .created }}
                 <small class="left">
-                  {{ dateFormat "January 2, 2006 ・ 3:04 PM MST" (time .created).Local }}
+                  {{ dateFormat "January 2, 2006" (time .created).Local }}
                 </small>
               {{ end }}
 
