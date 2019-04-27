@@ -23,5 +23,10 @@
 {{ end }}
 
 {{ define "title" }}
-  {{ .Page.Title }} | {{ .Site.Title }}
+  {{ if .Page.Title }}
+    {{ .Page.Title }}
+  {{ else }}
+    Untitled
+  {{ end }}
+  | {{ .Site.Title }}
 {{ end }}
