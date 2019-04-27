@@ -3,7 +3,7 @@ FROM ubuntu:latest
 # Install various tools.
 RUN apt-get update && \
 	apt-get upgrade -y && \
-    apt-get install -y \
+        apt-get install -y \
 	ffmpeg \
 	git-core \
 	curl \
@@ -39,9 +39,9 @@ RUN ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
 WORKDIR /usr/src/app
 
 # Copy the app into the container.
-COPY package*.json bin ./
+COPY package*.json ./
 
-# Install.
+# Install the app.
 RUN npm install
 
 # And go!
