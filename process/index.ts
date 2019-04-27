@@ -194,7 +194,6 @@ function processFiles(sourceDir: string): Promise<any> {
         Promise
             .all(files.map(file => exiftool.read(file)))
             .then(results => {
-                // exiftool.end();
 
                 for (let i = 0; i < results.length; i++) {
                     const file = files[i];
