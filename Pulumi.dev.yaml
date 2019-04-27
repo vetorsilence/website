@@ -1,6 +1,6 @@
 config:
   aws:region: us-west-2
-  cloud-aws:useFargate: true
+  cloud-aws:useFargate: "true"
   cloud:provider: aws
   website:aws_access_key_id:
     secure: AAABAEXqNM4S7jQv0TN0wQAp9SP4Pudow7PbeQWJEiKDSS1rqLPdqifFSBvTYRrYA85Uew==
@@ -9,4 +9,5 @@ config:
   website:certificateArn: arn:aws:acm:us-east-1:639972025873:certificate/044552ff-3c88-46d8-af77-ddcb366af26c
   website:github_personal_access_token:
     secure: AAABAIujCP1ySXhjJnUmF2T4CYweF5lwwPZWpN08UOI97UNDs0fmEnrJ7kvqK+h7Y8269VfQRmyeCim22vNklo7Z0OjsTr2r
+  website:image_tag: cnunciato/process:1556333459
   website:targetDomain: chris.nunciato.org

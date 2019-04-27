@@ -118,7 +118,7 @@ const cdn = new aws.cloudfront.Distribution('cdn', distributionArgs);
 let service = new cloud.Service("process", {
     containers: {
         parse: {
-            image: "cnunciato/process:1556316312",
+            image: config.require("image_tag"),
             memory: 2048,
             cpu: 2,
             ports: [
