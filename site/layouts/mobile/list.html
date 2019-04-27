@@ -27,6 +27,11 @@
             <img src="{{ replace .Params.photo.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.photo.caption }}">
           </a>
         {{ end }}
+        {{ if .Params.video }}
+          <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+            <img src="{{ replace .Params.video.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.video.caption }}">
+          </a>
+        {{ end }}
       </section>
       <hr>
     {{ end }}

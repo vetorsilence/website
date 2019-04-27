@@ -44,75 +44,106 @@ if (source) {
         const files = req.files as Express.Multer.File[];
 
         files.forEach(file => {
+            const path = file.path;
+            const filename = file.filename;
+            const workDir = `${path}-work/media`;
 
-            if (file.mimetype === "image/jpeg") {
-                const path = file.path;
-                const filename = file.filename;
-                const workDir = `${path}-work/media`;
+            mkdirp.sync(workDir);
 
-                mkdirp.sync(workDir);
-                fs.copyFileSync(path, `${workDir}/${filename}.jpg`);
+            // Copy and rename the file, using the extension supplied by the original.
+            fs.copyFileSync(path, `${workDir}/${filename}.${file.originalname.toLowerCase().split(".").slice(-1)[0]}`);
 
-                processFiles(workDir)
-                    .then(result => {
-                        console.log(`👏  Yay, it worked!`);
+            processFiles(workDir)
+                .then(result => {
+                    console.log(`👏  Yay, it worked!`);
 
-                        const [ photo ] = result;
-                        const filepath = `site/content/mobile/${photo.filename}.md`;
+                    const [ item ] = result;
+                    const filepath = `site/content/mobile/${item.filename}.md`;
 
-                        const jsonFrontmatter = {
+                    let [ mimeType ] = file.mimetype.split("/");
+                    let frontmatter;
+
+                    if (mimeType === "video") {
+                        frontmatter = {
                             title: req.body.subject || "",
-                            date: photo.created,
+                            date: item.created,
+                            draft: false,
+                            video: {
+                                url: item.url,
+                                thumb: item.thumb,
+                                preview: item.preview,
+                                created: item.created,
+                                exif: item.exif,
+                                title: item.title,
+                                caption: item.caption,
+                            },
+                            controls: item.controls,
+                            duration: item.duration,
+                            poster: item.poster,
+                        };
+                    }
+
+                    if (mimeType === "image") {
+                        frontmatter = {
+                            title: req.body.subject || "",
+                            date: item.created,
                             draft: false,
                             photo: {
-                                url: photo.url,
-                                thumb: photo.thumb,
-                                preview: photo.preview,
-                                created: photo.created,
-                                exif: photo.exif,
-                                title: photo.title,
-                                caption: photo.caption,
+                                url: item.url,
+                                thumb: item.thumb,
+                                preview: item.preview,
+                                created: item.created,
+                                exif: item.exif,
+                                title: item.title,
+                                caption: item.caption,
                             }
                         };
+                    }
 
-                        // Make it YAML.
-                        const content = `---\n${yaml.stringify(jsonFrontmatter, 4)}---\n\n${req.body.text.trim() || ''}`;
+                    if (!frontmatter) {
+                        console.error(`💥  No frontmatter! The result was ${result}.`);
+                        res.sendStatus(500);
+                        return;
+                    }
 
-                        // Send the YAML to GitHub.
-                        request
-                            .put(`https://api.github.com/repos/${repo}/contents/${filepath}`, {
-                                headers: {
-                                    "User-Agent": "Christian's Parser-Uploader"
+                    // Make it YAML.
+                    const content = `---\n${yaml.stringify(frontmatter, 4)}---\n\n${req.body.text.trim() || ''}`;
+
+                    // Send the YAML to GitHub.
+                    request
+                        .put(`https://api.github.com/repos/${repo}/contents/${filepath}`, {
+                            headers: {
+                                "User-Agent": "Christian's Parser-Uploader"
+                            },
+                            auth: {
+                                username,
+                                password: token,
+                            },
+                            json: {
+                                message: "Add a mobile item",
+                                committer: {
+                                    name: "Christian Nunciato",
+                                    email: "c@nunciato.org",
                                 },
-                                auth: {
-                                    username,
-                                    password: token,
-                                },
-                                json: {
-                                    message: "Add a photo",
-                                    committer: {
-                                        name: "Christian Nunciato",
-                                        email: "c@nunciato.org",
-                                    },
-                                    content: Buffer.from(content).toString('base64'),
-                                },
+                                content: Buffer.from(content).toString('base64'),
+                            },
 
-                            }, (ghErr, ghRes) => {
+                        }, (ghErr, ghRes) => {
 
-                                if (ghErr) {
-                                    console.error("💥  Error submitting to GitHub: ", ghErr);
-                                    res.sendStatus(500);
-                                    return;
-                                }
+                            if (ghErr) {
+                                console.error("💥  Error submitting to GitHub: ", ghErr);
+                                res.sendStatus(500);
+                                return;
+                            }
 
-                                console.log("🙌  Aww yeah:", ghRes.body);
-                                res.sendStatus(200);
-                            });
-                    })
-                    .catch(error => {
-                        console.error("💥  Something went wrong: ", error);
-                    });
-            }
+                            console.log("🙌  Aww yeah:", ghRes.body);
+                            res.sendStatus(200);
+                        });
+                })
+                .catch(error => {
+                    console.error("💥  Something went wrong: ", error);
+                    res.sendStatus(500);
+                });
         });
     });
 
@@ -249,7 +280,7 @@ function processFiles(sourceDir: string): Promise<any> {
                     if (type === "video") {
 
                         // Duration
-                        const duration = Number(execSync(`ffprobe -i "${file}" -show_entries stream=codec_type,duration -of compact=p=0:nk=1 | head -1 | sed -e 's/video|//g'`).toString().trim());
+                        const duration = Number(execSync(`ffprobe -i "${file}" -show_entries stream=codec_type,duration -of compact=p=0:nk=1 | head -1`).toString().trim().split("|").slice(-1)[0]);
 
                         // Large
                         execSync(`ffmpeg -i "${file}" -vf "fade=in:0:30,fade=out:st=${duration - 1}:d=1,scale=${largeWidth}:-1" -af "afade=in:st=0:d=1,afade=out:st=${duration - 1}:d=1" -vcodec h264 -acodec aac -strict -2 "${videoPath}/${filename}.mp4"`);
