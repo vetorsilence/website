@@ -13,7 +13,7 @@
       and deploys everything to the cloud, all without any intervention from me. Neat, right? Computers FTW.
     </p>
     <hr>
-    {{ range .Paginator.Pages }}
+    {{ range (.Paginator 50).Pages }}
       <section>
         <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
         <h2>
@@ -27,9 +27,6 @@
             <img src="{{ replace .Params.photo.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.photo.caption }}">
           </a>
         {{ end }}
-        <p class="item-count">
-          <!-- <i class="fas fa-mobile"></i> -->
-        </p>
       </section>
       <hr>
     {{ end }}
