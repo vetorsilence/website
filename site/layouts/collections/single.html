@@ -21,7 +21,7 @@
 
               {{ if .created }}
                 <small class="left">
-                  {{ dateFormat "January 2, 2006 ・ 3:04 PM" .created }}
+                  {{ dateFormat "January 2, 2006 ・ 3:04 PM MST" (time .created).Local }}
                 </small>
               {{ end }}
 
@@ -53,7 +53,7 @@
 
               {{ if .created }}
                 <small class="left">
-                  {{ dateFormat "January 2, 2006 ・ 3:04 PM" .created }}
+                  {{ dateFormat "January 2, 2006 ・ 3:04 PM MST" (time .created).Local }}
                 </small>
               {{ end }}
 

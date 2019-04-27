@@ -24,7 +24,7 @@
 
         {{ if .Params.video.created }}
           <small class="left">
-            {{ dateFormat "January 2, 2006 ・ 3:04 PM" .Params.video.created }}
+            {{ dateFormat "January 2, 2006 ・ 3:04 PM" (time .Params.video.created).Local }}
           </small>
         {{ end }}
 
