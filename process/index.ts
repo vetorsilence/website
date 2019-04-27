@@ -4,11 +4,8 @@ import * as rimraf from "rimraf";
 import * as path from "path";
 import * as mime from "mime";
 import * as moment from "moment-timezone";
-import * as slugify from "@sindresorhus/slugify";
-import * as geolib from "geolib";
 import * as yaml from "yamljs";
 import * as fs from "fs";
-
 import * as express from "express";
 import * as multer  from "multer";
 import * as request from "request";
@@ -33,10 +30,9 @@ if (source) {
     const port = process.env.PORT || 8080;
     const host = process.env.HOST || "0.0.0.0";
     const token = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
-    const repo = process.env.REPO || "github.com/cnunciato/website";
+    const repo = process.env.REPO || "cnunciato/website";
     const uploads = process.env.UPLOADS || "uploads";
     const username = process.env.USER || "cnunciato";
-
     const upload = multer({ dest: uploads });
     const app = express();
 
@@ -54,7 +50,6 @@ if (source) {
                 const filename = file.filename;
                 const workDir = `${path}-work/media`;
 
-                // fs.mkdirSync(filename);
                 mkdirp.sync(workDir);
                 fs.copyFileSync(path, `${workDir}/${filename}.jpg`);
 
@@ -64,9 +59,6 @@ if (source) {
 
                         const [ photo ] = result;
                         const filepath = `site/content/mobile/${photo.filename}.md`;
-
-                        // So like...
-                        console.log(photo, JSON.stringify(photo));
 
                         const jsonFrontmatter = {
                             title: req.body.subject || "",
@@ -83,15 +75,12 @@ if (source) {
                             }
                         };
 
-                        // And...
-                        console.log(jsonFrontmatter);
-
                         // Make it YAML.
                         const content = `---\n${yaml.stringify(jsonFrontmatter, 4)}---\n\n${req.body.text.trim() || ''}`;
 
                         // Send the YAML to GitHub.
                         request
-                            .put(`https://api.github.com/repos/cnunciato/website/contents/${filepath}`, {
+                            .put(`https://api.github.com/repos/${repo}/contents/${filepath}`, {
                                 headers: {
                                     "User-Agent": "Christian's Parser-Uploader"
                                 },
