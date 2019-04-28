@@ -281,7 +281,7 @@ function processFiles(sourceDir: string): Promise<any> {
                     if (type === "video") {
 
                         // Duration
-                        const duration = Number(execSync(`ffprobe -i "${file}" -show_entries stream=codec_type,duration -of compact=p=0:nk=1 | head -1`).toString().trim().split("|").slice(-1)[0]);
+                        const duration = parseInt(execSync(`ffprobe -i "${file}" -show_entries stream=codec_type,duration -of compact=p=0:nk=1 | head -1`).toString().trim().split("|").slice(-1)[0]);
 
                         // Large
                         execSync(`ffmpeg -i "${file}" -vf "fade=in:0:30,fade=out:st=${duration - 1}:d=1,scale=${largeWidth}:-1" -af "afade=in:st=0:d=1,afade=out:st=${duration - 1}:d=1" -vcodec h264 -acodec aac -strict -2 "${videoPath}/${mediaFilename}"`);
