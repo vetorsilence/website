@@ -76,10 +76,10 @@ if (source) {
                                 exif: item.exif,
                                 title: item.title,
                                 caption: item.caption,
+                                controls: item.controls,
+                                duration: item.duration,
+                                poster: item.poster,
                             },
-                            controls: item.controls,
-                            duration: item.duration,
-                            poster: item.poster,
                         };
                     }
 
@@ -181,7 +181,8 @@ function processFiles(sourceDir: string): Promise<any> {
     const files = glob.sync(`${sourceDir}/**/*.*`);
 
     function tagsToCreated(tags: Tags): ExifDateTime | undefined {
-        return (tags.DateTimeCreated || tags.DateCreated || tags.CreateDate) as ExifDateTime;
+        console.log("Tags: ", tags);
+        return (tags.DateTimeCreated || tags.DateCreated || tags["CreationDate"] || tags.CreateDate) as ExifDateTime;
     }
 
     function tagsToFilename(tags: Tags): string | undefined {
@@ -230,8 +231,8 @@ function processFiles(sourceDir: string): Promise<any> {
                     const file = files[i];
                     const tags = results[i];
                     const filename = tagsToFilename(results[i]);
-                    const mediaFilename = `${filename}${path.extname(file).toLowerCase()}`;
                     const type = fileToType(file);
+                    const mediaFilename = `${filename}.${type === "video" ? "mov" : "jpg"}`;
 
                     console.log("⏱  Processing...");
 
@@ -283,7 +284,7 @@ function processFiles(sourceDir: string): Promise<any> {
                         const duration = Number(execSync(`ffprobe -i "${file}" -show_entries stream=codec_type,duration -of compact=p=0:nk=1 | head -1`).toString().trim().split("|").slice(-1)[0]);
 
                         // Large
-                        execSync(`ffmpeg -i "${file}" -vf "fade=in:0:30,fade=out:st=${duration - 1}:d=1,scale=${largeWidth}:-1" -af "afade=in:st=0:d=1,afade=out:st=${duration - 1}:d=1" -vcodec h264 -acodec aac -strict -2 "${videoPath}/${filename}.mp4"`);
+                        execSync(`ffmpeg -i "${file}" -vf "fade=in:0:30,fade=out:st=${duration - 1}:d=1,scale=${largeWidth}:-1" -af "afade=in:st=0:d=1,afade=out:st=${duration - 1}:d=1" -vcodec h264 -acodec aac -strict -2 "${videoPath}/${mediaFilename}"`);
 
                         // Preview
                         execSync(`ffmpeg -i "${file}" -vf "select=gte(n\\,100),scale=${previewWidth}:-1" -vframes 1 "${previewPath}/${filename}.jpg"`);
