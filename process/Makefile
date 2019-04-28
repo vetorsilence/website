@@ -6,6 +6,10 @@ build:
 ngrok:
 	ngrok http 8080
 
-.PHONY: start
+.PHONY: process
+process:
+	npm start
+
+.PHONY: serve
 serve:
 	npm start

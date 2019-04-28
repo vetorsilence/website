@@ -24,11 +24,16 @@ invalidate:
 
 .PHONY: process
 process:
-	./process/process.sh ~/Desktop/Exports
+	echo "Not yet implemented. Should probably be a shell script."
 
 .PHONY: docker
 docker:
 	bin/docker
+
+.PHONY: release
+release:
+	$(MAKE) docker build deploy
+	git status
 
 .PHONY: clean
 clean:

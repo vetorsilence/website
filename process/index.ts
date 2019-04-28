@@ -111,7 +111,7 @@ if (source) {
                     const contentFilePath = `site/content/mobile/${item.filename}.md`;
 
                     let [ mimeType ] = uploadedFile.mimetype.split("/");
-                    if (mimeType) {
+                    if (!mimeType) {
                         console.error(`💥  Unable to determine mimeType for ${uploadedFile}.`);
                         return;
                     }
