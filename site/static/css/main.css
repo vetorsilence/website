@@ -161,7 +161,8 @@ body.home img, body.home video, body.section img, body.section video {
   max-width: 100%; }
 
 body.home .item-count, body.section .item-count {
-  font-family: "rooney-sans"; }
+  font-family: "rooney-sans";
+  color: #666; }
   body.home .item-count svg, body.section .item-count svg {
     margin-right: 2px; }
 
