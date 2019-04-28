@@ -15,6 +15,56 @@ import { execSync } from "child_process";
 
 const source = process.argv[2];
 
+interface Frontmatter {
+    title: string;
+    date: Date;
+    draft: boolean;
+    video?: {
+        url: string;
+        thumb: string;
+        preview: string;
+        created: Date;
+        exif: Exif;
+        title: string;
+        caption: string;
+        controls: boolean;
+        duration: number;
+        poster: string;
+    };
+    photo?: {
+        url: string;
+        thumb: string;
+        preview: string;
+        created: Date;
+        exif: Exif;
+        title: string;
+        caption: string;
+    };
+}
+
+type Result =  {
+    type: "photo" | "video";
+    title: string | undefined;
+    caption: string | undefined;
+    created: Date;
+    url: string;
+    preview: string;
+    thumb: string;
+    filename: string | undefined;
+    exif: Exif;
+}
+
+interface Exif {
+    make: string | undefined,
+    model: string | undefined,
+    lens: string | undefined,
+    iso: number | undefined,
+    aperture: number | undefined,
+    shutter_speed: string | undefined,
+    focal_length: string | undefined,
+    gps: string | undefined,
+}
+
 if (source) {
 
     processFiles(source)
@@ -43,25 +93,30 @@ if (source) {
     app.post('/', upload.any(), function (req, res, next) {
         const files = req.files as Express.Multer.File[];
 
-        files.forEach(file => {
-            const path = file.path;
-            const filename = file.filename;
-            const workDir = `${path}-work/media`;
+        files.forEach(uploadedFile => {
+            const uploadedFilePath = uploadedFile.path;
+            const uploadedFileName = uploadedFile.filename;
+            const workDir = `${uploadedFilePath}-work/media`;
 
             mkdirp.sync(workDir);
 
             // Copy and rename the file, using the extension supplied by the original.
-            fs.copyFileSync(path, `${workDir}/${filename}.${file.originalname.toLowerCase().split(".").slice(-1)[0]}`);
+            fs.copyFileSync(uploadedFilePath, `${workDir}/${uploadedFileName}.${uploadedFile.originalname.toLowerCase().split(".").slice(-1)[0]}`);
 
             processFiles(workDir)
                 .then(result => {
                     console.log(`👏  Yay, it worked!`);
 
                     const [ item ] = result;
-                    const filepath = `site/content/mobile/${item.filename}.md`;
+                    const contentFilePath = `site/content/mobile/${item.filename}.md`;
 
-                    let [ mimeType ] = file.mimetype.split("/");
-                    let frontmatter;
+                    let [ mimeType ] = uploadedFile.mimetype.split("/");
+                    if (mimeType) {
+                        console.error(`💥  Unable to determine mimeType for ${uploadedFile}.`);
+                        return;
+                    }
+
+                    let frontmatter: Frontmatter | undefined;
 
                     if (mimeType === "video") {
                         frontmatter = {
@@ -111,7 +166,7 @@ if (source) {
 
                     // Send the YAML to GitHub.
                     request
-                        .put(`https://api.github.com/repos/${repo}/contents/${filepath}`, {
+                        .put(`https://api.github.com/repos/${repo}/contents/${contentFilePath}`, {
                             headers: {
                                 "User-Agent": "Christian's Parser-Uploader"
                             },
@@ -143,6 +198,13 @@ if (source) {
                 .catch(error => {
                     console.error("💥  Something went wrong: ", error);
                     res.sendStatus(500);
+                })
+                .finally(() => {
+
+                    // Clean up
+                    console.log(`✨  Cleaning up ${uploadedFilePath} & ${workDir}...`);
+                    rimraf.sync(uploadedFilePath);
+                    rimraf.sync(workDir);
                 });
         });
     });
@@ -232,6 +294,12 @@ function processFiles(sourceDir: string): Promise<any> {
                     const tags = results[i];
                     const filename = tagsToFilename(results[i]);
                     const type = fileToType(file);
+
+                    if (!type) {
+                        console.error(`💥  Couldn't determine type for ${file}.`);
+                        return;
+                    }
+
                     const mediaFilename = `${filename}.${type === "video" ? "mov" : "jpg"}`;
 
                     console.log("⏱  Processing...");
@@ -243,7 +311,7 @@ function processFiles(sourceDir: string): Promise<any> {
                         return;
                     }
 
-                    const metadata = {
+                    const metadata: Result = {
                         type: type,
                         title: tags.Title,
                         caption: tags.Description,
@@ -306,16 +374,13 @@ function processFiles(sourceDir: string): Promise<any> {
                 }
             })
             .then(() => {
-
-                // Resolve.
-                resolve(output);
-
                 console.log("\n---------------------------------------------------------------------------------\n");
 
                 // Write the output files.
                 console.log(`📝  Writing ${processed}/out.json ...`);
                 const json = JSON.stringify(output, null, 4);
                 fs.writeFileSync(`${processed}/out.json`, json);
+
                 console.log(`📝  Writing ${processed}/out.yaml ...`);
                 fs.writeFileSync(`${processed}/out.yaml`, yaml.stringify(json));
 
@@ -325,15 +390,12 @@ function processFiles(sourceDir: string): Promise<any> {
 
                 console.log(`📸  ${output.length} objects processed.`);
                 console.log("🍻  Done.")
+                resolve(output);
             })
             .catch(error => {
 
                 console.error("💥  Processing error! ", error);
                 reject(error);
-            })
-            .finally(() => {
-
-                // TODO: Clean up?
             });
     })
 }
