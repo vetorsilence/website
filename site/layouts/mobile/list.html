@@ -31,6 +31,10 @@
           <a href="{{ .RelPermalink }}" title="{{ .Title }}">
             <img src="{{ replace .Params.video.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.video.caption }}">
           </a>
+          <p class="item-count">
+            <i class="fas fa-video"></i>
+            {{ ((time .Params.video.duration).Format "04:05") }}
+          </p>
         {{ end }}
       </section>
       <hr>
