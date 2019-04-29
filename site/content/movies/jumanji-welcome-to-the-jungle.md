@@ -1,14 +1,12 @@
 ---
 title: 'Jumanji: Welcome to the Jungle'
-date: 2019-04-29T17:18:41.862Z
+date: 2018-11-25
 draft: false
-rating: 3
+rating: 4
 director: ""
 year: 2019
 description: ""
 links: []
 ---
 
-4
-
-An absolute blast.
+An absolute blast &mdash; way more fun than I'd ever have expected.
