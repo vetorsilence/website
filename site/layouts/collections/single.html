@@ -17,7 +17,9 @@
 
           {{ if eq .type "photo" }}
             <div class="media-container">
-              <img src="{{ replace .url "s3/" $.Site.Params.mediaRoot }}" alt="{{ .caption }}">
+              <a href="{{ replace .url "s3/" $.Site.Params.mediaRoot }}" target="_blank">
+                <img src="{{ replace .url "s3/" $.Site.Params.mediaRoot }}" alt="{{ .caption }}">
+              </a>
 
               {{ if .created }}
                 <small class="left">

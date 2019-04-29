@@ -12,7 +12,9 @@
     {{ if .Params.photo }}
       <section>
         <div class="media-container">
-          <img src="{{ replace .Params.photo.url "s3/" $.Site.Params.mediaRoot }}" alt="{{ .Params.photo.caption }}">
+          <a href="{{ replace .Params.photo.url "s3/" $.Site.Params.mediaRoot }}" target="_blank">
+            <img src="{{ replace .Params.photo.url "s3/" $.Site.Params.mediaRoot }}" alt="{{ .Params.photo.caption }}">
+          </a>
           {{ if .Params.photo.created }}
             <small class="left">
               {{ dateFormat "January 2, 2006 ・ 3:04 PM MST" (time .Params.photo.created).Local}}
