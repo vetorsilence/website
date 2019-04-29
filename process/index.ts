@@ -116,7 +116,7 @@ if (source) {
                 title: messageSubject,
                 date: new Date(),
                 draft: false,
-                rating: 3,
+                rating: parseInt(messageBody),
                 director: "",
                 year: new Date().getFullYear(),
                 description: "",
