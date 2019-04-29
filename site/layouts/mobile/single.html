@@ -18,7 +18,8 @@
               {{ dateFormat "January 2, 2006 ・ 3:04 PM MST" (time .Params.photo.created).Local}}
               {{ if .Params.photo.exif.gps }}
                 ・
-                <a href="https://www.google.com/maps/search/?api=1&query={{ replace .Params.photo.exif.gps ' ' ',' }}">
+                <!-- https://developers.google.com/maps/documentation/urls/guide -->
+                <a href="https://www.google.com/maps/search/?api=1&zoom=5&query={{ replace .Params.photo.exif.gps ' ' ',' }}">
                   <i class="fas fa-map-marker-alt"></i>
                 </a>
               {{ end }}

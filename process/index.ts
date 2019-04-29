@@ -67,7 +67,7 @@ interface Exif {
 
 if (source) {
 
-    processFiles(source)
+    processFiles(source, true)
         .then(result => {
             console.log(result);
         })
@@ -93,6 +93,9 @@ if (source) {
     app.post('/', upload.any(), function (req, res, next) {
         const files = req.files as Express.Multer.File[];
 
+        const title = req.body.subject || "";
+        const useGPS = req.body.to.match(/^gps@/);
+
         files.forEach(uploadedFile => {
             const uploadedFilePath = uploadedFile.path;
             const uploadedFileName = uploadedFile.filename;
@@ -103,7 +106,7 @@ if (source) {
             // Copy and rename the file, using the extension supplied by the original.
             fs.copyFileSync(uploadedFilePath, `${workDir}/${uploadedFileName}.${uploadedFile.originalname.toLowerCase().split(".").slice(-1)[0]}`);
 
-            processFiles(workDir)
+            processFiles(workDir, useGPS)
                 .then(result => {
                     console.log(`👏  Yay, it worked!`);
 
@@ -120,7 +123,7 @@ if (source) {
 
                     if (mimeType === "video") {
                         frontmatter = {
-                            title: req.body.subject || "",
+                            title,
                             date: item.created,
                             draft: false,
                             video: {
@@ -140,7 +143,7 @@ if (source) {
 
                     if (mimeType === "image") {
                         frontmatter = {
-                            title: req.body.subject || "",
+                            title,
                             date: item.created,
                             draft: false,
                             photo: {
@@ -214,7 +217,7 @@ if (source) {
     });
 }
 
-function processFiles(sourceDir: string): Promise<any> {
+function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
     const mediaBucket = "cnunciato-website-media";
 
     const processed = `${sourceDir}/Out`;
@@ -328,7 +331,7 @@ function processFiles(sourceDir: string): Promise<any> {
                             aperture: tags.ApertureValue,
                             shutter_speed: tags.ShutterSpeed,
                             focal_length: tags.FocalLength,
-                            gps: tags.GPSPosition,
+                            gps: useGPS ? tags.GPSPosition : undefined,
                         },
                     }
 
