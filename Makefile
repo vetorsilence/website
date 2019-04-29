@@ -24,7 +24,13 @@ invalidate:
 
 .PHONY: process
 process:
-	echo "Not yet implemented. Should probably be a shell script."
+	docker run -it \
+		-e AWS_ACCESS_KEY_ID \
+		-e AWS_SECRET_ACCESS_KEY \
+		-e GITHUB_PERSONAL_ACCESS_TOKEN \
+		-v ~/Desktop/Exports:/media \
+		$(shell pulumi config get image_tag) \
+		npm start /media
 
 .PHONY: docker
 docker:

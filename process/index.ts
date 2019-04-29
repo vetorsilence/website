@@ -85,6 +85,9 @@ if (source) {
         })
         .catch(error => {
             console.error(error);
+        })
+        .finally(() => {
+            exiftool.end();
         });
 
 } else {
