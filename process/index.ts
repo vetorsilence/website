@@ -9,13 +9,14 @@ import * as fs from "fs";
 import * as express from "express";
 import * as multer  from "multer";
 import * as request from "request";
+import * as slugify from "@sindresorhus/slugify";
 
 import { exiftool, ExifDateTime, Tags } from "exiftool-vendored";
 import { execSync } from "child_process";
 
 const source = process.argv[2];
 
-interface Frontmatter {
+interface MobileFrontmatter {
     title: string;
     date: Date;
     draft: boolean;
@@ -40,6 +41,17 @@ interface Frontmatter {
         title: string;
         caption: string;
     };
+}
+
+interface MovieFrontmatter {
+    title: string;
+    date: Date;
+    draft: boolean;
+    rating: number;
+    description: string;
+    director: string
+    year: number
+    links: { name: string, url: string}[];
 }
 
 type Result =  {
@@ -79,10 +91,7 @@ if (source) {
 
     const port = process.env.PORT || 8080;
     const host = process.env.HOST || "0.0.0.0";
-    const token = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
-    const repo = process.env.REPO || "cnunciato/website";
     const uploads = process.env.UPLOADS || "uploads";
-    const username = process.env.USER || "cnunciato";
     const upload = multer({ dest: uploads });
     const app = express();
 
@@ -91,129 +100,192 @@ if (source) {
     });
 
     app.post('/', upload.any(), function (req, res, next) {
-        const files = req.files as Express.Multer.File[];
+        const toAddress = req.body.to;
+        const messageSubject = req.body.subject;
+        const messageBody = req.body.text;
 
-        const title = req.body.subject || "";
-        const useGPS = req.body.to.match(/^gps@/);
+        // Handle the type of submission.
+        console.log(`🏈  Receiving...`, toAddress, messageSubject, messageBody);
+        console.log(toAddress.match(/movies@/));
 
-        files.forEach(uploadedFile => {
-            const uploadedFilePath = uploadedFile.path;
-            const uploadedFileName = uploadedFile.filename;
-            const workDir = `${uploadedFilePath}-work/media`;
+        // Submit a movie.
+        if (toAddress.match(/movies@/)) {
+            const contentFilePath = `site/content/movies/${slugify(messageSubject)}.md`;
 
-            mkdirp.sync(workDir);
+            const frontmatter: MovieFrontmatter = {
+                title: messageSubject,
+                date: new Date(),
+                draft: false,
+                rating: 3,
+                director: "",
+                year: new Date().getFullYear(),
+                description: "",
+                links: [],
+            };
 
-            // Copy and rename the file, using the extension supplied by the original.
-            fs.copyFileSync(uploadedFilePath, `${workDir}/${uploadedFileName}.${uploadedFile.originalname.toLowerCase().split(".").slice(-1)[0]}`);
-
-            processFiles(workDir, useGPS)
-                .then(result => {
-                    console.log(`👏  Yay, it worked!`);
-
-                    const [ item ] = result;
-                    const contentFilePath = `site/content/mobile/${item.filename}.md`;
-
-                    let [ mimeType ] = uploadedFile.mimetype.split("/");
-                    if (!mimeType) {
-                        console.error(`💥  Unable to determine mimeType for ${uploadedFile}.`);
-                        return;
-                    }
-
-                    let frontmatter: Frontmatter | undefined;
-
-                    if (mimeType === "video") {
-                        frontmatter = {
-                            title,
-                            date: item.created,
-                            draft: false,
-                            video: {
-                                url: item.url,
-                                thumb: item.thumb,
-                                preview: item.preview,
-                                created: item.created,
-                                exif: item.exif,
-                                title: item.title,
-                                caption: item.caption,
-                                controls: item.controls,
-                                duration: item.duration,
-                                poster: item.poster,
-                            },
-                        };
-                    }
-
-                    if (mimeType === "image") {
-                        frontmatter = {
-                            title,
-                            date: item.created,
-                            draft: false,
-                            photo: {
-                                url: item.url,
-                                thumb: item.thumb,
-                                preview: item.preview,
-                                created: item.created,
-                                exif: item.exif,
-                                title: item.title,
-                                caption: item.caption,
-                            }
-                        };
-                    }
-
-                    if (!frontmatter) {
-                        console.error(`💥  No frontmatter! The result was ${result}.`);
-                        res.sendStatus(500);
-                        return;
-                    }
-
-                    // Make it YAML.
-                    const content = `---\n${yaml.stringify(frontmatter, 4)}---\n\n${req.body.text.trim() || ''}`;
-
-                    // Send the YAML to GitHub.
-                    request
-                        .put(`https://api.github.com/repos/${repo}/contents/${contentFilePath}`, {
-                            headers: {
-                                "User-Agent": "Christian's Parser-Uploader"
-                            },
-                            auth: {
-                                username,
-                                password: token,
-                            },
-                            json: {
-                                message: "Add a mobile item",
-                                committer: {
-                                    name: "Christian Nunciato",
-                                    email: "c@nunciato.org",
-                                },
-                                content: Buffer.from(content).toString('base64'),
-                            },
-
-                        }, (ghErr, ghRes) => {
-
-                            if (ghErr) {
-                                console.error("💥  Error submitting to GitHub: ", ghErr);
-                                res.sendStatus(500);
-                                return;
-                            }
-
-                            console.log("🙌  Aww yeah:", ghRes.body);
-                            res.sendStatus(200);
-                        });
+            // Submit the movie to GitHub.
+            submitToGitHub(contentFilePath, frontmatter, messageBody)
+                .then(response => {
+                    res.sendStatus(204);
                 })
-                .catch(error => {
-                    console.error("💥  Something went wrong: ", error);
+                .catch(err => {
                     res.sendStatus(500);
-                })
-                .finally(() => {
-
-                    // Clean up
-                    console.log(`✨  Cleaning up ${uploadedFilePath} & ${workDir}...`);
-                    rimraf.sync(uploadedFilePath);
-                    rimraf.sync(workDir);
                 });
-        });
+
+            return;
+        }
+
+        // Submit a mobile item.
+        if (req.files && req.files.length > 0) {
+            const files = req.files as Express.Multer.File[];
+            const title = messageSubject || "";
+            const useGPS = toAddress.match(/gps@/);
+
+            files.forEach(uploadedFile => {
+                const uploadedFilePath = uploadedFile.path;
+                const uploadedFileName = uploadedFile.filename;
+                const workDir = `${uploadedFilePath}-work/media`;
+
+                mkdirp.sync(workDir);
+
+                // Copy and rename the file, using the extension supplied by the original.
+                fs.copyFileSync(uploadedFilePath, `${workDir}/${uploadedFileName}.${uploadedFile.originalname.toLowerCase().split(".").slice(-1)[0]}`);
+
+                processFiles(workDir, useGPS)
+                    .then(result => {
+                        console.log(`👏  Yay, it worked!`);
+
+                        const [ item ] = result;
+                        const contentFilePath = `site/content/mobile/${item.filename}.md`;
+
+                        let [ mimeType ] = uploadedFile.mimetype.split("/");
+                        if (!mimeType) {
+                            console.error(`💥  Unable to determine mimeType for ${uploadedFile}.`);
+                            return;
+                        }
+
+                        let frontmatter: MobileFrontmatter | undefined;
+
+                        if (mimeType === "video") {
+                            frontmatter = {
+                                title,
+                                date: item.created,
+                                draft: false,
+                                video: {
+                                    url: item.url,
+                                    thumb: item.thumb,
+                                    preview: item.preview,
+                                    created: item.created,
+                                    exif: item.exif,
+                                    title: item.title,
+                                    caption: item.caption,
+                                    controls: item.controls,
+                                    duration: item.duration,
+                                    poster: item.poster,
+                                },
+                            };
+                        }
+
+                        if (mimeType === "image") {
+                            frontmatter = {
+                                title,
+                                date: item.created,
+                                draft: false,
+                                photo: {
+                                    url: item.url,
+                                    thumb: item.thumb,
+                                    preview: item.preview,
+                                    created: item.created,
+                                    exif: item.exif,
+                                    title: item.title,
+                                    caption: item.caption,
+                                }
+                            };
+                        }
+
+                        if (!frontmatter) {
+                            console.error(`💥  No frontmatter! The result was ${result}.`);
+                            res.sendStatus(500);
+                            return;
+                        }
+
+                        // Submit the item to GitHub.
+                        submitToGitHub(contentFilePath, frontmatter, messageBody)
+                            .then(response => {
+                                res.sendStatus(204);
+                            })
+                            .catch(err => {
+                                res.sendStatus(500);
+                            });
+                    })
+                    .catch(error => {
+                        console.error("💥  Something went wrong: ", error);
+                        res.sendStatus(500);
+                    })
+                    .finally(() => {
+
+                        // Clean up
+                        console.log(`✨  Cleaning up ${uploadedFilePath} & ${workDir}...`);
+                        rimraf.sync(uploadedFilePath);
+                        rimraf.sync(workDir);
+                    });
+            });
+
+            return;
+        }
     });
 
     app.listen(port, () => {
         console.log(`🎉  The service is now running on http://${host}:${port}`);
+    });
+}
+
+function submitToGitHub(
+        contentFilePath: string,
+        frontmatter: MobileFrontmatter | MovieFrontmatter,
+        content: string = ""): Promise<any> {
+
+    const username = process.env.USER || "cnunciato";
+    const token = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
+    const repo = process.env.REPO || "cnunciato/website";
+
+    console.log(`➡️  Sending to GitHub: ${contentFilePath}, ${JSON.stringify(frontmatter, null, 2)}, ${content}...`);
+
+    return new Promise((resolve, reject) => {
+
+        // Convert frontmatter to YAML and append content, if any.
+        const yamlContent = `---\n${yaml.stringify(frontmatter, 4)}---\n\n${content.trim()}`;
+
+        // Send it all to GitHub.
+        request
+            .put(`https://api.github.com/repos/${repo}/contents/${contentFilePath}`, {
+                headers: {
+                    "User-Agent": "Christian's Parser-Uploader"
+                },
+                auth: {
+                    username,
+                    password: token,
+                },
+                json: {
+                    message: "Add a mobile item",
+                    committer: {
+                        name: "Christian Nunciato",
+                        email: "c@nunciato.org",
+                    },
+                    content: Buffer.from(yamlContent).toString('base64'),
+                },
+
+            }, (ghErr, ghRes) => {
+
+                if (ghErr) {
+                    console.error("💥  Error submitting to GitHub: ", ghErr);
+                    reject(ghErr);
+                    return;
+                }
+
+                console.log("🙌  Aww yeah:", ghRes.body);
+                resolve(ghRes);
+            });
     });
 }
 
