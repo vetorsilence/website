@@ -119,8 +119,8 @@ let service = new cloud.Service("process", {
     containers: {
         parse: {
             image: config.require("image_tag"),
-            memory: 2048,
-            cpu: 2,
+            memory: 4096,
+            cpu: 4,
             ports: [
                 {
                     port: 80,
