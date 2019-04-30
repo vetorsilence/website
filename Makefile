@@ -27,7 +27,6 @@ release:
 	git fetch -p && \
 	git rebase origin/master && \
 	git push origin master && \
-	pulumi up --skip-preview --yes
 
 .PHONY: install
 ensure:
