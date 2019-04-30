@@ -38,7 +38,7 @@ docker:
 
 .PHONY: release
 release:
-	$(MAKE) docker build deploy
+	$(MAKE) docker build
 	git status
 
 .PHONY: clean
