@@ -28,7 +28,6 @@ WORKDIR /usr/src/app
 # Copy the app into the container.
 COPY *.json *.ts ./
 
-
 # Install it.
 RUN npm install
 
