@@ -118,8 +118,13 @@ if (source) {
 
         // Handle the type of submission.
         console.log(`🏈  Receiving...`, toAddress, messageSubject, messageBody);
-
         console.log(JSON.stringify(req.body, null, 4));
+
+        // Don't handle anything sent to stuff.
+        if (!!toAddress.match(/stuff/)) {
+            res.sendStatus(200);
+            return;
+        }
 
         // Submit a movie.
         if (toAddress.match(/movies@/)) {
