@@ -322,7 +322,7 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
     const mediaPath = `${processed}/media`
     const imagesPath = `${mediaPath}/images`;
     const videoPath = `${mediaPath}/video`;
-    const audioPath = `${mediaPath}/sounds`;
+    const audioPath = `${mediaPath}/audio`;
     const thumbPath = `${mediaPath}/thumbs`;
     const previewPath = `${mediaPath}/previews`;
     const posterPath = `${mediaPath}/posters`;
