@@ -163,7 +163,8 @@ if (source) {
                 mkdirp.sync(workDir);
 
                 // Copy and rename the file, using the extension supplied by the original.
-                fs.copyFileSync(uploadedFilePath, `${workDir}/${uploadedFileName}.${uploadedFile.originalname.toLowerCase().split(".").slice(-1)[0]}`);
+                const newFilename = `${workDir}/${uploadedFileName}.${uploadedFile.originalname.toLowerCase().split(".").slice(-1)[0]}`;
+                fs.copyFileSync(uploadedFilePath, newFilename);
 
                 processFiles(workDir, useGPS)
                     .then(result => {
@@ -171,7 +172,7 @@ if (source) {
 
                         const [ item ] = result;
                         const contentFilePath = `site/content/mobile/${item.filename}.md`;
-                        const fileType = fileToType(`${uploadedFilePath}/${uploadedFileName}`);
+                        const fileType = fileToType(`${newFilename}`);
 
                         if (!fileType) {
                             console.error(`💥  Unable to determine mimeType for ${uploadedFilePath}.`);
