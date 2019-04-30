@@ -171,7 +171,7 @@ if (source) {
                 const frontmatter: MobileFrontmatter = {
                     title,
                     date: new Date(),
-                    draft: false,
+                    draft: true,
                     sound: {
                         url: `s3/audio/${audioFilename}`,
 
