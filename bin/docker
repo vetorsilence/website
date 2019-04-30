@@ -1,16 +1,14 @@
 #!/bin/bash
 
 export IMAGE_TAG="cnunciato/process:$(date +%s)"
-echo "Building $IMAGE_TAG..."
 
-pushd process
-    make build
-popd
+echo "Building $IMAGE_TAG..."
+docker build --no-cache -t "$IMAGE_TAG"
 
 echo "Pushing..."
-docker push "$IMAGE_TAG"
+# docker push "$IMAGE_TAG"
 
 echo "Applying the new image to the Pulumi config..."
-pulumi config set image_tag "$IMAGE_TAG"
+# pulumi config set image_tag "$IMAGE_TAG"
 
 echo "Done."
