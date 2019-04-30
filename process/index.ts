@@ -171,7 +171,7 @@ if (source) {
 
                         const [ item ] = result;
                         const contentFilePath = `site/content/mobile/${item.filename}.md`;
-                        const fileType = fileToType(uploadedFilePath);
+                        const fileType = fileToType(`${uploadedFilePath}/${uploadedFileName}`);
 
                         if (!fileType) {
                             console.error(`💥  Unable to determine mimeType for ${uploadedFilePath}.`);
