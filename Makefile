@@ -38,8 +38,11 @@ docker:
 
 .PHONY: release
 release:
-	$(MAKE) docker build
-	git status
+	$(MAKE) docker build && \
+	git commit -am "Release $(shell pulumi config get image_tag)" && \
+	git fetch -p && \
+	git rebase origin/master && \
+	git push origin master
 
 .PHONY: clean
 clean:
