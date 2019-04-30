@@ -171,16 +171,16 @@ if (source) {
 
                         const [ item ] = result;
                         const contentFilePath = `site/content/mobile/${item.filename}.md`;
+                        const fileType = fileToType(uploadedFilePath);
 
-                        let [ mimeType ] = uploadedFile.mimetype.split("/");
-                        if (!mimeType) {
+                        if (!fileType) {
                             console.error(`💥  Unable to determine mimeType for ${uploadedFile}.`);
                             return;
                         }
 
                         let frontmatter: MobileFrontmatter | undefined;
 
-                        if (mimeType === "video") {
+                        if (fileType === "video") {
                             frontmatter = {
                                 title,
                                 date: item.created,
@@ -200,7 +200,7 @@ if (source) {
                             };
                         }
 
-                        if (mimeType === "image") {
+                        if (fileType === "photo") {
                             frontmatter = {
                                 title,
                                 date: item.created,
@@ -217,7 +217,7 @@ if (source) {
                             };
                         }
 
-                        if (mimeType === "application") { // Feels like we could get this from EXIF.
+                        if (fileType === "sound") {
                             frontmatter = {
                                 title,
                                 date: item.created,
@@ -344,50 +344,6 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
     mkdirp.sync(posterPath);
 
     const files = glob.sync(`${sourceDir}/**/*.*`);
-
-    function tagsToCreated(tags: Tags): ExifDateTime | undefined {
-        console.log("Tags: ", tags);
-        // return (tags.DateTimeCreated || tags.DateCreated || tags["CreationDate"] || tags.DateTimeOriginal || tags.CreateDate) as ExifDateTime;
-        return (tags.DateTimeCreated || tags.DateCreated || tags.DateTimeOriginal || tags.CreateDate) as ExifDateTime;
-    }
-
-    function tagsToFilename(tags: Tags): string | undefined {
-        const created = tagsToCreated(tags);
-
-        if (!created || !created.rawValue) {
-            return undefined;
-        }
-
-        return [
-            created.year,
-            created.month,
-            created.day,
-            created.hour,
-            created.minute,
-            created.second,
-        ]
-        .map(n => n.toString().length < 4 ? `0${n}`.slice(-2) : n)
-        .join("-");
-    }
-
-    function fileToType(path: string): "photo" | "video" | "sound" | undefined {
-        const mimeType = mime.getType(path);
-
-        if (mimeType) {
-            const [ type ] = mimeType.split("/");
-
-            switch (type) {
-                case "image":
-                    return "photo";
-                case "video":
-                    return "video";
-                case "audio":
-                    return "sound";
-            }
-        }
-
-        return undefined;
-    }
 
     return new Promise((resolve, reject) => {
 
@@ -545,4 +501,49 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
 
 function getMediaDuration(path: string): number {
     return parseInt(execSync(`ffprobe -i "${path}" -show_entries stream=codec_type,duration -of compact=p=0:nk=1 | head -1`).toString().trim().split("|").slice(-1)[0]);
+}
+
+function tagsToCreated(tags: Tags): ExifDateTime | undefined {
+    console.log("Tags: ", tags);
+    // return (tags.DateTimeCreated || tags.DateCreated || tags["CreationDate"] || tags.DateTimeOriginal || tags.CreateDate) as ExifDateTime;
+    return (tags.DateTimeCreated || tags.DateCreated || tags.DateTimeOriginal || tags.CreateDate) as ExifDateTime;
+}
+
+function tagsToFilename(tags: Tags): string | undefined {
+    const created = tagsToCreated(tags);
+
+    if (!created || !created.rawValue) {
+        return undefined;
+    }
+
+    return [
+        created.year,
+        created.month,
+        created.day,
+        created.hour,
+        created.minute,
+        created.second,
+    ]
+    .map(n => n.toString().length < 4 ? `0${n}`.slice(-2) : n)
+    .join("-");
+}
+
+function fileToType(path: string): "photo" | "video" | "sound" | undefined {
+    const mimeType = mime.getType(path);
+
+    if (mimeType) {
+        const [ type ] = mimeType.split("/");
+
+        switch (type) {
+            case "image":
+                return "photo";
+            case "video":
+                return "video";
+            case "audio":
+            case "application":
+                return "sound";
+        }
+    }
+
+    return undefined;
 }
