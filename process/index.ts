@@ -158,7 +158,7 @@ if (source) {
         if (req.files && req.files.length > 0) {
             const files = req.files as Express.Multer.File[];
             const title = messageSubject || "";
-            const useGPS = !!toAddress.match(/no-gps@/);
+            const useGPS = toAddress.match(/^gps@/);
 
             files.forEach(uploadedFile => {
                 const uploadedFilePath = uploadedFile.path;
