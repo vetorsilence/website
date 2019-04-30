@@ -26,7 +26,7 @@ release:
 	git commit -am "Release $(shell pulumi config get image_tag)" && \
 	git fetch -p && \
 	git rebase origin/master && \
-	git push origin master && \
+	git push origin master
 
 .PHONY: install
 ensure:
