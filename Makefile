@@ -29,12 +29,7 @@ release:
 	git push origin master && \
 	pulumi up
 
-.PHONY: clean
-clean:
-	rm -rf node_modules
-	rm -rf package-lock.json
-
-.PHONY: ensure
+.PHONY: install
 ensure:
 	npm install
 
@@ -44,14 +39,6 @@ serve:
 	pushd site && \
 	hugo serve && \
 	popd
-
-.PHONY: serve_built
-serve_built:
-	$(MAKE) build
-	cd site/public
-	open "http://localhost:1314"
-	php -S localhost:1314
-	cd ..
 
 .PHONY: watch_sass
 watch_sass:
