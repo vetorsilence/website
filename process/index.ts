@@ -174,7 +174,7 @@ if (source) {
                         const fileType = fileToType(uploadedFilePath);
 
                         if (!fileType) {
-                            console.error(`💥  Unable to determine mimeType for ${uploadedFile}.`);
+                            console.error(`💥  Unable to determine mimeType for ${uploadedFilePath}.`);
                             return;
                         }
 
@@ -530,6 +530,7 @@ function tagsToFilename(tags: Tags): string | undefined {
 
 function fileToType(path: string): "photo" | "video" | "sound" | undefined {
     const mimeType = mime.getType(path);
+    console.log(path);
 
     if (mimeType) {
         const [ type ] = mimeType.split("/");
