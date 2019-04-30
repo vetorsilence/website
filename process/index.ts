@@ -13,7 +13,6 @@ import * as slugify from "@sindresorhus/slugify";
 
 import { exiftool, ExifDateTime, Tags } from "exiftool-vendored";
 import { execSync } from "child_process";
-import { timingSafeEqual } from "crypto";
 
 const source = process.argv[2];
 
@@ -228,7 +227,7 @@ if (source) {
                             frontmatter = {
                                 title,
                                 date: item.created,
-                                draft: true,
+                                draft: false,
                                 sound: {
                                     url: item.url,
                                     thumb: item.thumb,
