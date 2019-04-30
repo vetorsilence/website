@@ -175,6 +175,7 @@ if (source) {
 
                         if (!fileType) {
                             console.error(`💥  Unable to determine mimeType for ${uploadedFilePath}.`);
+                            res.sendStatus(500);
                             return;
                         }
 
