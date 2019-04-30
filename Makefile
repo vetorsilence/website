@@ -4,18 +4,6 @@ build:
 	node_modules/.bin/node-sass --include-path site/scss --output site/static/css site/scss/main.scss
 	hugo --baseURL https://chris.nunciato.org --source site
 
-.PHONY: deploy
-deploy: build
-	$(MAKE) update
-
-.PHONY: preview
-preview:
-	pulumi preview
-
-.PHONY: update
-update:
-	pulumi up --yes --skip-preview
-
 .PHONY: invalidate
 invalidate:
 	aws cloudfront create-invalidation \
@@ -32,17 +20,14 @@ process:
 		$(shell pulumi config get image_tag) \
 		npm start /media
 
-.PHONY: docker
-docker:
-	bin/docker
-
 .PHONY: release
 release:
-	$(MAKE) docker build && \
+	bin/docker && \
 	git commit -am "Release $(shell pulumi config get image_tag)" && \
 	git fetch -p && \
 	git rebase origin/master && \
-	git push origin master
+	git push origin master && \
+	pulumi up
 
 .PHONY: clean
 clean:
