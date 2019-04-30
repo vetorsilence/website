@@ -39,6 +39,12 @@
             {{ ((time .Params.video.duration).Format "04:05") }}
           </p>
         {{ end }}
+        {{ if .Params.sound }}
+          <p class="item-count">
+            <i class="fas fa-headphones"></i>
+            {{ ((time .Params.sound.duration).Format "04:05") }}
+          </p>
+        {{ end }}
       </section>
       <hr>
     {{ end }}

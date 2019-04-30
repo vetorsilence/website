@@ -84,6 +84,19 @@
       </section>
     {{ end }}
 
+    {{ if .Params.sound }}
+      <section>
+        <div class="media-container">
+          <audio controls>
+            <source src="{{ replace .Params.sound.url "s3/" .Site.Params.mediaRoot }}">
+          </audio>
+        </div>
+        <p class="caption">
+          {{ .Params.video.caption | markdownify }}
+        </p>
+      </section>
+    {{ end }}
+
     <section>
       {{ .Content }}
     </section>

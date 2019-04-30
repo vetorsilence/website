@@ -41,6 +41,12 @@ interface MobileFrontmatter {
         title: string;
         caption: string;
     };
+    sound?: {
+        url: string;
+        thumb: string;
+        preview: string;
+        duration: number;
+    };
 }
 
 interface MovieFrontmatter {
@@ -54,7 +60,7 @@ interface MovieFrontmatter {
     links: { name: string, url: string}[];
 }
 
-type Result =  {
+interface ProcessingResult {
     type: "photo" | "video";
     title: string | undefined;
     caption: string | undefined;
@@ -76,6 +82,8 @@ interface Exif {
     focal_length: string | undefined,
     gps: string | undefined,
 }
+
+const mediaBucket = "cnunciato-website-media";
 
 if (source) {
 
@@ -109,7 +117,6 @@ if (source) {
 
         // Handle the type of submission.
         console.log(`🏈  Receiving...`, toAddress, messageSubject, messageBody);
-        console.log(toAddress.match(/movies@/));
 
         // Submit a movie.
         if (toAddress.match(/movies@/)) {
@@ -138,7 +145,66 @@ if (source) {
             return;
         }
 
-        // Submit a mobile item.
+        // Submit a sound.
+        if (toAddress.match(/sounds@/) && req.files && req.files.length > 0) {
+
+            const files = req.files as Express.Multer.File[];
+            const title = messageSubject || "";
+
+            files.forEach(uploadedFile => {
+                const uploadedFilePath = uploadedFile.path;
+                const workDir = `${uploadedFilePath}-work/media`;
+                const audioPath = `${workDir}/audio`;
+
+                mkdirp.sync(audioPath);
+
+                // Basename is currently based on now, but could also be driven by EXIF data, since we'll have it,
+                // and will want to use it for duration, too.
+                const basename = moment().format("YYYY-MM-DD-HH-mm-ss");
+
+                // Copy and rename the file, using the extension supplied by the original.
+                const audioFilename = `${basename}.${uploadedFile.originalname.toLowerCase().split(".").slice(-1)[0]}`;
+                const contentFilePath = `site/content/mobile/${basename}.md`;
+
+                fs.copyFileSync(uploadedFilePath, `${audioPath}/${audioFilename}`);
+
+                const frontmatter: MobileFrontmatter = {
+                    title,
+                    date: new Date(),
+                    draft: false,
+                    sound: {
+                        url: `s3/audio/${audioFilename}`,
+
+                        // TODO: These.
+                        preview: 's3/previews/wrong.jpg',
+                        thumb: 's3/thumbs/wrong.jpg',
+                        duration: 0,
+                    },
+                };
+
+                // Upload to S3.
+                console.log(`⬆️  Uploading object to S3...`);
+                execSync(`aws s3 sync ${workDir} s3://${mediaBucket}`);
+
+                // Submit the sound to GitHub.
+                submitToGitHub(contentFilePath, frontmatter, messageBody)
+                    .then(response => {
+                        res.sendStatus(204);
+                    })
+                    .catch(err => {
+                        res.sendStatus(500);
+                    });
+
+                // Clean up
+                console.log(`✨  Cleaning up ${uploadedFilePath} & ${workDir}...`);
+                rimraf.sync(uploadedFilePath);
+                rimraf.sync(workDir);
+            });
+
+            return;
+        }
+
+        // Otheriwe, if there are attachments, submit a mobile item.
         if (req.files && req.files.length > 0) {
             const files = req.files as Express.Multer.File[];
             const title = messageSubject || "";
@@ -293,8 +359,6 @@ function submitToGitHub(
 }
 
 function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
-    const mediaBucket = "cnunciato-website-media";
-
     const processed = `${sourceDir}/Out`;
     const mediaPath = `${processed}/media`
     const imagesPath = `${mediaPath}/images`;
@@ -389,7 +453,7 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
                         return;
                     }
 
-                    const metadata: Result = {
+                    const metadata: ProcessingResult = {
                         type: type,
                         title: tags.Title,
                         caption: tags.Description,
