@@ -91,10 +91,12 @@
 
     {{ if .Params.sound }}
       <section>
-        <div class="media-container">
-          <a href="{{ replace .Params.sound.preview "s3/" $.Site.Params.mediaRoot }}" target="_blank">
-            <img src="{{ replace .Params.sound.preview "s3/" $.Site.Params.mediaRoot }}">
+        {{ if .Params.sound.photo.url }}
+          <a href="{{ replace .Params.sound.photo.url "s3/" $.Site.Params.mediaRoot }}" target="_blank">
+            <img src="{{ replace .Params.sound.photo.url "s3/" $.Site.Params.mediaRoot }}">
           </a>
+        {{ end }}
+        <div class="media-container">
           <audio controls>
             <source src="{{ replace .Params.sound.url "s3/" .Site.Params.mediaRoot }}">
           </audio>
