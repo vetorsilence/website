@@ -22,30 +22,31 @@ interface MobileFrontmatter {
     draft: boolean;
     video?: {
         url: string;
-        thumb: string;
-        preview: string;
+        thumb?: string;
+        preview?: string;
+        poster?: string;
         created: Date;
-        exif: Exif;
-        title: string;
-        caption: string;
+        exif?: Exif;
+        title?: string;
+        caption?: string;
         controls: boolean;
-        duration: number;
-        poster: string;
+        duration?: number;
     };
     photo?: {
         url: string;
-        thumb: string;
-        preview: string;
+        thumb?: string;
+        preview?: string;
         created: Date;
-        exif: Exif;
-        title: string;
-        caption: string;
+        exif?: Exif;
+        title?: string;
+        caption?: string;
     };
     sound?: {
         url: string;
-        thumb: string;
-        preview: string;
-        duration: number;
+        photo?: string;
+        thumb?: string;
+        preview?: string;
+        duration?: number;
     };
 }
 
@@ -69,6 +70,8 @@ interface ProcessingResult {
     filename: string | undefined;
     preview?: string;
     thumb?: string;
+    poster?: string;
+    duration?: number;
     exif?: Exif;
 }
 
@@ -81,6 +84,12 @@ interface Exif {
     shutter_speed: string | undefined,
     focal_length: string | undefined,
     gps: string | undefined,
+}
+
+interface GitHubSubmission {
+    frontmatter: MobileFrontmatter;
+    content: string;
+    path: string;
 }
 
 const mediaBucket = "cnunciato-website-media";
@@ -116,7 +125,7 @@ if (source) {
         const messageBody = req.body.text;
 
         // Handle the type of submission.
-        console.log(`🏈  Receiving...`, toAddress, messageSubject, messageBody);
+        console.log(`🏈 Receiving...`, toAddress, messageSubject, messageBody);
         console.log(JSON.stringify(req.body, null, 4));
 
         // Don't handle anything sent to stuff.
@@ -147,6 +156,8 @@ if (source) {
                     res.sendStatus(204);
                 })
                 .catch(err => {
+                    console.error("💥 submitToGitHub error in movie submission: ", contentFilePath, frontmatter, messageBody);
+                    console.log  ("Sending a 500.")
                     res.sendStatus(500);
                 });
 
@@ -159,118 +170,178 @@ if (source) {
             const title = messageSubject || "";
             const useGPS = toAddress.match(/^gps@/);
 
-            files.forEach(uploadedFile => {
-                const uploadedFilePath = uploadedFile.path;
-                const uploadedFileName = uploadedFile.filename;
-                const workDir = `${uploadedFilePath}-work/media`;
+            const filesToProcess = files.map(uploadedFile => {
+                console.log("UploadedFile: ", uploadedFile);
 
-                mkdirp.sync(workDir);
+                return new Promise<GitHubSubmission | null>((resolve, reject) => {
+                    const uploadedFilePath = uploadedFile.path;
+                    const uploadedFileName = uploadedFile.filename;
+                    const workDir = `${uploadedFilePath}-work/media`;
 
-                // Copy and rename the file, using the extension supplied by the original.
-                const newFilename = `${workDir}/${uploadedFileName}.${uploadedFile.originalname.toLowerCase().split(".").slice(-1)[0]}`;
-                fs.copyFileSync(uploadedFilePath, newFilename);
+                    mkdirp.sync(workDir);
 
-                processFiles(workDir, useGPS)
-                    .then(result => {
-                        console.log(`👏  Yay, it worked!`);
+                    // Copy and rename the file, using the extension supplied by the original.
+                    const newFilename = `${workDir}/${uploadedFileName}${path.extname(uploadedFile.originalname)}`;
+                    fs.copyFileSync(uploadedFilePath, newFilename);
 
-                        const [ item ] = result;
-                        const contentFilePath = `site/content/mobile/${item.filename}.md`;
-                        const fileType = fileToType(`${newFilename}`);
+                    processFiles(workDir, useGPS)
+                        .then(result => {
+                            const [ item ] = result;
 
-                        if (!fileType) {
-                            console.error(`💥  Unable to determine mimeType for ${uploadedFilePath}.`);
-                            res.sendStatus(500);
-                            return;
-                        }
+                            // Unprocessed items will be returned as empty arrays.
+                            if (!item) {
+                                resolve(null);
+                                return;
+                            }
 
-                        let frontmatter: MobileFrontmatter | undefined;
+                            const contentFilePath = `site/content/mobile/${item.filename}.md`;
+                            const fileType = fileToItemType(`${newFilename}`);
 
-                        if (fileType === "video") {
-                            frontmatter = {
-                                title,
-                                date: item.created,
-                                draft: false,
-                                video: {
-                                    url: item.url,
-                                    thumb: item.thumb,
-                                    preview: item.preview,
-                                    created: item.created,
-                                    exif: item.exif,
-                                    title: item.title,
-                                    caption: item.caption,
-                                    controls: item.controls,
-                                    duration: item.duration,
-                                    poster: item.poster,
-                                },
-                            };
-                        }
+                            if (!fileType) {
+                                reject(new Error(`💥 Unable to determine mimeType for ${uploadedFilePath}.`));
+                                return;
+                            }
 
-                        if (fileType === "photo") {
-                            frontmatter = {
-                                title,
-                                date: item.created,
-                                draft: false,
-                                photo: {
-                                    url: item.url,
-                                    thumb: item.thumb,
-                                    preview: item.preview,
-                                    created: item.created,
-                                    exif: item.exif,
-                                    title: item.title,
-                                    caption: item.caption,
-                                }
-                            };
-                        }
+                            let frontmatter: MobileFrontmatter | undefined;
 
-                        if (fileType === "sound") {
-                            frontmatter = {
-                                title,
-                                date: item.created,
-                                draft: false,
-                                sound: {
-                                    url: item.url,
-                                    thumb: item.thumb,
-                                    preview: item.preview,
-                                    duration: item.duration,
+                            if (fileType === "video") {
+                                frontmatter = {
+                                    title,
+                                    date: item.created,
+                                    draft: false,
+                                    video: {
+                                        url: item.url,
+                                        thumb: item.thumb,
+                                        preview: item.preview,
+                                        poster: item.poster,
+                                        created: item.created,
+                                        exif: item.exif,
+                                        title: item.title,
+                                        caption: item.caption,
+                                        controls: true,
+                                        duration: item.duration,
+                                    },
+                                };
+                            }
+
+                            if (fileType === "photo") {
+                                frontmatter = {
+                                    title,
+                                    date: item.created,
+                                    draft: false,
+                                    photo: {
+                                        url: item.url,
+                                        thumb: item.thumb,
+                                        preview: item.preview,
+                                        created: item.created,
+                                        exif: item.exif,
+                                        title: item.title,
+                                        caption: item.caption,
+                                    }
+                                };
+                            }
+
+                            if (fileType === "sound") {
+                                frontmatter = {
+                                    title,
+                                    date: item.created,
+                                    draft: false,
+                                    sound: {
+                                        url: item.url,
+                                        thumb: item.thumb,
+                                        preview: item.preview,
+                                        duration: item.duration,
+                                    }
                                 }
                             }
-                        }
 
-                        if (!frontmatter) {
-                            console.error(`💥  No frontmatter! The result was ${JSON.stringify(result, null, 4)}.`);
-                            res.sendStatus(500);
-                            return;
-                        }
+                            if (!frontmatter) {
+                                reject(new Error(`💥 No frontmatter! The result was ${JSON.stringify(result, null, 4)}.`));
+                                return;
+                            }
 
-                        // Submit the item to GitHub.
-                        submitToGitHub(contentFilePath, frontmatter, messageBody)
-                            .then(response => {
-                                res.sendStatus(204);
-                            })
-                            .catch(err => {
-                                res.sendStatus(500);
+                            resolve({
+                                frontmatter,
+                                content: messageBody,
+                                path: contentFilePath,
                             });
-                    })
-                    .catch(error => {
-                        console.error("💥  Something went wrong: ", error);
-                        res.sendStatus(500);
-                    })
-                    .finally(() => {
+                        })
+                        .catch(error => {
+                            reject(new Error(`💥 Something went wrong: ${error}`));
+                        })
+                        .finally(() => {
 
-                        // Clean up
-                        console.log(`✨  Cleaning up ${uploadedFilePath} & ${workDir}...`);
-                        rimraf.sync(uploadedFilePath);
-                        rimraf.sync(workDir);
-                    });
+                            // Clean up
+                            console.log(`✨ Cleaning up ${uploadedFilePath}...`);
+                            rimraf.sync(`${uploadedFilePath}*`);
+                        });
+                });
             });
 
-            return;
+            Promise
+                .all(filesToProcess)
+                .then(results => {
+                    console.log("Process.all handler: ", results);
+
+                    let selection: GitHubSubmission | undefined;
+
+                    // Filter out the nulls.
+                    const submissions = results.filter(r => r !== null);
+
+                    // When multiple items have been submitted, chances are it's a sound with an (optional) image.
+                    // Look for a sound, treat that as the main thing to be submitted, and then treat the accompanying
+                    // image as its... well, accompaniment.
+
+                    const submittableSound = submissions.filter(s => s && !!s.frontmatter.sound)[0];
+                    const submittablePhoto = submissions.filter(s => s && !!s.frontmatter.photo)[0];
+                    const submittableVideo = submissions.filter(s => s && !!s.frontmatter.video)[0];
+
+                    if (submittableSound) {
+                        selection = submittableSound;
+
+                        if (submittablePhoto && selection.frontmatter.sound && submittablePhoto.frontmatter.photo) {
+                            selection.frontmatter.sound.photo = submittablePhoto.frontmatter.photo.url;
+                            selection.frontmatter.sound.preview = submittablePhoto.frontmatter.photo.preview;
+                            selection.frontmatter.sound.thumb = submittablePhoto.frontmatter.photo.thumb;
+                        }
+                    } else if (submittablePhoto) {
+                        selection = submittablePhoto;
+                    }
+                    else if (submittableVideo) {
+                        selection = submittableVideo;
+                    }
+
+                    if (!selection) {
+                        console.error("💥 Selection not set. We have: ", submittableSound, submittablePhoto, submittableVideo);
+                        console.log  ("Sending a 500.")
+                        res.sendStatus(500);
+                        return;
+                    }
+
+                    // Submit the item to GitHub.
+                    submitToGitHub(selection.path, selection.frontmatter, selection.content)
+                        .then(response => {
+                            res.sendStatus(204);
+                        })
+                        .catch(error => {
+                            console.error("💥 submitToGitHub error: ", error);
+                            console.log  ("Sending a 500.")
+                            res.sendStatus(500);
+                        });
+                })
+                .catch(error => {
+                    console.error("💥 Error in Process.all handler: ", error);
+                    console.log  ("Sending a 500.")
+                    res.sendStatus(500);
+                })
+                .finally(() => {
+                    console.log("Finished.");
+                });
         }
     });
 
     app.listen(port, () => {
-        console.log(`🎉  The service is now running on http://${host}:${port}`);
+        console.log(`🎉 The service is now running on http://${host}:${port}`);
     });
 }
 
@@ -283,7 +354,7 @@ function submitToGitHub(
     const token = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
     const repo = process.env.REPO || "cnunciato/website";
 
-    console.log(`➡️  Sending to GitHub: ${contentFilePath}, ${JSON.stringify(frontmatter, null, 2)}, ${content}...`);
+    console.log(`➡️ Sending to GitHub: ${contentFilePath}, ${JSON.stringify(frontmatter, null, 2)}, ${content}...`);
 
     return new Promise((resolve, reject) => {
 
@@ -312,7 +383,7 @@ function submitToGitHub(
             }, (ghErr, ghRes) => {
 
                 if (ghErr) {
-                    console.error("💥  Error submitting to GitHub: ", ghErr);
+                    console.error("💥 Error submitting to GitHub: ", ghErr);
                     reject(ghErr);
                     return;
                 }
@@ -323,7 +394,7 @@ function submitToGitHub(
     });
 }
 
-function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
+function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingResult | null)[]> {
     const processed = `${sourceDir}/Out`;
     const mediaPath = `${processed}/media`
     const imagesPath = `${mediaPath}/images`;
@@ -337,7 +408,7 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
     const previewWidth = 800;
     const largeWidth = 1600;
 
-    const output: any[] = [];
+    const output: ProcessingResult[] = [];
 
     rimraf.sync(processed);
     mkdirp.sync(processed);
@@ -351,20 +422,18 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
 
     const files = glob.sync(`${sourceDir}/**/*.*`);
 
-    return new Promise((resolve, reject) => {
-
-        Promise
+    return new Promise<ProcessingResult[]>((resolve, reject) => {
+        return Promise
             .all(files.map(file => exiftool.read(file)))
             .then(results => {
-
                 for (let i = 0; i < results.length; i++) {
                     const file = files[i];
                     const tags = results[i];
                     const filename = tagsToFilename(results[i]);
-                    const type = fileToType(file);
+                    const type = fileToItemType(file);
 
                     if (!type) {
-                        console.error(`💥  Couldn't determine type for ${file}.`);
+                        console.error(`🤔 Couldn't find a submission type for ${file}. Skipping.`);
                         return;
                     }
 
@@ -383,18 +452,20 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
                     }
 
                     if (!extension) {
-                        reject(new Error(`😢  No extension! The tags were: ${tags}.`));
+                        console.log("Tags:", tags);
+                        reject(new Error("😢 No file extension detected! See above for the tags."));
                         return;
                     }
 
                     const mediaFilename = `${filename}.${extension}`;
 
-                    console.log("⏱  Processing...");
+                    console.log("⏱ Processing...");
 
                     const date = tagsToCreated(tags);
 
                     if (!date) {
-                        reject(new Error(`😢  No date! The tags were: ${tags}.`));
+                        console.log("Tags:", tags);
+                        reject(new Error("😢 No date detected! See above for the tags."));
                         return;
                     }
 
@@ -457,7 +528,6 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
 
                         Object.assign(metadata, {
                             duration,
-                            controls: true,
                             poster: `s3/posters/${filename}.jpg`,
                         });
                     }
@@ -482,24 +552,26 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
                 console.log("\n---------------------------------------------------------------------------------\n");
 
                 // Write the output files.
-                console.log(`📝  Writing ${processed}/out.json ...`);
+                console.log(`📝 Writing ${processed}/out.json ...`);
                 const json = JSON.stringify(output, null, 4);
                 fs.writeFileSync(`${processed}/out.json`, json);
 
-                console.log(`📝  Writing ${processed}/out.yaml ...`);
+                console.log(`📝 Writing ${processed}/out.yaml ...`);
                 fs.writeFileSync(`${processed}/out.yaml`, yaml.stringify(json));
 
                 // Upload to S3.
-                console.log(`⬆️  Uploading ${output.length} objects to S3...`);
+                console.log(`⬆️ Uploading ${output.length} objects to S3...`);
                 execSync(`aws s3 sync ${mediaPath} s3://${mediaBucket}`);
 
-                console.log(`📸  ${output.length} objects processed.`);
-                console.log("🍻  Done.")
+                console.log(`📸 ${output.length} objects processed.`);
+                console.log("🍻 Done.")
+
+                console.log(`👏 Yay, it worked!`);
                 resolve(output);
             })
             .catch(error => {
 
-                console.error("💥  Processing error! ", error);
+                console.error("💥 Processing error! ", error);
                 reject(error);
             });
     })
@@ -511,8 +583,7 @@ function getMediaDuration(path: string): number {
 
 function tagsToCreated(tags: Tags): ExifDateTime | undefined {
     console.log("Tags: ", tags);
-    // return (tags.DateTimeCreated || tags.DateCreated || tags["CreationDate"] || tags.DateTimeOriginal || tags.CreateDate) as ExifDateTime;
-    return (tags.DateTimeCreated || tags.DateCreated || tags.DateTimeOriginal || tags.CreateDate) as ExifDateTime;
+    return (tags.DateTimeCreated || tags.DateCreated || tags.DateTimeOriginal || tags.FileModifyDate) as ExifDateTime;
 }
 
 function tagsToFilename(tags: Tags): string | undefined {
@@ -534,7 +605,7 @@ function tagsToFilename(tags: Tags): string | undefined {
     .join("-");
 }
 
-function fileToType(path: string): "photo" | "video" | "sound" | undefined {
+function fileToItemType(path: string): "photo" | "video" | "sound" | undefined {
     const mimeType = mime.getType(path);
     console.log(path);
 

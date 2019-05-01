@@ -2,7 +2,13 @@
   <main>
     <section class="heading">
       <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
-      <h1>{{ .Title }}</h1>
+      <h1>
+        {{ if .Title }}
+            {{ .Title }}
+          {{ else }}
+            Untitled
+          {{ end }}
+      </h1>
       {{ if .Description }}
         <h2>{{ .Description }}</h2>
       {{ end }}
@@ -48,8 +54,7 @@
       <section>
         <div class="media-container">
           <video
-            src="{{ replace .Params.video.url "s3/" $.Site.Params.mediaRoot }}"
-            alt="{{ .Params.video.caption }}"
+            src="{{ replace .Params.video.url "s3/" $.Site.Params.mediaRoot }}" alt="{{ .Params.video.caption }}"
             {{ if .Params.video.poster }}poster="{{ replace .Params.video.poster "s3/" $.Site.Params.mediaRoot }}"{{ end }}
             {{ if .Params.video.controls }} controls {{ end }}
             {{ if .Params.video.muted }} muted {{ end }}
@@ -87,6 +92,9 @@
     {{ if .Params.sound }}
       <section>
         <div class="media-container">
+          <a href="{{ replace .Params.sound.preview "s3/" $.Site.Params.mediaRoot }}" target="_blank">
+            <img src="{{ replace .Params.sound.preview "s3/" $.Site.Params.mediaRoot }}">
+          </a>
           <audio controls>
             <source src="{{ replace .Params.sound.url "s3/" .Site.Params.mediaRoot }}">
           </audio>

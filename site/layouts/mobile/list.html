@@ -17,7 +17,13 @@
       <section>
         <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
         <h2>
-          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          <a href="{{ .RelPermalink }}">
+            {{ if .Title }}
+              {{ .Title }}
+            {{ else }}
+              Untitled
+            {{ end }}
+          </a>
         </h2>
         <h3>
           {{ .Description }}
@@ -27,7 +33,7 @@
             <img src="{{ replace .Params.photo.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.photo.caption }}">
           </a>
           <p class="item-count">
-            <i class="fas fa-camera"></i>
+            <!-- <i class="fas fa-camera"></i> -->
           </p>
         {{ end }}
         {{ if .Params.video }}
@@ -40,6 +46,11 @@
           </p>
         {{ end }}
         {{ if .Params.sound }}
+          {{ if .Params.sound.preview }}
+            <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+              <img src="{{ replace .Params.sound.preview "s3/" .Site.Params.mediaRoot }}">
+            </a>
+          {{ end }}
           <p class="item-count">
             <i class="fas fa-headphones"></i>
             {{ ((time .Params.sound.duration).Format "04:05") }}
