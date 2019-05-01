@@ -4,18 +4,6 @@ build:
 	node_modules/.bin/node-sass --include-path site/scss --output site/static/css site/scss/main.scss
 	hugo --baseURL https://chris.nunciato.org --source site
 
-.PHONY: deploy
-deploy: build
-	$(MAKE) update
-
-.PHONY: preview
-preview:
-	pulumi preview
-
-.PHONY: update
-update:
-	pulumi up --yes --skip-preview
-
 .PHONY: invalidate
 invalidate:
 	aws cloudfront create-invalidation \
@@ -32,21 +20,15 @@ process:
 		$(shell pulumi config get image_tag) \
 		npm start /media
 
-.PHONY: docker
-docker:
-	bin/docker
-
 .PHONY: release
 release:
-	$(MAKE) docker build deploy
-	git status
+	bin/docker && \
+	git commit -am "Release $(shell pulumi config get image_tag)" && \
+	git fetch -p && \
+	git rebase origin/master && \
+	git push origin master
 
-.PHONY: clean
-clean:
-	rm -rf node_modules
-	rm -rf package-lock.json
-
-.PHONY: ensure
+.PHONY: install
 ensure:
 	npm install
 
@@ -56,14 +38,6 @@ serve:
 	pushd site && \
 	hugo serve && \
 	popd
-
-.PHONY: serve_built
-serve_built:
-	$(MAKE) build
-	cd site/public
-	open "http://localhost:1314"
-	php -S localhost:1314
-	cd ..
 
 .PHONY: watch_sass
 watch_sass:

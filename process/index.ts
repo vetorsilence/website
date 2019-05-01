@@ -55,21 +55,21 @@ interface MovieFrontmatter {
     draft: boolean;
     rating: number;
     description: string;
-    director: string
-    year: number
+    director: string | null;
+    year: number | null;
     links: { name: string, url: string}[];
 }
 
 interface ProcessingResult {
-    type: "photo" | "video";
+    type: "photo" | "video" | "sound";
     title: string | undefined;
     caption: string | undefined;
     created: Date;
     url: string;
-    preview: string;
-    thumb: string;
     filename: string | undefined;
-    exif: Exif;
+    preview?: string;
+    thumb?: string;
+    exif?: Exif;
 }
 
 interface Exif {
@@ -117,24 +117,32 @@ if (source) {
 
         // Handle the type of submission.
         console.log(`🏈  Receiving...`, toAddress, messageSubject, messageBody);
+        console.log(JSON.stringify(req.body, null, 4));
+
+        // Don't handle anything sent to stuff.
+        if (!!toAddress.match(/stuff/)) {
+            res.sendStatus(200);
+            return;
+        }
 
         // Submit a movie.
         if (toAddress.match(/movies@/)) {
             const contentFilePath = `site/content/movies/${slugify(messageSubject)}.md`;
+            const rating = parseInt(messageBody);
 
             const frontmatter: MovieFrontmatter = {
                 title: messageSubject,
                 date: new Date(),
                 draft: false,
-                rating: parseInt(messageBody),
-                director: "",
-                year: new Date().getFullYear(),
+                rating,
+                director: null,
+                year: null,
                 description: "",
                 links: [],
             };
 
             // Submit the movie to GitHub.
-            submitToGitHub(contentFilePath, frontmatter, messageBody)
+            submitToGitHub(contentFilePath, frontmatter, messageBody.replace(rating).trim())
                 .then(response => {
                     res.sendStatus(204);
                 })
@@ -145,70 +153,11 @@ if (source) {
             return;
         }
 
-        // Submit a sound.
-        if (toAddress.match(/sounds@/) && req.files && req.files.length > 0) {
-
-            const files = req.files as Express.Multer.File[];
-            const title = messageSubject || "";
-
-            files.forEach(uploadedFile => {
-                const uploadedFilePath = uploadedFile.path;
-                const workDir = `${uploadedFilePath}-work/media`;
-                const audioPath = `${workDir}/audio`;
-
-                mkdirp.sync(audioPath);
-
-                // Basename is currently based on now, but could also be driven by EXIF data, since we'll have it,
-                // and will want to use it for duration, too.
-                const basename = moment().format("YYYY-MM-DD-HH-mm-ss");
-
-                // Copy and rename the file, using the extension supplied by the original.
-                const audioFilename = `${basename}.${uploadedFile.originalname.toLowerCase().split(".").slice(-1)[0]}`;
-                const contentFilePath = `site/content/mobile/${basename}.md`;
-
-                fs.copyFileSync(uploadedFilePath, `${audioPath}/${audioFilename}`);
-
-                const frontmatter: MobileFrontmatter = {
-                    title,
-                    date: new Date(),
-                    draft: true,
-                    sound: {
-                        url: `s3/audio/${audioFilename}`,
-
-                        // TODO: These.
-                        preview: 's3/previews/wrong.jpg',
-                        thumb: 's3/thumbs/wrong.jpg',
-                        duration: 0,
-                    },
-                };
-
-                // Upload to S3.
-                console.log(`⬆️  Uploading object to S3...`);
-                execSync(`aws s3 sync ${workDir} s3://${mediaBucket}`);
-
-                // Submit the sound to GitHub.
-                submitToGitHub(contentFilePath, frontmatter, messageBody)
-                    .then(response => {
-                        res.sendStatus(204);
-                    })
-                    .catch(err => {
-                        res.sendStatus(500);
-                    });
-
-                // Clean up
-                console.log(`✨  Cleaning up ${uploadedFilePath} & ${workDir}...`);
-                rimraf.sync(uploadedFilePath);
-                rimraf.sync(workDir);
-            });
-
-            return;
-        }
-
-        // Otheriwe, if there are attachments, submit a mobile item.
+        // Otherwise, if there are attachments, submit a mobile item.
         if (req.files && req.files.length > 0) {
             const files = req.files as Express.Multer.File[];
             const title = messageSubject || "";
-            const useGPS = toAddress.match(/gps@/);
+            const useGPS = toAddress.match(/^gps@/);
 
             files.forEach(uploadedFile => {
                 const uploadedFilePath = uploadedFile.path;
@@ -218,7 +167,8 @@ if (source) {
                 mkdirp.sync(workDir);
 
                 // Copy and rename the file, using the extension supplied by the original.
-                fs.copyFileSync(uploadedFilePath, `${workDir}/${uploadedFileName}.${uploadedFile.originalname.toLowerCase().split(".").slice(-1)[0]}`);
+                const newFilename = `${workDir}/${uploadedFileName}.${uploadedFile.originalname.toLowerCase().split(".").slice(-1)[0]}`;
+                fs.copyFileSync(uploadedFilePath, newFilename);
 
                 processFiles(workDir, useGPS)
                     .then(result => {
@@ -226,16 +176,17 @@ if (source) {
 
                         const [ item ] = result;
                         const contentFilePath = `site/content/mobile/${item.filename}.md`;
+                        const fileType = fileToType(`${newFilename}`);
 
-                        let [ mimeType ] = uploadedFile.mimetype.split("/");
-                        if (!mimeType) {
-                            console.error(`💥  Unable to determine mimeType for ${uploadedFile}.`);
+                        if (!fileType) {
+                            console.error(`💥  Unable to determine mimeType for ${uploadedFilePath}.`);
+                            res.sendStatus(500);
                             return;
                         }
 
                         let frontmatter: MobileFrontmatter | undefined;
 
-                        if (mimeType === "video") {
+                        if (fileType === "video") {
                             frontmatter = {
                                 title,
                                 date: item.created,
@@ -255,7 +206,7 @@ if (source) {
                             };
                         }
 
-                        if (mimeType === "image") {
+                        if (fileType === "photo") {
                             frontmatter = {
                                 title,
                                 date: item.created,
@@ -272,8 +223,22 @@ if (source) {
                             };
                         }
 
+                        if (fileType === "sound") {
+                            frontmatter = {
+                                title,
+                                date: item.created,
+                                draft: false,
+                                sound: {
+                                    url: item.url,
+                                    thumb: item.thumb,
+                                    preview: item.preview,
+                                    duration: item.duration,
+                                }
+                            }
+                        }
+
                         if (!frontmatter) {
-                            console.error(`💥  No frontmatter! The result was ${result}.`);
+                            console.error(`💥  No frontmatter! The result was ${JSON.stringify(result, null, 4)}.`);
                             res.sendStatus(500);
                             return;
                         }
@@ -363,6 +328,7 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
     const mediaPath = `${processed}/media`
     const imagesPath = `${mediaPath}/images`;
     const videoPath = `${mediaPath}/video`;
+    const audioPath = `${mediaPath}/audio`;
     const thumbPath = `${mediaPath}/thumbs`;
     const previewPath = `${mediaPath}/previews`;
     const posterPath = `${mediaPath}/posters`;
@@ -378,52 +344,12 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
     mkdirp.sync(mediaPath);
     mkdirp.sync(imagesPath);
     mkdirp.sync(videoPath);
+    mkdirp.sync(audioPath);
     mkdirp.sync(thumbPath);
     mkdirp.sync(previewPath);
     mkdirp.sync(posterPath);
 
     const files = glob.sync(`${sourceDir}/**/*.*`);
-
-    function tagsToCreated(tags: Tags): ExifDateTime | undefined {
-        console.log("Tags: ", tags);
-        return (tags.DateTimeCreated || tags.DateCreated || tags["CreationDate"] || tags.CreateDate) as ExifDateTime;
-    }
-
-    function tagsToFilename(tags: Tags): string | undefined {
-        const created = tagsToCreated(tags);
-
-        if (!created || !created.rawValue) {
-            return undefined;
-        }
-
-        return [
-            created.year,
-            created.month,
-            created.day,
-            created.hour,
-            created.minute,
-            created.second,
-        ]
-        .map(n => n.toString().length < 4 ? `0${n}`.slice(-2) : n)
-        .join("-");
-    }
-
-    function fileToType(path: string): "photo" | "video" | undefined {
-        const mimeType = mime.getType(path);
-
-        if (mimeType) {
-            const [ type ] = mimeType.split("/");
-
-            switch (type) {
-                case "image":
-                    return "photo";
-                case "video":
-                    return "video";
-            }
-        }
-
-        return undefined;
-    }
 
     return new Promise((resolve, reject) => {
 
@@ -442,7 +368,26 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
                         return;
                     }
 
-                    const mediaFilename = `${filename}.${type === "video" ? "mov" : "jpg"}`;
+                    let extension;
+                    let s3Path;
+
+                    if (type === "photo") {
+                        extension = "jpg";
+                        s3Path = "images";
+                    } else if (type === "video") {
+                        extension = "mp4";
+                        s3Path = "video";
+                    } else if (type === "sound") {
+                        extension = "m4a";
+                        s3Path = "audio";
+                    }
+
+                    if (!extension) {
+                        reject(new Error(`😢  No extension! The tags were: ${tags}.`));
+                        return;
+                    }
+
+                    const mediaFilename = `${filename}.${extension}`;
 
                     console.log("⏱  Processing...");
 
@@ -458,20 +403,25 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
                         title: tags.Title,
                         caption: tags.Description,
                         created: moment.tz(date.toDate(), "America/Los_Angeles").toDate(),
-                        url: `s3/${type === "video" ? "video" : "images"}/${mediaFilename}`,
-                        preview: `s3/previews/${filename}.jpg`,
-                        thumb: `s3/thumbs/${filename}.jpg`,
+                        url: `s3/${s3Path}/${mediaFilename}`,
                         filename,
-                        exif: {
-                            make: tags.Make,
-                            model: tags.Model,
-                            lens: tags.LensModel,
-                            iso: tags.ISO,
-                            aperture: tags.ApertureValue,
-                            shutter_speed: tags.ShutterSpeed,
-                            focal_length: tags.FocalLength,
-                            gps: useGPS ? tags.GPSPosition : undefined,
-                        },
+                    }
+
+                    if (type === "photo" || type === "video") {
+                        Object.assign(metadata, {
+                            preview: `s3/previews/${filename}.jpg`,
+                            thumb: `s3/thumbs/${filename}.jpg`,
+                            exif: {
+                                make: tags.Make,
+                                model: tags.Model,
+                                lens: tags.LensModel,
+                                iso: tags.ISO,
+                                aperture: tags.ApertureValue,
+                                shutter_speed: tags.ShutterSpeed,
+                                focal_length: tags.FocalLength,
+                                gps: useGPS ? tags.GPSPosition : undefined,
+                            },
+                        });
                     }
 
                     if (type === "photo") {
@@ -491,7 +441,7 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
                     if (type === "video") {
 
                         // Duration
-                        const duration = parseInt(execSync(`ffprobe -i "${file}" -show_entries stream=codec_type,duration -of compact=p=0:nk=1 | head -1`).toString().trim().split("|").slice(-1)[0]);
+                        const duration = getMediaDuration(file);
 
                         // Large
                         execSync(`ffmpeg -i "${file}" -vf "fade=in:0:30,fade=out:st=${duration - 1}:d=1,scale=${largeWidth}:-1" -af "afade=in:st=0:d=1,afade=out:st=${duration - 1}:d=1" -vcodec h264 -acodec aac -strict -2 "${videoPath}/${mediaFilename}"`);
@@ -509,6 +459,19 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
                             duration,
                             controls: true,
                             poster: `s3/posters/${filename}.jpg`,
+                        });
+                    }
+
+                    if (type === "sound") {
+
+                        // Duration
+                        const duration = getMediaDuration(file);
+
+                        // Just copy the file, verbatim. (At least as of today; maybe someday, we'll also do fades here, too.)
+                        fs.copyFileSync(file, `${audioPath}/${mediaFilename}`);
+
+                        Object.assign(metadata, {
+                            duration,
                         });
                     }
 
@@ -540,4 +503,54 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<any> {
                 reject(error);
             });
     })
+}
+
+function getMediaDuration(path: string): number {
+    return parseInt(execSync(`ffprobe -i "${path}" -show_entries stream=codec_type,duration -of compact=p=0:nk=1 | head -1`).toString().trim().split("|").slice(-1)[0]);
+}
+
+function tagsToCreated(tags: Tags): ExifDateTime | undefined {
+    console.log("Tags: ", tags);
+    // return (tags.DateTimeCreated || tags.DateCreated || tags["CreationDate"] || tags.DateTimeOriginal || tags.CreateDate) as ExifDateTime;
+    return (tags.DateTimeCreated || tags.DateCreated || tags.DateTimeOriginal || tags.CreateDate) as ExifDateTime;
+}
+
+function tagsToFilename(tags: Tags): string | undefined {
+    const created = tagsToCreated(tags);
+
+    if (!created || !created.rawValue) {
+        return undefined;
+    }
+
+    return [
+        created.year,
+        created.month,
+        created.day,
+        created.hour,
+        created.minute,
+        created.second,
+    ]
+    .map(n => n.toString().length < 4 ? `0${n}`.slice(-2) : n)
+    .join("-");
+}
+
+function fileToType(path: string): "photo" | "video" | "sound" | undefined {
+    const mimeType = mime.getType(path);
+    console.log(path);
+
+    if (mimeType) {
+        const [ type ] = mimeType.split("/");
+
+        switch (type) {
+            case "image":
+                return "photo";
+            case "video":
+                return "video";
+            case "audio":
+            case "application":
+                return "sound";
+        }
+    }
+
+    return undefined;
 }

@@ -11,8 +11,7 @@
         "experimentalDecorators": true,
         "pretty": true,
         "noFallthroughCasesInSwitch": true,
-        // TODO: Investigate this weirdness (CreationDate, for video).
-        // "noImplicitAny": true,
+        "noImplicitAny": true,
         "noImplicitReturns": true,
         "forceConsistentCasingInFileNames": true,
         "strictNullChecks": true

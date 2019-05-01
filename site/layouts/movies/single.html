@@ -3,8 +3,15 @@
     <section>
       <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
       <h1>{{ .Title }}</h1>
-      <h2>{{ .Params.year }}, Dir: {{ .Params.director }}</h2>
-      <h3><cdn-rating rating="{{ .Params.rating }}"></cdn-rating></h3>
+      <h2>
+        {{ .Params.year }}
+        {{ if .Params.director }}
+          <h3>Directed by {{ .Params.director }}</h3>
+        {{ end }}
+      </h2>
+      <h4>
+        <cdn-rating rating="{{ .Params.rating }}"></cdn-rating>
+      </h4>
       <p>
         {{ .Description }}
       </p>
