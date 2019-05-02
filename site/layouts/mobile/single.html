@@ -91,9 +91,9 @@
 
     {{ if .Params.sound }}
       <section>
-        {{ if .Params.sound.photo.url }}
-          <a href="{{ replace .Params.sound.photo.url "s3/" $.Site.Params.mediaRoot }}" target="_blank">
-            <img src="{{ replace .Params.sound.photo.url "s3/" $.Site.Params.mediaRoot }}">
+        {{ if .Params.sound.photo }}
+          <a href="{{ replace .Params.sound.photo "s3/" $.Site.Params.mediaRoot }}" target="_blank">
+            <img src="{{ replace .Params.sound.photo "s3/" $.Site.Params.mediaRoot }}">
           </a>
         {{ end }}
         <div class="media-container">
