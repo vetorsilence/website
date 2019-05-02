@@ -359,7 +359,7 @@ function submitToGitHub(
     return new Promise((resolve, reject) => {
 
         // Convert frontmatter to YAML and append content, if any.
-        const yamlContent = `---\n${yaml.stringify(frontmatter, 4)}---\n\n${content.trim()}`;
+        const yamlContent = `---\n${toYaml(frontmatter)}---\n\n${content.trim()}`;
 
         // Send it all to GitHub.
         request
@@ -426,6 +426,7 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
         return Promise
             .all(files.map(file => exiftool.read(file)))
             .then(results => {
+
                 for (let i = 0; i < results.length; i++) {
                     const file = files[i];
                     const tags = results[i];
@@ -434,7 +435,7 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
 
                     if (!type) {
                         console.error(`🤔 Couldn't find a submission type for ${file}. Skipping.`);
-                        return;
+                        continue;
                     }
 
                     let extension;
@@ -557,7 +558,7 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
                 fs.writeFileSync(`${processed}/out.json`, json);
 
                 console.log(`📝 Writing ${processed}/out.yaml ...`);
-                fs.writeFileSync(`${processed}/out.yaml`, yaml.stringify(json));
+                fs.writeFileSync(`${processed}/out.yaml`, toYaml(output));
 
                 // Upload to S3.
                 console.log(`⬆️ Uploading ${output.length} objects to S3...`);
@@ -624,4 +625,8 @@ function fileToItemType(path: string): "photo" | "video" | "sound" | undefined {
     }
 
     return undefined;
+}
+
+function toYaml(json: any, inline = 4, indent = 2): string {
+    return yaml.stringify(json, inline, indent);
 }
