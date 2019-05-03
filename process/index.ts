@@ -586,7 +586,9 @@ function getMediaDuration(path: string): number {
 
 function tagsToCreated(tags: Tags): ExifDateTime | undefined {
     console.log("Tags: ", tags);
-    return (tags.DateTimeCreated || tags.DateCreated || tags.DateTimeOriginal || tags.CreateDate) as ExifDateTime;
+
+    // Note that CreationDate is present with iOS videos, but is apparently not a known type to exiftool-vendored.
+    return (tags.DateTimeCreated || tags.DateCreated || tags.DateTimeOriginal || tags["CreationDate"]) as ExifDateTime;
 }
 
 function tagsToFilename(tags: Tags): string | undefined {
