@@ -124,13 +124,16 @@ if (source) {
         const messageSubject = req.body.subject;
         const messageBody = req.body.text;
 
+        // Thanks -- we'll get to it.
+        res.sendStatus(202);
+
         // Handle the type of submission.
         console.log(`🏈 Receiving...`, toAddress, messageSubject, messageBody);
-        console.log(JSON.stringify(req.body, null, 4));
+        console.log(toJson(req.body));
 
         // Don't handle anything sent to stuff.
         if (!!toAddress.match(/stuff/)) {
-            res.sendStatus(200);
+            // res.sendStatus(200);
             return;
         }
 
@@ -151,14 +154,14 @@ if (source) {
             };
 
             // Submit the movie to GitHub.
-            submitToGitHub(contentFilePath, frontmatter, messageBody.replace(rating).trim())
+            submitToGitHub(contentFilePath, frontmatter, messageBody.replace(rating, "").trim())
                 .then(response => {
-                    res.sendStatus(204);
+                    // res.sendStatus(204);
                 })
                 .catch(err => {
                     console.error("💥 submitToGitHub error in movie submission: ", contentFilePath, frontmatter, messageBody);
                     console.log  ("Sending a 500.")
-                    res.sendStatus(500);
+                    // res.sendStatus(500);
                 });
 
             return;
@@ -256,7 +259,7 @@ if (source) {
                             }
 
                             if (!frontmatter) {
-                                reject(new Error(`💥 No frontmatter! The result was ${JSON.stringify(result, null, 4)}.`));
+                                reject(new Error(`💥 No frontmatter! The result was ${toJson(result)}.`));
                                 return;
                             }
 
@@ -314,25 +317,25 @@ if (source) {
                     if (!selection) {
                         console.error("💥 Selection not set. We have: ", submittableSound, submittablePhoto, submittableVideo);
                         console.log  ("Sending a 500.")
-                        res.sendStatus(500);
+                        // res.sendStatus(500);
                         return;
                     }
 
                     // Submit the item to GitHub.
                     submitToGitHub(selection.path, selection.frontmatter, selection.content)
                         .then(response => {
-                            res.sendStatus(204);
+                            // res.sendStatus(204);
                         })
                         .catch(error => {
                             console.error("💥 submitToGitHub error: ", error);
                             console.log  ("Sending a 500.")
-                            res.sendStatus(500);
+                            // res.sendStatus(500);
                         });
                 })
                 .catch(error => {
                     console.error("💥 Error in Process.all handler: ", error);
                     console.log  ("Sending a 500.")
-                    res.sendStatus(500);
+                    // res.sendStatus(500);
                 })
                 .finally(() => {
                     console.log("Finished.");
@@ -354,7 +357,7 @@ function submitToGitHub(
     const token = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
     const repo = process.env.REPO || "cnunciato/website";
 
-    console.log(`➡️ Sending to GitHub: ${contentFilePath}, ${JSON.stringify(frontmatter, null, 2)}, ${content}...`);
+    console.log(`➡️ Sending to GitHub: ${contentFilePath}, ${toJson(frontmatter)}, ${content}...`);
 
     return new Promise((resolve, reject) => {
 
@@ -554,8 +557,7 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
 
                 // Write the output files.
                 console.log(`📝 Writing ${processed}/out.json ...`);
-                const json = JSON.stringify(output, null, 4);
-                fs.writeFileSync(`${processed}/out.json`, json);
+                fs.writeFileSync(`${processed}/out.json`, JSON.stringify(output, null, 4));
 
                 console.log(`📝 Writing ${processed}/out.yaml ...`);
                 fs.writeFileSync(`${processed}/out.yaml`, toYaml(output));
@@ -584,7 +586,7 @@ function getMediaDuration(path: string): number {
 
 function tagsToCreated(tags: Tags): ExifDateTime | undefined {
     console.log("Tags: ", tags);
-    return (tags.DateTimeCreated || tags.DateCreated || tags.DateTimeOriginal || tags.FileModifyDate) as ExifDateTime;
+    return (tags.DateTimeCreated || tags.DateCreated || tags.DateTimeOriginal || tags.CreateDate) as ExifDateTime;
 }
 
 function tagsToFilename(tags: Tags): string | undefined {
@@ -629,4 +631,8 @@ function fileToItemType(path: string): "photo" | "video" | "sound" | undefined {
 
 function toYaml(json: any, inline = 4, indent = 2): string {
     return yaml.stringify(json, inline, indent);
+}
+
+function toJson(obj: any): string {
+    return JSON.stringify(obj, null, 4);
 }
