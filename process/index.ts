@@ -120,7 +120,9 @@ if (source) {
     });
 
     app.post('/', upload.any(), function (req, res, next) {
-        const toAddress = req.body.to;
+
+        // https://sendgrid.com/docs/for-developers/parsing-email/setting-up-the-inbound-parse-webhook
+        const [ toAddress ] = req.body.envelope.to;
         const messageSubject = req.body.subject;
         const messageBody = req.body.text;
 
