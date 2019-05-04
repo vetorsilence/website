@@ -65,6 +65,17 @@ interface MovieFrontmatter {
     links: { name: string, url: string}[];
 }
 
+interface BookFrontmatter {
+    title: string;
+    date: Date;
+    draft: boolean;
+    rating: number;
+    description: string;
+    author: string | null;
+    year: number | null;
+    links: { name: string, url: string}[];
+}
+
 interface ProcessingResult {
     type: "photo" | "video" | "sound";
     title: string | undefined;
@@ -153,6 +164,28 @@ if (source) {
             // Submit the movie to GitHub.
             submitToGitHub(contentFilePath, frontmatter, messageBody.replace(rating, "").trim())
                 .then(() => console.log("🍿 Movie submitted successfully."));
+
+            return;
+        }
+
+        if (toAddress.match(/books@/)) {
+            const contentFilePath = `site/content/books/${slugify(messageSubject)}.md`;
+            const rating = parseInt(messageBody);
+
+            const frontmatter: BookFrontmatter = {
+                title: messageSubject,
+                date: new Date(),
+                draft: false,
+                rating,
+                author: null,
+                year: null,
+                description: "",
+                links: [],
+            };
+
+            // Submit the book to GitHub.
+            submitToGitHub(contentFilePath, frontmatter, messageBody.replace(rating, "").trim())
+                .then(() => console.log("📚 Book submitted successfully."));
 
             return;
         }
@@ -319,12 +352,9 @@ if (source) {
 
                     // Submit the item to GitHub.
                     submitToGitHub(selection.path, selection.frontmatter, selection.content)
-                        .then(response => {
-
-                        })
-                        .catch(error => {
-
-                        });
+                        .then(response => {})
+                        .catch(error => {})
+                        .finally(() => {});
                 })
                 .catch(error => {
                     console.error("💥 Error in Process.all result handler: ", error);
