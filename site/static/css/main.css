@@ -136,12 +136,6 @@ main {
   main .mobile {
     display: flex;
     margin-bottom: 16px; }
-    @media (min-width: 768px) {
-      main .mobile {
-        padding: 16px;
-        border: 1px solid #eee;
-        border-radius: 4px;
-        background: #fafafa; } }
     main .mobile a {
       margin-bottom: 16px; }
       main .mobile a:not(:first-child):not(:last-child) {

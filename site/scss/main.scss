@@ -230,13 +230,6 @@ main {
     display: flex;
     margin-bottom: 16px;
 
-    @include tablet-up {
-      padding: 16px;
-      border: $default-border;
-      border-radius: $default-radius;
-      background: $off-white;
-    }
-
     a {
       margin-bottom: $default-margin;
 
