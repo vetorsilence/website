@@ -46,10 +46,12 @@
           </p>
         {{ end }}
         {{ if .Params.sound }}
-          {{ if .Params.sound.preview }}
-            <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-              <img src="{{ replace .Params.sound.preview "s3/" .Site.Params.mediaRoot }}">
-            </a>
+          {{ if .Params.sound.photo }}
+            {{ if .Params.sound.photo.preview }}
+              <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+                <img src="{{ replace .Params.sound.photo.preview "s3/" .Site.Params.mediaRoot }}">
+              </a>
+            {{ end }}
           {{ end }}
           <p class="item-count">
             <i class="fas fa-headphones"></i>

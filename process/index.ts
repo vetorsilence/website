@@ -14,8 +14,6 @@ import * as slugify from "@sindresorhus/slugify";
 import { exiftool, ExifDateTime, Tags } from "exiftool-vendored";
 import { execSync } from "child_process";
 
-const source = process.argv[2];
-
 interface MobileFrontmatter {
     title: string;
     date: Date;
@@ -43,10 +41,16 @@ interface MobileFrontmatter {
     };
     sound?: {
         url: string;
-        photo?: string;
-        thumb?: string;
-        preview?: string;
         duration?: number;
+        photo?: {
+            url: string;
+            thumb?: string;
+            preview?: string;
+            created: Date;
+            exif?: Exif;
+            title?: string;
+            caption?: string;
+        }
     };
 }
 
@@ -92,20 +96,20 @@ interface GitHubSubmission {
     path: string;
 }
 
+// The S3 home of all website media.
 const mediaBucket = "cnunciato-website-media";
 
+// An optional source path.
+const source = process.argv[2];
+
+// If a source path is passed into this script, run as a script; otherwise,
+// run as an Express service.
 if (source) {
 
     processFiles(source, true)
-        .then(result => {
-            console.log(result);
-        })
-        .catch(error => {
-            console.error(error);
-        })
-        .finally(() => {
-            exiftool.end();
-        });
+        .then(result => console.log(result))
+        .catch(error => console.error(error))
+        .finally(() => exiftool.end());
 
 } else {
 
@@ -120,26 +124,17 @@ if (source) {
     });
 
     app.post('/', upload.any(), function (req, res, next) {
-
-        // https://sendgrid.com/docs/for-developers/parsing-email/setting-up-the-inbound-parse-webhook
-        const [ toAddress ] = req.body.envelope.to;
+        const [ toAddress ] = JSON.parse(req.body.envelope).to;
         const messageSubject = req.body.subject;
         const messageBody = req.body.text;
 
-        // Thanks -- we'll get to it.
+        // Respond immediately to post requests.
         res.sendStatus(202);
 
-        // Handle the type of submission.
         console.log(`🏈 Receiving...`, toAddress, messageSubject, messageBody);
         console.log(toJson(req.body));
 
-        // Don't handle anything sent to stuff.
-        if (!!toAddress.match(/stuff/)) {
-            // res.sendStatus(200);
-            return;
-        }
-
-        // Submit a movie.
+        // Handle movie submissions.
         if (toAddress.match(/movies@/)) {
             const contentFilePath = `site/content/movies/${slugify(messageSubject)}.md`;
             const rating = parseInt(messageBody);
@@ -157,14 +152,7 @@ if (source) {
 
             // Submit the movie to GitHub.
             submitToGitHub(contentFilePath, frontmatter, messageBody.replace(rating, "").trim())
-                .then(response => {
-                    // res.sendStatus(204);
-                })
-                .catch(err => {
-                    console.error("💥 submitToGitHub error in movie submission: ", contentFilePath, frontmatter, messageBody);
-                    console.log  ("Sending a 500.")
-                    // res.sendStatus(500);
-                });
+                .then(() => console.log("🍿 Movie submitted successfully."));
 
             return;
         }
@@ -173,16 +161,20 @@ if (source) {
         if (req.files && req.files.length > 0) {
             const files = req.files as Express.Multer.File[];
             const title = messageSubject || "";
+
+            // Conditionally capture GPS data based on the inbound address.
             const useGPS = toAddress.match(/^gps@/);
 
+            // Map each file to a promise of (eventual) GitHubSubmission, or null for items that couldn't
+            // be processed (such as text or email attachments).
             const filesToProcess = files.map(uploadedFile => {
-                console.log("UploadedFile: ", uploadedFile);
-
                 return new Promise<GitHubSubmission | null>((resolve, reject) => {
+
+                    // Create a working directory for each file, as the processFiles function
+                    // expects a path containing one or more media files to process.
                     const uploadedFilePath = uploadedFile.path;
                     const uploadedFileName = uploadedFile.filename;
                     const workDir = `${uploadedFilePath}-work/media`;
-
                     mkdirp.sync(workDir);
 
                     // Copy and rename the file, using the extension supplied by the original.
@@ -193,17 +185,21 @@ if (source) {
                         .then(result => {
                             const [ item ] = result;
 
-                            // Unprocessed items will be returned as empty arrays.
+                            // Unprocessed items are returned by processFiles as empty arrays. For these, just
+                            // resolve here with nulls, and we'll filter them out later.
                             if (!item) {
                                 resolve(null);
                                 return;
                             }
 
+                            // The repo-relative path for the GitHub submission.
                             const contentFilePath = `site/content/mobile/${item.filename}.md`;
-                            const fileType = fileToItemType(`${newFilename}`);
+
+                            // The mobile item type, based on the MIME-type of the submission.
+                            const fileType = fileToItemType(newFilename);
 
                             if (!fileType) {
-                                reject(new Error(`💥 Unable to determine mimeType for ${uploadedFilePath}.`));
+                                reject(new Error(`💥 Unable to determine MIME type for ${newFilename}.`));
                                 return;
                             }
 
@@ -253,15 +249,13 @@ if (source) {
                                     draft: false,
                                     sound: {
                                         url: item.url,
-                                        thumb: item.thumb,
-                                        preview: item.preview,
                                         duration: item.duration,
                                     }
                                 }
                             }
 
                             if (!frontmatter) {
-                                reject(new Error(`💥 No frontmatter! The result was ${toJson(result)}.`));
+                                reject(new Error(`💥 Unable to derive frontmatter from processFiles result: ${toJson(result)}.`));
                                 return;
                             }
 
@@ -286,61 +280,57 @@ if (source) {
             Promise
                 .all(filesToProcess)
                 .then(results => {
-                    console.log("Process.all handler: ", results);
-
                     let selection: GitHubSubmission | undefined;
 
                     // Filter out the nulls.
-                    const submissions = results.filter(r => r !== null);
+                    const submissions = results.filter(r => !!r);
 
                     // When multiple items have been submitted, chances are it's a sound with an (optional) image.
                     // Look for a sound, treat that as the main thing to be submitted, and then treat the accompanying
-                    // image as its... well, accompaniment.
+                    // image as its, well, accompaniment.
 
-                    const submittableSound = submissions.filter(s => s && !!s.frontmatter.sound)[0];
-                    const submittablePhoto = submissions.filter(s => s && !!s.frontmatter.photo)[0];
-                    const submittableVideo = submissions.filter(s => s && !!s.frontmatter.video)[0];
+                    const [ sound ] = submissions.filter(s => s && !!s.frontmatter.sound);
+                    const [ photo ] = submissions.filter(s => s && !!s.frontmatter.photo);
+                    const [ video ] = submissions.filter(s => s && !!s.frontmatter.video);
 
-                    if (submittableSound) {
-                        selection = submittableSound;
+                    if (sound) {
+                        selection = sound;
 
-                        if (submittablePhoto && selection.frontmatter.sound && submittablePhoto.frontmatter.photo) {
-                            selection.frontmatter.sound.photo = submittablePhoto.frontmatter.photo.url;
-                            selection.frontmatter.sound.preview = submittablePhoto.frontmatter.photo.preview;
-                            selection.frontmatter.sound.thumb = submittablePhoto.frontmatter.photo.thumb;
+                        if (photo) {
+                            const p = photo.frontmatter.photo;
+                            const s = selection.frontmatter.sound;
+
+                            if (p && s) {
+                                s.photo = p;
+                            }
                         }
-                    } else if (submittablePhoto) {
-                        selection = submittablePhoto;
+
+                    } else if (photo) {
+                        selection = photo;
                     }
-                    else if (submittableVideo) {
-                        selection = submittableVideo;
+                    else if (video) {
+                        selection = video;
                     }
 
                     if (!selection) {
-                        console.error("💥 Selection not set. We have: ", submittableSound, submittablePhoto, submittableVideo);
-                        console.log  ("Sending a 500.")
-                        // res.sendStatus(500);
+                        console.error("💥 Selection not set. We have: ", sound, photo, video);
                         return;
                     }
 
                     // Submit the item to GitHub.
                     submitToGitHub(selection.path, selection.frontmatter, selection.content)
                         .then(response => {
-                            // res.sendStatus(204);
+
                         })
                         .catch(error => {
-                            console.error("💥 submitToGitHub error: ", error);
-                            console.log  ("Sending a 500.")
-                            // res.sendStatus(500);
+
                         });
                 })
                 .catch(error => {
-                    console.error("💥 Error in Process.all handler: ", error);
-                    console.log  ("Sending a 500.")
-                    // res.sendStatus(500);
+                    console.error("💥 Error in Process.all result handler: ", error);
                 })
                 .finally(() => {
-                    console.log("Finished.");
+                    console.log("🎈Finished.");
                 });
         }
     });
@@ -356,8 +346,8 @@ function submitToGitHub(
         content: string = ""): Promise<any> {
 
     const username = process.env.USER || "cnunciato";
-    const token = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
     const repo = process.env.REPO || "cnunciato/website";
+    const token = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
 
     console.log(`➡️ Sending to GitHub: ${contentFilePath}, ${toJson(frontmatter)}, ${content}...`);
 
@@ -399,6 +389,7 @@ function submitToGitHub(
     });
 }
 
+// The thing that does the thing.
 function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingResult | null)[]> {
     const processed = `${sourceDir}/Out`;
     const mediaPath = `${processed}/media`
@@ -435,15 +426,32 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
                 for (let i = 0; i < results.length; i++) {
                     const file = files[i];
                     const tags = results[i];
+
+                    // The filename (which has no extension here) we'll use for the Markdown file and
+                    // all derived media. It takes the form `YYYY-MM-DD-hh-mm-ss`.
                     const filename = tagsToFilename(results[i]);
+
+                    // The type of submission (photo, video, sound), derived from the file path and MIME type.
                     const type = fileToItemType(file);
 
-                    if (!type) {
-                        console.error(`🤔 Couldn't find a submission type for ${file}. Skipping.`);
+                    if (!filename) {
+                        console.error(`🤔 Couldn't derive a filename for ${file}. Skipping.`);
                         continue;
                     }
 
+                    if (!type) {
+                        console.error(`🤔 Couldn't derive a submission type for ${file}. Skipping.`);
+                        continue;
+                    }
+
+                    // The extension to use for the rendered item. For photos, this is always JPG;
+                    // for videos, we want to have ffmpeg render MP4s, and for audio, it's M4A, but
+                    // that's only because the iPhone creates M4As by default, so when we try to do this
+                    // for other file types, like MP3s or WAVs, it's going to 💥. (TODO: Handle other
+                    // audio file types, yo.)
                     let extension;
+
+                    // The S3 folder to which the file will be uploaded.
                     let s3Path;
 
                     if (type === "photo") {
@@ -459,19 +467,23 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
 
                     if (!extension) {
                         console.log("Tags:", tags);
-                        reject(new Error("😢 No file extension detected! See above for the tags."));
+                        reject(new Error("😢 No file extension detected. See above for the tags."));
                         return;
                     }
 
+                    // The file we'll be generating. This refers to the
                     const mediaFilename = `${filename}.${extension}`;
 
                     console.log("⏱ Processing...");
 
+                    // Derive an ExifDate from the tags provided. Here, this is used to set the
+                    // item creation date as an actual JavaScript date, so it can ultimately be
+                    // rendered properly by the Hugo template.
                     const date = tagsToCreated(tags);
 
                     if (!date) {
                         console.log("Tags:", tags);
-                        reject(new Error("😢 No date detected! See above for the tags."));
+                        reject(new Error("😢 No date detected. See above for the tags."));
                         return;
                     }
 
@@ -503,34 +515,29 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
 
                     if (type === "photo") {
 
+                        // iPhone photos are weird. When they're vertically oriented, they aren't, like, _really_
+                        // vertically oriented; they're horizontally oriented, but their _metadata_ says they're vertical,
+                        // and some (but not all) browsers and image viewers attempt to honor this, which is just annoying.
+                        // Exiftran is a great little tool that simply rotates the photo losslessly and corrects the metadata
+                        // tag, making everyone happy, expecially me. https://linux.die.net/man/1/exiftran
                         execSync(`exiftran -a -i ${file}`);
 
-                        // Large
-                        execSync(`ffmpeg -i "${file}" -vf "scale=${largeWidth}:-1" -pix_fmt yuvj422p -q:v 4 -y "${imagesPath}/${mediaFilename}"`);
-
-                        // Preview
-                        execSync(`ffmpeg -i "${file}" -vf "scale=${previewWidth}:-1" -pix_fmt yuvj422p -q:v 4 -y "${previewPath}/${mediaFilename}"`);
-
-                        // Thumb
-                        execSync(`ffmpeg -i "${file}" -vf "scale=${thumbWidth}:-1" -pix_fmt yuvj422p -q:v 1 -y "${thumbPath}/${mediaFilename}"`);
+                        // Make thumbs and things.
+                        makeResizedImage(file, path.join(imagesPath, mediaFilename), largeWidth);
+                        makeResizedImage(file, path.join(previewPath, mediaFilename), previewWidth);
+                        makeResizedImage(file, path.join(thumbPath, mediaFilename), thumbWidth);
                     }
 
                     if (type === "video") {
-
-                        // Duration
                         const duration = getMediaDuration(file);
 
-                        // Large
+                        // Scale and bracket the video with simple A/V transitions (fade in, fade out).
                         execSync(`ffmpeg -i "${file}" -vf "fade=in:0:30,fade=out:st=${duration - 1}:d=1,scale=${largeWidth}:-1" -af "afade=in:st=0:d=1,afade=out:st=${duration - 1}:d=1" -vcodec h264 -acodec aac -strict -2 "${videoPath}/${mediaFilename}"`);
 
-                        // Preview
-                        execSync(`ffmpeg -i "${file}" -vf "select=gte(n\\,100),scale=${previewWidth}:-1" -vframes 1 "${previewPath}/${filename}.jpg"`);
-
-                        // Thumb
-                        execSync(`ffmpeg -i "${file}" -vf "select=gte(n\\,100),scale=${thumbWidth}:-1" -vframes 1 "${thumbPath}/${filename}.jpg"`);
-
-                        // Poster
-                        execSync(`ffmpeg -i "${file}" -vf "select=gte(n\\,100),scale=${largeWidth}:-1" -vframes 1 "${posterPath}/${filename}.jpg"`);
+                        // Make static imagery.
+                        makeVideoThumbnail(file, path.join(previewPath, filename), previewWidth);
+                        makeVideoThumbnail(file, path.join(thumbPath, filename), thumbWidth);
+                        makeVideoThumbnail(file, path.join(posterPath, filename), largeWidth);
 
                         Object.assign(metadata, {
                             duration,
@@ -539,11 +546,9 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
                     }
 
                     if (type === "sound") {
-
-                        // Duration
                         const duration = getMediaDuration(file);
 
-                        // Just copy the file, verbatim. (At least as of today; maybe someday, we'll also do fades here, too.)
+                        // Just copy the sound as-is. (TODO: Add fade-in/fade-out for these as well.)
                         fs.copyFileSync(file, `${audioPath}/${mediaFilename}`);
 
                         Object.assign(metadata, {
@@ -560,7 +565,6 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
                 // Write the output files.
                 console.log(`📝 Writing ${processed}/out.json ...`);
                 fs.writeFileSync(`${processed}/out.json`, JSON.stringify(output, null, 4));
-
                 console.log(`📝 Writing ${processed}/out.yaml ...`);
                 fs.writeFileSync(`${processed}/out.yaml`, toYaml(output));
 
@@ -568,31 +572,42 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
                 console.log(`⬆️ Uploading ${output.length} objects to S3...`);
                 execSync(`aws s3 sync ${mediaPath} s3://${mediaBucket}`);
 
+                // Report.
                 console.log(`📸 ${output.length} objects processed.`);
                 console.log("🍻 Done.")
-
-                console.log(`👏 Yay, it worked!`);
                 resolve(output);
             })
             .catch(error => {
-
                 console.error("💥 Processing error! ", error);
                 reject(error);
             });
     })
 }
 
+// Get the duration, in seconds, of a video. (TODO: Can we use this for audio, too?)
 function getMediaDuration(path: string): number {
     return parseInt(execSync(`ffprobe -i "${path}" -show_entries stream=codec_type,duration -of compact=p=0:nk=1 | head -1`).toString().trim().split("|").slice(-1)[0]);
+}
+
+// Resize an image.
+function makeResizedImage(source: string, destination: string, width: number) {
+    execSync(`ffmpeg -i "${source}" -vf "scale=${width}:-1" -pix_fmt yuvj422p -q:v 4 -y "${destination}"`);
+}
+
+// Make a video thumbnail.
+function makeVideoThumbnail(source: string, destination: string, width: number) {
+    execSync(`ffmpeg -i "${source}" -vf "select=gte(n\\,100),scale=${width}:-1" -vframes 1 "${destination}.jpg"`);
 }
 
 function tagsToCreated(tags: Tags): ExifDateTime | undefined {
     console.log("Tags: ", tags);
 
-    // Note that CreationDate is present with iOS videos, but is apparently not a known type to exiftool-vendored.
+    // Note that CreationDate is present with iOS videos, but is apparently not recognized by exiftool-vendored,
+    // which seems strange, and suggests some looking-into. (TODO: Find out if there's a better way to do this.)
     return (tags.DateTimeCreated || tags.DateCreated || tags.DateTimeOriginal || tags["CreationDate"]) as ExifDateTime;
 }
 
+// Generate a filename based on date-oriented tags. E.g., `YYYY-MM-DD-hh-mm-ss`.
 function tagsToFilename(tags: Tags): string | undefined {
     const created = tagsToCreated(tags);
 
@@ -612,9 +627,9 @@ function tagsToFilename(tags: Tags): string | undefined {
     .join("-");
 }
 
+// Derive the submission type.
 function fileToItemType(path: string): "photo" | "video" | "sound" | undefined {
     const mimeType = mime.getType(path);
-    console.log(path);
 
     if (mimeType) {
         const [ type ] = mimeType.split("/");
@@ -633,10 +648,12 @@ function fileToItemType(path: string): "photo" | "video" | "sound" | undefined {
     return undefined;
 }
 
+// Convert JSON to YAML.
 function toYaml(json: any, inline = 4, indent = 2): string {
     return yaml.stringify(json, inline, indent);
 }
 
+// Pretty-print some JSON.
 function toJson(obj: any): string {
     return JSON.stringify(obj, null, 4);
 }
