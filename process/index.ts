@@ -232,6 +232,10 @@ if (source) {
             // Conditionally capture GPS data based on the inbound address.
             const useGPS = toAddress.match(/^gps@/);
 
+            // Working directory based on now.
+            const workDir = new Date().getTime().toString();
+            mkdirp.sync(workDir);
+
             // Map each file to a promise of (eventual) GitHubSubmission, or null for items that couldn't
             // be processed (such as text or email attachments).
             const filesToProcess = files.map(uploadedFile => {
@@ -241,8 +245,6 @@ if (source) {
                     // expects a path containing one or more media files to process.
                     const uploadedFilePath = uploadedFile.path;
                     const uploadedFileName = uploadedFile.filename;
-                    const workDir = `${uploadedFilePath}-work/media`;
-                    mkdirp.sync(workDir);
 
                     // Copy and rename the file, using the extension supplied by the original.
                     const newFilename = `${workDir}/${uploadedFileName}${path.extname(uploadedFile.originalname)}`;
@@ -341,6 +343,7 @@ if (source) {
 
                             // Clean up
                             console.log(`✨ Cleaning up ${uploadedFilePath}...`);
+                            rimraf.sync(workDir);
                             rimraf.sync(`${uploadedFilePath}*`);
                         });
                 });
