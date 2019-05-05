@@ -199,6 +199,9 @@ if (source) {
             const files = req.files as Express.Multer.File[];
             const title = messageSubject || "";
 
+            // TODO: It'd really be nice to be able to submit multiple photos with a single message,
+            // such that they'd be grouped in the UI into a single post, much like a collection is today.
+
             // Conditionally capture GPS data based on the inbound address.
             const useGPS = toAddress.match(/^gps@/);
 
