@@ -24,7 +24,7 @@ interface PhotoItem {
         thumb?: string;
         preview?: string;
         created: Date;
-        exif?: Exif;
+        exif?: EXIFData;
         title?: string;
         caption?: string;
     };
@@ -41,7 +41,7 @@ interface VideoItem {
         preview?: string;
         poster?: string;
         created: Date;
-        exif?: Exif;
+        exif?: EXIFData;
         title?: string;
         caption?: string;
         controls: boolean;
@@ -62,7 +62,9 @@ interface SoundItem {
     };
 }
 
-type MediaItem = PhotoItem | VideoItem | SoundItem;
+type MediaItem = PhotoItem | VideoItem | SoundItem & {
+    mobile: boolean;
+};
 
 interface WordsFrontmatter {
 
@@ -114,10 +116,10 @@ interface ProcessingResult {
     thumb?: string;
     poster?: string;
     duration?: number;
-    exif?: Exif;
+    exif?: EXIFData;
 }
 
-interface Exif {
+interface EXIFData {
     make: string | undefined,
     model: string | undefined,
     lens: string | undefined,
@@ -237,7 +239,7 @@ if (source) {
             mkdirp.sync(workDir);
 
             // Map each file to a promise of (eventual) GitHubSubmission, or null for items that couldn't
-            // be processed (such as text or email attachments).
+            // be processed (such as text or HTML "attachments").
             const filesToProcess = files.map(uploadedFile => {
                 return new Promise<GitHubSubmission | null>((resolve, reject) => {
 
@@ -281,6 +283,7 @@ if (source) {
                                         title,
                                         date: item.created,
                                         draft: false,
+                                        mobile: true,
                                         video: {
                                             url: item.url,
                                             thumb: item.thumb,
@@ -300,6 +303,7 @@ if (source) {
                                         title,
                                         date: item.created,
                                         draft: false,
+                                        mobile: true,
                                         photo: {
                                             url: item.url,
                                             thumb: item.thumb,
@@ -316,6 +320,7 @@ if (source) {
                                         title,
                                         date: item.created,
                                         draft: false,
+                                        mobile: true,
                                         sound: {
                                             url: item.url,
                                             duration: item.duration,
