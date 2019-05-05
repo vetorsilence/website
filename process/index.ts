@@ -14,11 +14,28 @@ import * as slugify from "@sindresorhus/slugify";
 import { exiftool, ExifDateTime, Tags } from "exiftool-vendored";
 import { execSync } from "child_process";
 
-interface MobileFrontmatter {
+interface PhotoItem {
     title: string;
     date: Date;
     draft: boolean;
-    video?: {
+    description?: string
+    photo: {
+        url: string;
+        thumb?: string;
+        preview?: string;
+        created: Date;
+        exif?: Exif;
+        title?: string;
+        caption?: string;
+    };
+}
+
+interface VideoItem {
+    title: string;
+    date: Date;
+    draft: boolean;
+    description?: string;
+    video: {
         url: string;
         thumb?: string;
         preview?: string;
@@ -30,28 +47,38 @@ interface MobileFrontmatter {
         controls: boolean;
         duration?: number;
     };
-    photo?: {
+}
+
+interface SoundItem {
+    title: string;
+    date: Date;
+    draft: boolean;
+    description?: string;
+    sound: {
         url: string;
         thumb?: string;
         preview?: string;
-        created: Date;
-        exif?: Exif;
-        title?: string;
-        caption?: string;
-    };
-    sound?: {
-        url: string;
         duration?: number;
-        photo?: {
-            url: string;
-            thumb?: string;
-            preview?: string;
-            created: Date;
-            exif?: Exif;
-            title?: string;
-            caption?: string;
-        }
     };
+}
+
+type MediaItem = PhotoItem | VideoItem | SoundItem;
+
+interface WordsFrontmatter {
+
+}
+
+interface QuoteFrontmatter {
+
+}
+
+interface ItemCollection {
+    title: string;
+    date: Date;
+    draft: boolean;
+    description: string;
+    featured: MediaItem,
+    items: MediaItem[],
 }
 
 interface MovieFrontmatter {
@@ -102,9 +129,9 @@ interface Exif {
 }
 
 interface GitHubSubmission {
-    frontmatter: MobileFrontmatter;
+    frontmatter: MediaItem;
+    relativePath: string;
     content: string;
-    path: string;
 }
 
 // The S3 home of all website media.
@@ -197,7 +224,7 @@ if (source) {
         // Otherwise, if there are attachments, submit a mobile item.
         if (req.files && req.files.length > 0) {
             const files = req.files as Express.Multer.File[];
-            const title = messageSubject || "";
+            const title: string = messageSubject || "";
 
             // TODO: It'd really be nice to be able to submit multiple photos with a single message,
             // such that they'd be grouped in the UI into a single post, much like a collection is today.
@@ -222,8 +249,9 @@ if (source) {
                     fs.copyFileSync(uploadedFilePath, newFilename);
 
                     processFiles(workDir, useGPS)
-                        .then(result => {
-                            const [ item ] = result;
+                        .then(results => {
+
+                            const [ item ] = results;
 
                             // Unprocessed items are returned by processFiles as empty arrays. For these, just
                             // resolve here with nulls, and we'll filter them out later.
@@ -232,77 +260,78 @@ if (source) {
                                 return;
                             }
 
-                            // The repo-relative path for the GitHub submission.
-                            const contentFilePath = `site/content/mobile/${item.filename}.md`;
-
                             // The mobile item type, based on the MIME-type of the submission.
                             const fileType = fileToItemType(newFilename);
+
+                            // The repo-relative path for the GitHub submission.
+                            const contentFilePath = `site/content/mobile/${item.filename}.md`;
 
                             if (!fileType) {
                                 reject(new Error(`💥 Unable to determine MIME type for ${newFilename}.`));
                                 return;
                             }
 
-                            let frontmatter: MobileFrontmatter | undefined;
+                            let frontmatter: MediaItem | undefined;
 
-                            if (fileType === "video") {
-                                frontmatter = {
-                                    title,
-                                    date: item.created,
-                                    draft: false,
-                                    video: {
-                                        url: item.url,
-                                        thumb: item.thumb,
-                                        preview: item.preview,
-                                        poster: item.poster,
-                                        created: item.created,
-                                        exif: item.exif,
-                                        title: item.title,
-                                        caption: item.caption,
-                                        controls: true,
-                                        duration: item.duration,
-                                    },
-                                };
-                            }
-
-                            if (fileType === "photo") {
-                                frontmatter = {
-                                    title,
-                                    date: item.created,
-                                    draft: false,
-                                    photo: {
-                                        url: item.url,
-                                        thumb: item.thumb,
-                                        preview: item.preview,
-                                        created: item.created,
-                                        exif: item.exif,
-                                        title: item.title,
-                                        caption: item.caption,
-                                    }
-                                };
-                            }
-
-                            if (fileType === "sound") {
-                                frontmatter = {
-                                    title,
-                                    date: item.created,
-                                    draft: false,
-                                    sound: {
-                                        url: item.url,
-                                        duration: item.duration,
-                                    }
-                                }
+                            switch (fileType) {
+                                case "video":
+                                    frontmatter = {
+                                        title,
+                                        date: item.created,
+                                        draft: false,
+                                        video: {
+                                            url: item.url,
+                                            thumb: item.thumb,
+                                            preview: item.preview,
+                                            poster: item.poster,
+                                            created: item.created,
+                                            exif: item.exif,
+                                            title: item.title,
+                                            caption: item.caption,
+                                            controls: true,
+                                            duration: item.duration,
+                                        },
+                                    };
+                                    break;
+                                case "photo":
+                                    frontmatter = {
+                                        title,
+                                        date: item.created,
+                                        draft: false,
+                                        photo: {
+                                            url: item.url,
+                                            thumb: item.thumb,
+                                            preview: item.preview,
+                                            created: item.created,
+                                            exif: item.exif,
+                                            title: item.title,
+                                            caption: item.caption,
+                                        }
+                                    };
+                                    break;
+                                case "sound":
+                                    frontmatter = {
+                                        title,
+                                        date: item.created,
+                                        draft: false,
+                                        sound: {
+                                            url: item.url,
+                                            duration: item.duration,
+                                        }
+                                    };
+                                    break;
                             }
 
                             if (!frontmatter) {
-                                reject(new Error(`💥 Unable to derive frontmatter from processFiles result: ${toJSON(result)}.`));
+                                reject(new Error(`💥 Unable to derive frontmatter from processFiles result: ${toJSON(results)}.`));
                                 return;
                             }
 
+                            // Resolve with a GitHubSubmission.
                             resolve({
                                 frontmatter,
+                                relativePath: contentFilePath,
                                 content: messageBody,
-                                path: contentFilePath,
                             });
                         })
                         .catch(error => {
@@ -317,44 +346,22 @@ if (source) {
                 });
             });
 
+            // Run all promises (again, once for each file attachment), and when they're
+            // all complete, do the GitHub submitting.
             Promise
                 .all(filesToProcess)
                 .then(results => {
-                    let selection: GitHubSubmission | undefined;
 
-                    // Filter out the nulls.
-                    const submissions = results.filter(r => !!r);
-
-                    // At this point, we have an array of
-                    const [ sound ] = submissions.filter(s => s && !!s.frontmatter.sound);
-                    const [ photo ] = submissions.filter(s => s && !!s.frontmatter.photo);
-                    const [ video ] = submissions.filter(s => s && !!s.frontmatter.video);
-
-                    if (sound) {
-                        selection = sound;
-
-                        if (photo) {
-                            const p = photo.frontmatter.photo;
-
-                            if (p && selection.frontmatter.sound) {
-                                selection.frontmatter.sound.photo = p;
-                            }
-                        }
-
-                    } else if (photo) {
-                        selection = photo;
-                    }
-                    else if (video) {
-                        selection = video;
-                    }
+                    // For now, just take the first non-null selection. We're still refactoring, here.
+                    const [ selection ] = results.filter(r => !!r)
 
                     if (!selection) {
-                        console.error("💥 Selection not set. We have: ", sound, photo, video);
+                        console.error("💥 Selection not set. The results were: ", results);
                         return;
                     }
 
                     // Submit the item to GitHub.
-                    submitToGitHub(selection.path, selection.frontmatter, selection.content)
+                    submitToGitHub(selection.relativePath, selection.frontmatter, selection.content)
                         .then(response => {})
                         .catch(error => {})
                         .finally(() => {});
@@ -375,7 +382,7 @@ if (source) {
 
 function submitToGitHub(
         contentFilePath: string,
-        frontmatter: MobileFrontmatter | MovieFrontmatter,
+        frontmatter: MediaItem | MovieFrontmatter | BookFrontmatter,
         content: string = ""): Promise<any> {
 
     const username = process.env.USER || "cnunciato";
@@ -411,16 +418,16 @@ function submitToGitHub(
                     content: Buffer.from(yamlContent).toString('base64'),
                 },
 
-            }, (ghErr, ghRes) => {
+            }, (error, response) => {
 
-                if (ghErr) {
-                    console.error("💥 Error submitting to GitHub: ", ghErr);
-                    reject(ghErr);
+                if (error) {
+                    console.error("💥 Error submitting to GitHub: ", error);
+                    reject(error);
                     return;
                 }
 
-                console.log("🙌  Aww yeah:", ghRes.body);
-                resolve(ghRes);
+                console.log("🙌  Aww yeah:", response.body);
+                resolve(response);
             });
     });
 }
