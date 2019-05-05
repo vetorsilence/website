@@ -139,16 +139,18 @@ if (source) {
         const messageSubject = req.body.subject;
         const messageBody = req.body.text;
 
-        // Respond immediately to post requests.
+        // Respond immediately to post requests; we'll do the processing out of band.
         res.sendStatus(202);
 
         console.log(`🏈 Receiving...`, toAddress, messageSubject, messageBody);
-        console.log(toJson(req.body));
+        console.log(toJSON(req.body));
 
         // Handle movie submissions.
         if (toAddress.match(/movies@/)) {
             const contentFilePath = `site/content/movies/${slugify(messageSubject)}.md`;
             const rating = parseInt(messageBody);
+
+            // TODO: Allow passing in director and year.
 
             const frontmatter: MovieFrontmatter = {
                 title: messageSubject,
@@ -171,6 +173,8 @@ if (source) {
         if (toAddress.match(/books@/)) {
             const contentFilePath = `site/content/books/${slugify(messageSubject)}.md`;
             const rating = parseInt(messageBody);
+
+            // TODO: Allow passing in the author, year, and an image.
 
             const frontmatter: BookFrontmatter = {
                 title: messageSubject,
@@ -288,7 +292,7 @@ if (source) {
                             }
 
                             if (!frontmatter) {
-                                reject(new Error(`💥 Unable to derive frontmatter from processFiles result: ${toJson(result)}.`));
+                                reject(new Error(`💥 Unable to derive frontmatter from processFiles result: ${toJSON(result)}.`));
                                 return;
                             }
 
@@ -318,10 +322,7 @@ if (source) {
                     // Filter out the nulls.
                     const submissions = results.filter(r => !!r);
 
-                    // When multiple items have been submitted, chances are it's a sound with an (optional) image.
-                    // Look for a sound, treat that as the main thing to be submitted, and then treat the accompanying
-                    // image as its, well, accompaniment.
-
+                    // At this point, we have an array of
                     const [ sound ] = submissions.filter(s => s && !!s.frontmatter.sound);
                     const [ photo ] = submissions.filter(s => s && !!s.frontmatter.photo);
                     const [ video ] = submissions.filter(s => s && !!s.frontmatter.video);
@@ -331,10 +332,9 @@ if (source) {
 
                         if (photo) {
                             const p = photo.frontmatter.photo;
-                            const s = selection.frontmatter.sound;
 
-                            if (p && s) {
-                                s.photo = p;
+                            if (p && selection.frontmatter.sound) {
+                                selection.frontmatter.sound.photo = p;
                             }
                         }
 
@@ -377,20 +377,23 @@ function submitToGitHub(
 
     const username = process.env.USER || "cnunciato";
     const repo = process.env.REPO || "cnunciato/website";
+    const gitUsername = process.env.GIT_USER_NAME || "cnunciato";
+    const gitEmail = process.env.GIT_USER_EMAIL || "c@nunciato.org";
+    const userAgent = process.env.GITHUB_USER_AGENT || "Christian's Media-Processor Uploader Service Thing";
     const token = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
 
-    console.log(`➡️ Sending to GitHub: ${contentFilePath}, ${toJson(frontmatter)}, ${content}...`);
+    console.log(`➡️ Sending to GitHub: ${contentFilePath}, ${toJSON(frontmatter)}, ${content}...`);
 
     return new Promise((resolve, reject) => {
 
         // Convert frontmatter to YAML and append content, if any.
-        const yamlContent = `---\n${toYaml(frontmatter)}---\n\n${content.trim()}`;
+        const yamlContent = `---\n${toYAML(frontmatter)}---\n\n${content.trim()}`;
 
         // Send it all to GitHub.
         request
             .put(`https://api.github.com/repos/${repo}/contents/${contentFilePath}`, {
                 headers: {
-                    "User-Agent": "Christian's Parser-Uploader"
+                    "User-Agent": userAgent,
                 },
                 auth: {
                     username,
@@ -399,8 +402,8 @@ function submitToGitHub(
                 json: {
                     message: "Add a mobile item",
                     committer: {
-                        name: "Christian Nunciato",
-                        email: "c@nunciato.org",
+                        name: gitUsername,
+                        email: gitEmail,
                     },
                     content: Buffer.from(yamlContent).toString('base64'),
                 },
@@ -479,11 +482,12 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
                     // that's only because the iPhone creates M4As by default, so when we try to do this
                     // for other file types, like MP3s or WAVs, it's going to 💥. (TODO: Handle other
                     // audio file types, yo.)
-                    let extension;
+                    let extension: string;
 
                     // The S3 folder to which the file will be uploaded.
-                    let s3Path;
+                    let s3Path: string;
 
+                    // Set the target extension and path based on the item type.
                     if (type === "photo") {
                         extension = "jpg";
                         s3Path = "images";
@@ -493,12 +497,9 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
                     } else if (type === "sound") {
                         extension = "m4a";
                         s3Path = "audio";
-                    }
-
-                    if (!extension) {
-                        console.log("Tags:", tags);
-                        reject(new Error("😢 No file extension detected. See above for the tags."));
-                        return;
+                    } else {
+                        console.error(`🤔 Unprocessable type for ${file} (It was ${type}). Skipping.`);
+                        continue;
                     }
 
                     // The file we'll be generating. This refers to the
@@ -596,7 +597,7 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
                 console.log(`📝 Writing ${processed}/out.json ...`);
                 fs.writeFileSync(`${processed}/out.json`, JSON.stringify(output, null, 4));
                 console.log(`📝 Writing ${processed}/out.yaml ...`);
-                fs.writeFileSync(`${processed}/out.yaml`, toYaml(output));
+                fs.writeFileSync(`${processed}/out.yaml`, toYAML(output));
 
                 // Upload to S3.
                 console.log(`⬆️ Uploading ${output.length} objects to S3...`);
@@ -679,11 +680,11 @@ function fileToItemType(path: string): "photo" | "video" | "sound" | undefined {
 }
 
 // Convert JSON to YAML.
-function toYaml(json: any, inline = 4, indent = 2): string {
+function toYAML(json: any, inline = 4, indent = 2): string {
     return yaml.stringify(json, inline, indent);
 }
 
 // Pretty-print some JSON.
-function toJson(obj: any): string {
+function toJSON(obj: any): string {
     return JSON.stringify(obj, null, 4);
 }
