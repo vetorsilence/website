@@ -28,6 +28,7 @@ interface PhotoItem {
         title?: string;
         caption?: string;
     };
+    links: Link[];
 }
 
 interface VideoItem {
@@ -47,6 +48,7 @@ interface VideoItem {
         controls: boolean;
         duration?: number;
     };
+    links: Link[];
 }
 
 interface SoundItem {
@@ -60,6 +62,7 @@ interface SoundItem {
         preview?: string;
         duration?: number;
     };
+    links: Link[];
 }
 
 type MediaItem = PhotoItem | VideoItem | SoundItem & {
@@ -81,6 +84,7 @@ interface ItemCollection {
     description: string;
     featured: MediaItem,
     items: MediaItem[],
+    links: Link[];
 }
 
 interface MovieFrontmatter {
@@ -91,7 +95,7 @@ interface MovieFrontmatter {
     description: string;
     director: string | null;
     year: number | null;
-    links: { name: string, url: string}[];
+    links: Link[];
 }
 
 interface BookFrontmatter {
@@ -102,7 +106,7 @@ interface BookFrontmatter {
     description: string;
     author: string | null;
     year: number | null;
-    links: { name: string, url: string}[];
+    links: Link[];
 }
 
 interface ProcessingResult {
@@ -117,6 +121,11 @@ interface ProcessingResult {
     poster?: string;
     duration?: number;
     exif?: EXIFData;
+}
+
+interface Link {
+    name: string;
+    url: string;
 }
 
 interface EXIFData {
