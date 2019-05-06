@@ -1,13 +1,32 @@
+{{ define "opengraph" }}
+  {{ if .Title }}
+    <meta property="og:title" content="{{ .Title }}" />
+  {{ else }}
+    <meta property="og:title" content="Untitled" />
+  {{ end }}
+  {{ if .Params.photo }}
+    <meta property="og:image" content="{{ replace .Params.photo.preview "s3/" $.Site.Params.mediaRoot }}" />
+  {{ end }}
+  {{ if .Params.video }}
+    <meta property="og:image" content="{{ replace .Params.video.preview "s3/" $.Site.Params.mediaRoot }}" />
+    <meta property="og:video" content="{{ replace .Params.video.url "s3/" $.Site.Params.mediaRoot }}" />
+  {{ end }}
+  {{ if .Params.sound }}
+    <meta property="og:image" content="{{ replace .Params.sound.preview "s3/" $.Site.Params.mediaRoot }}" />
+    <meta property="og:audio" content="{{ replace .Params.sound.url "s3/" $.Site.Params.mediaRoot }}" />
+  {{ end }}
+{{ end }}
+
 {{ define "main" }}
   <main>
     <section class="heading">
       <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
       <h1>
         {{ if .Title }}
-            {{ .Title }}
-          {{ else }}
-            Untitled
-          {{ end }}
+          {{ .Title }}
+        {{ else }}
+          Untitled
+        {{ end }}
       </h1>
       {{ if .Description }}
         <h2>{{ .Description }}</h2>
