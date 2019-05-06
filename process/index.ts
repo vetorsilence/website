@@ -305,6 +305,7 @@ if (source) {
                                             controls: true,
                                             duration: item.duration,
                                         },
+                                        links: [],
                                     };
                                     break;
                                 case "photo":
@@ -321,7 +322,8 @@ if (source) {
                                             exif: item.exif,
                                             title: item.title,
                                             caption: item.caption,
-                                        }
+                                        },
+                                        links: [],
                                     };
                                     break;
                                 case "sound":
@@ -333,7 +335,8 @@ if (source) {
                                         sound: {
                                             url: item.url,
                                             duration: item.duration,
-                                        }
+                                        },
+                                        links: [],
                                     };
                                     break;
                             }
