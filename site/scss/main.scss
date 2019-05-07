@@ -245,6 +245,10 @@ main {
         margin-left: 4px;
       }
     }
+
+    &.anchor {
+      font-weight: normal;
+    }
   }
 }
 
@@ -300,6 +304,33 @@ body {
             }
           }
         }
+      }
+    }
+  }
+
+  &.mobile {
+
+    h2 {
+
+      a {
+
+        &.anchor {
+          font-weight: normal;
+          margin-left: $default-margin / 2;
+          color: $light-gray;
+
+          &:hover {
+            color: inherit;
+          }
+        }
+      }
+    }
+
+    .item-count {
+      display: flex;
+
+      span {
+        margin-right: $default-margin;
       }
     }
   }
