@@ -1,0 +1,32 @@
+{{ define "main" }}
+    <main>
+        <section class="heading">
+
+            <!-- Date -->
+            <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
+
+            <!-- Title -->
+            <h1>{{ .Title }}</h1>
+
+            <!-- Description -->
+            <h2>{{ .Description }}</h2>
+
+        </section>
+        <hr>
+        <section>
+            {{ .Content }}
+        </section>
+        <section>
+            {{ partial "tags" . }}
+        </section>
+    </main>
+{{ end }}
+
+{{ define "title" }}
+    {{ if .Page.Title }}
+        {{ .Page.Title }}
+    {{ else }}
+        Untitled
+    {{ end }}
+    | {{ .Site.Title }}
+{{ end }}
