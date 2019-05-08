@@ -1,0 +1,18 @@
+{{ if .Params.sound.photo }}
+    {{ if .Params.sound.photo.preview }}
+        <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+        <img src="{{ replace .Params.sound.photo.preview "s3/" .Site.Params.mediaRoot }}">
+        </a>
+    {{ end }}
+    {{ end }}
+    <p class="item-count">
+    <span>
+        <i class="fas fa-headphones"></i>
+        {{ ((time .Params.sound.duration).Format "04:05") }}
+    </span>
+    {{ if .WordCount }}
+        <span>
+        <i class="far fa-file-alt"></i> {{ .WordCount }}
+        </span>
+    {{ end }}
+</p>

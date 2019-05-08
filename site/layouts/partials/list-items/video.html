@@ -1,0 +1,14 @@
+<a href="{{ .RelPermalink }}" title="{{ .Title }}">
+    <img src="{{ replace .Params.video.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.video.caption }}">
+    </a>
+    <p class="item-count">
+    <span>
+        <i class="fas fa-video"></i>
+        {{ ((time .Params.video.duration).Format "04:05") }}
+    </span>
+    {{ if .WordCount }}
+        <span>
+        <i class="far fa-file-alt"></i> {{ .WordCount }}
+        </span>
+    {{ end }}
+</p>

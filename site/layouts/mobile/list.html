@@ -31,59 +31,24 @@
           </a>
         </h2>
 
+        <!-- Description of the item, if any -->
         <h3>
           {{ .Description }}
         </h3>
 
+        <!-- Photo item -->
         {{ if .Params.photo }}
-          <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-            <img src="{{ replace .Params.photo.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.photo.caption }}">
-          </a>
-          <p class="item-count">
-            {{ if .WordCount }}
-              <span>
-                <i class="far fa-file-alt"></i> {{ .WordCount }}
-              </span>
-            {{ end }}
-          </p>
+          {{ partial "list-items/photo" . }}
         {{ end }}
 
+        <!-- Video item -->
         {{ if .Params.video }}
-          <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-            <img src="{{ replace .Params.video.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.video.caption }}">
-          </a>
-          <p class="item-count">
-            <span>
-              <i class="fas fa-video"></i>
-              {{ ((time .Params.video.duration).Format "04:05") }}
-            </span>
-            {{ if .WordCount }}
-              <span>
-                <i class="far fa-file-alt"></i> {{ .WordCount }}
-              </span>
-            {{ end }}
-          </p>
+          {{ partial "list-items/video" . }}
         {{ end }}
 
+        <!-- Sound item -->
         {{ if .Params.sound }}
-          {{ if .Params.sound.photo }}
-            {{ if .Params.sound.photo.preview }}
-              <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-                <img src="{{ replace .Params.sound.photo.preview "s3/" .Site.Params.mediaRoot }}">
-              </a>
-            {{ end }}
-          {{ end }}
-          <p class="item-count">
-            <span>
-              <i class="fas fa-headphones"></i>
-              {{ ((time .Params.sound.duration).Format "04:05") }}
-            </span>
-            {{ if .WordCount }}
-              <span>
-                <i class="far fa-file-alt"></i> {{ .WordCount }}
-              </span>
-            {{ end }}
-          </p>
+          {{ partial "list-items/sound" . }}
         {{ end }}
 
       </section>

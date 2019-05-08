@@ -1,6 +1,6 @@
 {{ define "main" }}
   <main>
-    <h1>{{ with .Site.GetPage "section" "sounds" }}{{ .Title }}{{ end }}</h1>
+    <h1>Sounds</h1>
     <p>
       I've always felt sound was underrepresented on the web. I carry a
       <a href="http://tascam.com/product/dr-05/">Tascam DR-05</a> around with me in
@@ -10,7 +10,10 @@
     <hr>
     {{ range .Paginator.Pages }}
       <section>
+
+        <!-- Date -->
         <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
+
         <div>
           <div>
             <a href="{{ .RelPermalink }}">
@@ -18,19 +21,21 @@
             </a>
           </div>
           <div>
-            <h2>
-              <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-            </h2>
-            <h3>
-              {{ .Description }}
-            </h3>
+
+            <!-- Title -->
+            <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+
+            <!-- Description -->
+            <h3>{{ .Description }}</h3>
+
+            <!-- Duration -->
             <p class="item-count">
               <i class="fas fa-headphones"></i>
               {{ ((time .Params.sound.duration).Format "04:05") }}
             </p>
           </div>
         </div>
-        {{ partial "categories" . }}
+
       </section>
       <hr>
     {{ end }}

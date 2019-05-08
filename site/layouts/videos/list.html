@@ -1,29 +1,24 @@
 {{ define "main" }}
   <main>
-    <h1>{{ with .Site.GetPage "section" "videos" }}{{ .Title }}{{ end }}</h1>
+    <h1>Videos</h1>
     <p>
       Moments of interestingness, variably captured.
     </p>
     <hr>
     {{ range .Paginator.Pages }}
       <section>
+
+        <!-- Date -->
         <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
-        <h2>
-          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-        </h2>
-        <h3>
-          {{ .Description }}
-        </h3>
-        {{ if .Params.video.preview }}
-          <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-            <img src="{{ replace .Params.video.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.video.caption }}">
-          </a>
-        {{ end }}
-        <p class="item-count">
-          <i class="fas fa-video"></i>
-          {{ ((time .Params.video.duration).Format "04:05") }}
-        </p>
-        {{ partial "tags" . }}
+
+        <!-- Title -->
+        <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+
+        <!-- Description -->
+        <h3>{{ .Description }}</h3>
+
+        <!-- Item -->
+        {{ partial "list-items/video" . }}
       </section>
       <hr>
     {{ end }}

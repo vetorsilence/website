@@ -1,34 +1,22 @@
 {{ define "main" }}
   <main>
-    <h1>{{ with .Site.GetPage "section" "photos" }}{{ .Title }}{{ end }}</h1>
+    <h1>Pictures</h1>
     <p>
       I take a lot of pictures &mdash; with my phone, of course, but also with my
       <a href="https://www.usa.canon.com/internet/portal/us/home/products/details/cameras/dslr/eos-70d">Canon 70D</a>,
       which I lug around with me just about everywhere I go.
     </p>
     <p>
-      See <a href="/collections">Collections</a> and
-      <a href="/mobile">Mobile</a> for more.
+      See <a href="/collections">Collections</a> and <a href="/mobile">Mobile</a> for more.
     </p>
     <hr>
     {{ range .Paginator.Pages }}
       <section>
         <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
-        <h2>
-          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-        </h2>
-        <h3>
-          {{ .Description }}
-        </h3>
-        {{ if .Params.photo }}
-          <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-            <img src="{{ replace .Params.photo.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.photo.caption }}">
-          </a>
-        {{ end }}
-        <p class="item-count">
-          <i class="fas fa-camera"></i>
-          1 photo
-        </p>
+        <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+        <h3>{{ .Description }}</h3>
+
+        {{ partial "list-items/photo" . }}
       </section>
       <hr>
     {{ end }}
