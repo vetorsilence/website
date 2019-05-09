@@ -1,5 +1,5 @@
 <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-    {{ partial "media/image" (dict "context" . "url" .Params.photo.preview "caption" .Params.photo.caption) }}
+    <img src="{{ replace .Params.photo.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.photo.caption }}">
 </a>
 <p class="item-count">
     {{ if .WordCount }}
