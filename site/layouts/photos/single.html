@@ -22,31 +22,7 @@
         </section>
         <hr>
         <section>
-            <div class="media-container">
-                <a href="{{ replace .Params.photo.url "s3/" $.Site.Params.mediaRoot }}" target="_blank">
-                    <img src="{{ replace .Params.photo.url "s3/" $.Site.Params.mediaRoot }}" alt="{{ .Params.photo.caption }}">
-                </a>
-
-                {{ if .Params.photo.created }}
-                    <small class="left">
-                        {{ dateFormat "January 2, 2006" (time .Params.photo.created).Local }}
-                    </small>
-                {{ end }}
-
-                {{ if .Params.photo.exif }}
-                    <small class="right">
-                        {{ .Params.photo.exif.make }}
-                        {{ replace .Params.photo.exif.model .Params.photo.exif.make "" }}
-                        {{ if .Params.photo.exif.iso }}&bull; ISO {{ .Params.photo.exif.iso }}{{ end }}
-                        {{ if .Params.photo.exif.aperture }}&bull; f{{ .Params.photo.exif.aperture }}{{ end }}
-                        {{ if .Params.photo.exif.shutter_speed }}&bull; {{ .Params.photo.exif.shutter_speed }} sec {{ end }}
-                        {{ if .Params.photo.exif.focal_length }} &bull; {{ .Params.photo.exif.focal_length }}{{ end }}
-                    </small>
-                {{ end }}
-            </div>
-            <p class="caption">
-                {{ .Params.photo.caption | markdownify }}
-            </p>
+            {{ partial "photo" . }}
         </section>
         <section>
             {{ .Content }}

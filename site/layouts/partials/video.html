@@ -1,0 +1,34 @@
+<div class="media-container">
+    <video
+        src="{{ replace .Params.video.url "s3/" $.Site.Params.mediaRoot }}" alt="{{ .Params.video.caption }}"
+        {{ if .Params.video.poster }}poster="{{ replace .Params.video.poster "s3/" $.Site.Params.mediaRoot }}"{{ end }}
+        {{ if .Params.video.controls }} controls {{ end }}
+        {{ if .Params.video.muted }} muted {{ end }}
+        {{ if .Params.video.autoplay }} autoplay {{ end }}
+        {{ if .Params.video.loop }} loop {{ end }}
+        {{ if .Params.video.loop }} loop {{ end }}
+    >
+    </video>
+
+    {{ if .Params.video.created }}
+        <small class="left">
+            {{ dateFormat "January 2, 2006 ・ 3:04 PM MST" (time .Params.video.created).Local}}
+            {{ if .Params.video.exif.gps }}
+                ・
+                <a href="https://www.google.com/maps/search/?api=1&query={{ replace .Params.video.exif.gps ' ' ',' }}">
+                    <i class="fas fa-map-marker-alt"></i>
+                </a>
+            {{ end }}
+        </small>
+    {{ end }}
+
+    {{ if .Params.video.exif }}
+        <small class="right">
+            {{ .Params.video.exif.make }}
+            {{ replace .Params.video.exif.model .Params.video.exif.make "" }}
+        </small>
+    {{ end }}
+</div>
+<p class="caption">
+    {{ .Params.video.caption | markdownify }}
+</p>
