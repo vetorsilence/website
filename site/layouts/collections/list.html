@@ -24,11 +24,6 @@
                     </a>
                 {{ end }}
 
-                <!-- Featured video -->
-                {{ if eq .Params.featured.type "video" }}
-                    <video src="{{ .Params.featured.url }}" alt="{{ .Params.featured.caption }}" controls></video>
-                {{ end }}
-
                 <p class="item-count">
                     <i class="fas fa-images"></i>
                     {{ len .Params.items }} things
