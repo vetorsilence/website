@@ -2,13 +2,16 @@
     <main>
         {{ range .Paginator.Pages }}
             <section>
-                <h2>
-                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                </h2>
-                <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
-                <h3>
-                    {{ .Description }}
-                </h3>
+
+                <!-- Title -->
+                {{ partial "list-items/title" . }}
+
+                <!-- Date -->
+                {{ partial "date" . }}
+
+                <!-- Description -->
+                <h3>{{ .Description }}</h3>
+
                 {{ partial "categories" . }}
                 {{ partial "tags" . }}
             </section>
