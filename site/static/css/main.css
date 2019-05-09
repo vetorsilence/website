@@ -175,6 +175,11 @@ body.home .item-count, body.section .item-count {
       max-width: 33%;
       margin-right: 16px; } }
 
+body.mobile .item-count {
+  display: flex; }
+  body.mobile .item-count span {
+    margin-right: 16px; }
+
 audio {
   width: 100%; }
 
@@ -339,3 +344,10 @@ ol li, ul li {
 .links {
   list-style-type: none;
   padding: 0; }
+
+.anchor {
+  font-weight: normal;
+  margin-left: 8px;
+  color: #eee; }
+  .anchor:after {
+    content: "#"; }

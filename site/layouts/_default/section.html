@@ -5,8 +5,8 @@
         {{ range .Paginator.Pages }}
             <section>
 
-                <!-- title -->
-                <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+                <!-- Title -->
+                {{ partial "title" . }}
 
                 <!-- Date -->
                 {{ partial "date" . }}

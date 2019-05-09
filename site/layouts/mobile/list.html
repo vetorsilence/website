@@ -22,18 +22,7 @@
                 {{ partial "date" . }}
 
                 <!-- Title -->
-                <h2>
-                    <a id="{{ .UniqueID }}" href="{{ .RelPermalink }}">
-                        {{ if .Title }}
-                            {{ .Title }}
-                        {{ else }}
-                            Untitled
-                        {{ end }}
-                    </a>
-                    <a class="anchor" id="{{ .UniqueID }}" href="#{{ .UniqueID }}">
-                        #
-                    </a>
-                </h2>
+                {{ partial "title" . }}
 
                 <!-- Description -->
                 <h3>{{ .Description }}</h3>

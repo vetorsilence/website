@@ -16,7 +16,7 @@
                 {{ partial "date" . }}
 
                 <!-- Title -->
-                <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+                {{ partial "title" . }}
 
                 <!-- Rating -->
                 <cdn-rating rating="{{ .Params.rating }}"></cdn-rating>
