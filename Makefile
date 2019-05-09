@@ -7,7 +7,7 @@ build:
 .PHONY: invalidate
 invalidate:
 	aws cloudfront create-invalidation \
-		--distribution-id $(shell pulumi stack output cloudfrontDistributionId --cwd infra) \
+		--distribution-id $(shell pulumi stack output distributionID --cwd infra) \
 		--paths $(shell find site/public -name "*.html" -o -name "*.css" -o -name "*.js" | sed "s/^site\/public//g")
 
 .PHONY: process
