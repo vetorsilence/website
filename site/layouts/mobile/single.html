@@ -25,7 +25,7 @@
         <section class="heading">
 
             <!-- Date -->
-            <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
+            {{ partial "date" . }}
 
             <!-- Title -->
             <h1>
