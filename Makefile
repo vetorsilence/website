@@ -7,7 +7,7 @@ build:
 .PHONY: invalidate
 invalidate:
 	aws cloudfront create-invalidation \
-		--distribution-id $(shell pulumi stack output cloudfrontDistributionId) \
+		--distribution-id $(shell pulumi stack output cloudfrontDistributionId --cwd infra) \
 		--paths $(shell find site/public -name "*.html" -o -name "*.css" -o -name "*.js" | sed "s/^site\/public//g")
 
 .PHONY: process
@@ -17,13 +17,13 @@ process:
 		-e AWS_SECRET_ACCESS_KEY \
 		-e GITHUB_PERSONAL_ACCESS_TOKEN \
 		-v ~/Desktop/Exports:/media \
-		$(shell pulumi config get image_tag) \
+		$(shell pulumi config get image_tag --cwd infra) \
 		npm start /media
 
 .PHONY: release
 release:
 	bin/docker && \
-	git commit -am "Release $(shell pulumi config get image_tag)" && \
+	git commit -am "Release $(shell pulumi config get image_tag --cwd infra)" && \
 	git fetch -p && \
 	git rebase origin/master && \
 	git push origin master

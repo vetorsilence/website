@@ -10,4 +10,6 @@ config:
   website:github_personal_access_token:
     secure: AAABAIujCP1ySXhjJnUmF2T4CYweF5lwwPZWpN08UOI97UNDs0fmEnrJ7kvqK+h7Y8269VfQRmyeCim22vNklo7Z0OjsTr2r
   website:image_tag: cnunciato/process:1557167858
+  website:site_bucket: cnunciato-website
+  website:site_dir: ../site/public/
   website:targetDomain: chris.nunciato.org

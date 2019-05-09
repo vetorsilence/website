@@ -3,8 +3,8 @@ echo "Travis push job"
 # Update the stack
 case ${TRAVIS_BRANCH} in
     master)
-        pulumi stack select cnunciato/website/dev
-        pulumi update --yes
+        pulumi stack select cnunciato/website/dev --cwd infra
+        pulumi update --yes --cwd infra
         ;;
     *)
         echo "No Pulumi stack associated with branch ${TRAVIS_BRANCH}."
