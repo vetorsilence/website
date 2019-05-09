@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "Travis push job"
 
 # Update the stack
