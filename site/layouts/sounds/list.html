@@ -1,54 +1,54 @@
 {{ define "main" }}
-  <main>
-    <h1>Sounds</h1>
-    <p>
-      I've always felt sound was underrepresented on the web. I carry a
-      <a href="http://tascam.com/product/dr-05/">Tascam DR-05</a> around with me in
-      my gear bag, and if find I'm somewhere the sound is interesting, I'll just
-      start recording. Occasionally I pick up something worth sharing.
-    </p>
-    <hr>
-    {{ range .Paginator.Pages }}
-      <section>
+    <main>
+        <h1>Sounds</h1>
+        <p>
+            I've always felt sound was underrepresented on the web. I carry a
+            <a href="http://tascam.com/product/dr-05/">Tascam DR-05</a> around with me in
+            my gear bag, and if find I'm somewhere the sound is interesting, I'll just
+            start recording. Occasionally I pick up something worth sharing.
+        </p>
+        <hr>
+        {{ range .Paginator.Pages }}
+            <section>
 
-        <!-- Date -->
-        <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
+                <!-- Date -->
+                <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
 
-        <div>
-          <div>
-            <a href="{{ .RelPermalink }}">
-                <img src="{{ replace .Params.sound.preview "s3/" $.Site.Params.mediaRoot }}" title="{{ .Params.description }}" alt="{{ .Params.photo.caption }}">
-            </a>
-          </div>
-          <div>
+                <div>
+                    <div>
+                        <a href="{{ .RelPermalink }}">
+                            <img src="{{ replace .Params.sound.preview "s3/" $.Site.Params.mediaRoot }}" title="{{ .Params.description }}" alt="{{ .Params.photo.caption }}">
+                        </a>
+                    </div>
+                    <div>
 
-            <!-- Title -->
-            <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+                        <!-- Title -->
+                        <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
 
-            <!-- Description -->
-            <h3>{{ .Description }}</h3>
+                        <!-- Description -->
+                        <h3>{{ .Description }}</h3>
 
-            <!-- Duration -->
-            <p class="item-count">
-              <i class="fas fa-headphones"></i>
-              {{ ((time .Params.sound.duration).Format "04:05") }}
-            </p>
-          </div>
-        </div>
+                        <!-- Duration -->
+                        <p class="item-count">
+                            <i class="fas fa-headphones"></i>
+                            {{ ((time .Params.sound.duration).Format "04:05") }}
+                        </p>
+                    </div>
+                </div>
 
-      </section>
-      <hr>
-    {{ end }}
-  </main>
+            </section>
+            <hr>
+        {{ end }}
+    </main>
 {{ end }}
 
 {{ define "title" }}
-  {{ title .Section }} | {{ .Site.Title }}
+    {{ title .Section }} | {{ .Site.Title }}
 {{ end }}
 
 {{ define "rss" }}
-  {{ if .RSSLink }}
-  <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
-  <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
-  {{ end }}
+    {{ if .RSSLink }}
+        <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+        <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
+    {{ end }}
 {{ end }}

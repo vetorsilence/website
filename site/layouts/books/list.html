@@ -1,34 +1,40 @@
 {{ define "main" }}
-  <main>
-    <h1>{{ with .Site.GetPage "section" "books" }}{{ .Title }}{{ end }}</h1>
-    <p>
-      I read a lot (though nowhere near as much as my wife) and I like to keep a record of what I've read, because my memory is terrible.
-    </p>
-    <hr>
-    {{ range .Paginator.Pages }}
-      <section>
-        <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
-        <h2>
-          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-        </h2>
-        <cdn-rating rating="{{ .Params.rating }}"></cdn-rating>
-        <h3>
-          {{ .Description }}
-        </h3>
-        {{ partial "categories" . }}
-      </section>
-      <hr>
-    {{ end }}
-  </main>
+    <main>
+        <h1>Books</h1>
+        <p>
+            I read a lot (though nowhere near as much as my wife) and I like to keep a
+            record of what I've read, because my memory is terrible.
+        </p>
+        <hr>
+        {{ range .Paginator.Pages }}
+            <section>
+
+                <!-- Date -->
+                <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
+
+                <!-- Title -->
+                <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+
+                <!-- Rating -->
+                <cdn-rating rating="{{ .Params.rating }}"></cdn-rating>
+
+                <!-- Description -->
+                <h3>{{ .Description }}</h3>
+
+                {{ partial "categories" . }}
+            </section>
+            <hr>
+        {{ end }}
+    </main>
 {{ end }}
 
 {{ define "title" }}
-  {{ title .Section }} | {{ .Site.Title }}
+    {{ title .Section }} | {{ .Site.Title }}
 {{ end }}
 
 {{ define "rss" }}
-  {{ if .RSSLink }}
-  <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
-  <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
-  {{ end }}
+    {{ if .RSSLink }}
+        <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+        <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
+    {{ end }}
 {{ end }}

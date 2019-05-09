@@ -1,37 +1,37 @@
 {{ define "main" }}
-  <main>
-    <h1>Videos</h1>
-    <p>
-      Moments of interestingness, variably captured.
-    </p>
-    <hr>
-    {{ range .Paginator.Pages }}
-      <section>
+    <main>
+        <h1>Videos</h1>
+        <p>
+            Moments of interestingness, variably captured.
+        </p>
+        <hr>
+        {{ range .Paginator.Pages }}
+            <section>
 
-        <!-- Date -->
-        <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
+                <!-- Date -->
+                <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
 
-        <!-- Title -->
-        <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+                <!-- Title -->
+                <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
 
-        <!-- Description -->
-        <h3>{{ .Description }}</h3>
+                <!-- Description -->
+                <h3>{{ .Description }}</h3>
 
-        <!-- Item -->
-        {{ partial "list-items/video" . }}
-      </section>
-      <hr>
-    {{ end }}
-  </main>
+                <!-- Item -->
+                {{ partial "list-items/video" . }}
+            </section>
+            <hr>
+        {{ end }}
+    </main>
 {{ end }}
 
 {{ define "title" }}
-  {{ title .Section }} | {{ .Site.Title }}
+    {{ title .Section }} | {{ .Site.Title }}
 {{ end }}
 
 {{ define "rss" }}
-  {{ if .RSSLink }}
-  <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
-  <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
-  {{ end }}
+    {{ if .RSSLink }}
+        <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+        <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
+    {{ end }}
 {{ end }}

@@ -1,10 +1,11 @@
 <a href="{{ .RelPermalink }}" title="{{ .Title }}">
     {{ partial "media/image" (dict "context" . "url" .Params.photo.preview "caption" .Params.photo.caption) }}
-    </a>
-    <p class="item-count">
+</a>
+<p class="item-count">
     {{ if .WordCount }}
         <span>
-        <i class="far fa-file-alt"></i> {{ .WordCount }}
+            <i class="far fa-file-alt"></i>
+            {{ .WordCount }}
         </span>
     {{ end }}
 </p>

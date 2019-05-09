@@ -1,150 +1,154 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hello! I'm Christian Nunciato.</title>
-    <meta name="description" content="">
-    <link rel="stylesheet" href="/css/main.css?{{ now.Unix }}">
-    <script src="/js/main.js?{{ now.Unix }}"></script>
-    <script src="/js/app.js?{{ now.Unix }}"></script>
-    <!-- https://fontawesome.com/icons?d=gallery -->
-    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js" integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe" crossorigin="anonymous"></script>
-    {{ if .Site.RSSLink }}
-      <link href="/index.xml" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
-    {{ end }}
-  </head>
-  <body class="{{ .Kind }}">
-    <nav class="header">
-      <header>
-        {{ partial "header" }}
-      </header>
-    </nav>
-    <main>
-      <div class="items">
-
-        <!-- Mobile -->
-        <h2><a href="/mobile">Recent Mobiles</a></h2>
-        <div class="mobile">
-          {{ range first 5 (where .Data.Pages "Section" "eq" "mobile") }}
-            {{ if not .Params.sound }}
-              <a href="{{ .RelPermalink }}" title="{{ .Params.title }}">
-                <span>
-                  {{ if .Params.photo }}
-                    <img src="{{ replace .Params.photo.thumb "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.photo.caption }}" alt="{{ .Params.photo.caption }}">
-                  {{ end }}
-                  {{ if .Params.video }}
-                    <img src="{{ replace .Params.video.thumb "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.video.caption }}" alt="{{ .Params.video.caption }}">
-                  {{ end }}
-                </span>
-              </a>
-            {{ end }}
-          {{ end }}
-
-        </div>
-        <div class="more">
-          <a href="/mobile/">More&nbsp;&rarr;</a>
-        </div>
-        <hr>
-
-        {{ range where .Data.Pages "Section" "not in" "movies, books, quotes, mobile" }}
-          {{ if .Section }}
-            <div class="{{ .Section }}">
-              <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
-              <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
-
-              {{ if .Description }}
-                <h3>{{ .Description }}</h3>
-              {{ end }}
-
-              <!-- Photos -->
-              {{ if eq .Section "photos" }}
-                <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-                  <span>
-                    <img src="{{ replace .Params.photo.preview "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.photo.caption }}" alt="{{ .Params.photo.caption }}">
-                  </span>
-                </a>
-                <p class="item-count">
-                  <i class="fas fa-camera"></i>
-                  1
-                </p>
-              {{ end }}
-
-              <!-- Videos -->
-              {{ if eq .Section "videos" }}
-                <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-                  <span>
-                    <img src="{{ replace .Params.video.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.video.caption }}" alt="{{ .Params.video.caption }}">
-                  </span>
-                </a>
-                <p class="item-count">
-                  <i class="fas fa-video"></i>
-                  {{ ((time .Params.video.duration).Format "04:05") }}
-                </p>
-              {{ end }}
-
-              <!-- Sounds -->
-              {{ if eq .Section "sounds" }}
-                <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-                  <span>
-                    <img src="{{ replace .Params.sound.preview "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.description }}" alt="{{ .Params.description }}">
-                  </span>
-                </a>
-                <p class="item-count">
-                  <i class="fas fa-headphones"></i>
-                  {{ ((time .Params.sound.duration).Format "04:05") }}
-                </p>
-              {{ end }}
-
-              <!-- Words -->
-              {{ if eq .Section "words" }}
-                <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-                  <span>
-                    <img src="{{ replace .Params.photo.preview "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.photo.caption }}" alt="{{ .Params.photo.caption }}">
-                  </span>
-                </a>
-                <p class="item-count">
-                  <i class="far fa-file-alt"></i>
-                  {{ .WordCount }}
-                </p>
-              {{ end }}
-
-              <!-- Collections -->
-              {{ if eq .Section "collections" }}
-                {{ if eq .Params.featured.type "photo" }}
-                  <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-                    <span>
-                      <img src="{{ replace .Params.featured.url "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.featured.caption }}" alt="{{ .Params.featured.caption }}">
-                    </span>
-                  </a>
-                {{ end }}
-                {{ if eq .Params.featured.type "video" }}
-                  <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-                    <span>
-                      <img src="{{ replace .Params.featured.url "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.featured.caption }}" alt="{{ .Params.featured.caption }}">
-                    </span>
-                  </a>
-                {{ end }}
-                <p class="item-count">
-                  <i class="fas fa-images"></i>
-                  {{ len .Params.items }}
-                </p>
-              {{ end }}
-            </div>
-            <hr>
-          {{ end }}
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Hello! I'm Christian Nunciato.</title>
+        <meta name="description" content="">
+        <link rel="stylesheet" href="/css/main.css?{{ now.Unix }}">
+        <script src="/js/main.js?{{ now.Unix }}"></script>
+        <script src="/js/app.js?{{ now.Unix }}"></script>
+        <!-- https://fontawesome.com/icons?d=gallery -->
+        <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js" integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe" crossorigin="anonymous"></script>
+        {{ if .Site.RSSLink }}
+            <link href="/index.xml" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
         {{ end }}
-      </div>
-    </main>
-    <nav class="footer">
-      <footer>
-        {{ partial "footer" . }}
-      </footer>
-    </nav>
-    <script>
-        window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
-        ga('create','UA-33874507-2','auto');ga('send','pageview')
-    </script>
-    <script src="https://www.google-analytics.com/analytics.js" async defer></script>
-  </body>
+    </head>
+    <body class="{{ .Kind }}">
+        <nav class="header">
+            <header>
+                {{ partial "header" }}
+            </header>
+        </nav>
+        <main>
+            <div class="items">
+
+                <!-- Mobile items: A work in progress if ever there was one. -->
+                <h2><a href="/mobile">Recent Mobiles</a></h2>
+
+                <div class="mobile">
+                    {{ range first 5 (where .Data.Pages "Section" "eq" "mobile") }}
+                        {{ if not .Params.sound }}
+                            <a href="{{ .RelPermalink }}" title="{{ .Params.title }}">
+                                <span>
+                                    {{ if .Params.photo }}
+                                        <img src="{{ replace .Params.photo.thumb "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.photo.caption }}" alt="{{ .Params.photo.caption }}">
+                                    {{ end }}
+                                    {{ if .Params.video }}
+                                        <img src="{{ replace .Params.video.thumb "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.video.caption }}" alt="{{ .Params.video.caption }}">
+                                    {{ end }}
+                                </span>
+                            </a>
+                        {{ end }}
+                    {{ end }}
+
+                </div>
+                <div class="more">
+                    <a href="/mobile/">More&nbsp;&rarr;</a>
+                </div>
+                <hr>
+
+                {{ range where .Data.Pages "Section" "not in" "movies, books, quotes, mobile" }}
+                    {{ if .Section }}
+                        <div class="{{ .Section }}">
+
+                            <!-- Date -->
+                            <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
+
+                            <!-- Title -->
+                            <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+
+                            <!-- Description -->
+                            <h3>{{ .Description }}</h3>
+
+                            <!-- Photos -->
+                            {{ if eq .Section "photos" }}
+                                <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+                                    <span>
+                                        <img src="{{ replace .Params.photo.preview "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.photo.caption }}" alt="{{ .Params.photo.caption }}">
+                                    </span>
+                                </a>
+                                <p class="item-count">
+                                    <i class="fas fa-camera"></i>
+                                    1
+                                </p>
+                            {{ end }}
+
+                            <!-- Videos -->
+                            {{ if eq .Section "videos" }}
+                                <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+                                    <span>
+                                        <img src="{{ replace .Params.video.preview "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.video.caption }}" alt="{{ .Params.video.caption }}">
+                                    </span>
+                                </a>
+                                <p class="item-count">
+                                    <i class="fas fa-video"></i>
+                                    {{ ((time .Params.video.duration).Format "04:05") }}
+                                </p>
+                            {{ end }}
+
+                            <!-- Sounds -->
+                            {{ if eq .Section "sounds" }}
+                                <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+                                    <span>
+                                        <img src="{{ replace .Params.sound.preview "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.description }}" alt="{{ .Params.description }}">
+                                    </span>
+                                </a>
+                                <p class="item-count">
+                                    <i class="fas fa-headphones"></i>
+                                    {{ ((time .Params.sound.duration).Format "04:05") }}
+                                </p>
+                            {{ end }}
+
+                            <!-- Words -->
+                            {{ if eq .Section "words" }}
+                                <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+                                    <span>
+                                        <img src="{{ replace .Params.photo.preview "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.photo.caption }}" alt="{{ .Params.photo.caption }}">
+                                    </span>
+                                </a>
+                                <p class="item-count">
+                                    <i class="far fa-file-alt"></i>
+                                    {{ .WordCount }}
+                                </p>
+                            {{ end }}
+
+                            <!-- Collections -->
+                            {{ if eq .Section "collections" }}
+                                {{ if eq .Params.featured.type "photo" }}
+                                    <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+                                        <span>
+                                            <img src="{{ replace .Params.featured.url "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.featured.caption }}" alt="{{ .Params.featured.caption }}">
+                                        </span>
+                                    </a>
+                                {{ end }}
+                                {{ if eq .Params.featured.type "video" }}
+                                    <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+                                        <span>
+                                            <img src="{{ replace .Params.featured.url "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.featured.caption }}" alt="{{ .Params.featured.caption }}">
+                                        </span>
+                                    </a>
+                                {{ end }}
+                                <p class="item-count">
+                                    <i class="fas fa-images"></i>
+                                    {{ len .Params.items }}
+                                </p>
+                            {{ end }}
+                        </div>
+                        <hr>
+                    {{ end }}
+                {{ end }}
+            </div>
+        </main>
+        <nav class="footer">
+            <footer>
+                {{ partial "footer" . }}
+            </footer>
+        </nav>
+        <script>
+                window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;
+                ga('create','UA-33874507-2','auto');ga('send','pageview')
+        </script>
+        <script src="https://www.google-analytics.com/analytics.js" async defer></script>
+    </body>
 </html>

@@ -1,21 +1,25 @@
 {{ define "main" }}
-  <main>
-    <section>
-      <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
-      <h1>{{ .Title }}</h1>
-    </section>
-    <section>
-      {{ .Content }}
-      &mdash; {{ .Params.quotee }}
-    </section>
-    <section>
-      {{ partial "categories" . }}
-      {{ partial "tags" . }}
-      {{ partial "links" . }}
-    </section>
-  </main>
+    <main>
+        <section>
+
+            <!-- Date -->
+            <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
+
+            <!-- Title -->
+            <h1>{{ .Title }}</h1>
+        </section>
+        <section>
+            {{ .Content }}
+            &mdash; {{ .Params.quotee }}
+        </section>
+        <section>
+            {{ partial "categories" . }}
+            {{ partial "tags" . }}
+            {{ partial "links" . }}
+        </section>
+    </main>
 {{ end }}
 
 {{ define "title" }}
-  {{ .Page.Title }} | {{ .Site.Title }}
+    {{ .Page.Title }} | {{ .Site.Title }}
 {{ end }}

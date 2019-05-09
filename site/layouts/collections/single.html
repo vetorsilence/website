@@ -1,107 +1,112 @@
 {{ define "main" }}
-  <main>
-    <section class="heading">
-      <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
-      <h1>{{ .Title }}</h1>
-      {{ if .Description }}
-        <h2>{{ .Description }}</h2>
-      {{ end }}
-    </section>
-    <hr>
-    <section>
-      {{ .Content }}
-    </section>
-    <section class="collection">
-      {{ range .Params.items }}
-        <div class="item {{ .type }}">
+    <main>
+        <section class="heading">
 
-          {{ if eq .type "photo" }}
-            <div class="media-container">
-              <a href="{{ replace .url "s3/" $.Site.Params.mediaRoot }}" target="_blank">
-                <img src="{{ replace .url "s3/" $.Site.Params.mediaRoot }}" alt="{{ .caption }}">
-              </a>
+            <!-- Date -->
+            <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
 
-              {{ if .created }}
-                <small class="left">
-                  {{ dateFormat "January 2, 2006" (time .created).Local }}
-                </small>
-              {{ end }}
+            <!-- Title -->
+            <h1>{{ .Title }}</h1>
 
-              {{ if .exif }}
-                <small class="right">
-                  {{ .exif.make }}
-                  {{ replace .exif.model .exif.make "" }}
-                  {{ if .exif.iso }} &bull; ISO {{ .exif.iso }}{{ end }}
-                  {{ if .exif.aperture }} &bull; f{{ .exif.aperture }}{{ end }}
-                  {{ if and (ne .exif.shutter_speed "0") (ne .exif.shutter_speed "") }} &bull; {{ .exif.shutter_speed }} sec{{ end }}
-                  {{ if .exif.focal_length }} &bull; {{ .exif.focal_length }}{{ end }}
-                </small>
-              {{ end }}
-            </div>
-          {{ end }}
+            <!-- Description -->
+            <h2>{{ .Description }}</h2>
 
-          {{ if eq .type "video" }}
-            <div class="media-container">
-              <video
-                src="{{ replace .url "s3/" $.Site.Params.mediaRoot }}"
-                alt="{{ .caption }}"
-                {{ if .poster }}poster="{{ replace .poster "s3/" $.Site.Params.mediaRoot }}"{{ end }}
-                {{ if .controls }} controls {{ end }}
-                {{ if .muted }} muted {{ end }}
-                {{ if .autoplay }} autoplay {{ end }}
-                {{ if .loop }} loop {{ end }}
-              >
-              </video>
+        </section>
+        <hr>
+        <section>
+            {{ .Content }}
+        </section>
+        <section class="collection">
+            {{ range .Params.items }}
+                <div class="item {{ .type }}">
 
-              {{ if .created }}
-                <small class="left">
-                  {{ dateFormat "January 2, 2006" (time .created).Local }}
-                </small>
-              {{ end }}
+                    {{ if eq .type "photo" }}
+                        <div class="media-container">
+                            <a href="{{ replace .url "s3/" $.Site.Params.mediaRoot }}" target="_blank">
+                                <img src="{{ replace .url "s3/" $.Site.Params.mediaRoot }}" alt="{{ .caption }}">
+                            </a>
 
-              {{ if .exif }}
-                <small class="right">
-                  {{ .exif.make }}
-                  {{ replace .exif.model .exif.make "" }}
-                  {{ if .exif.iso }} &bull; ISO {{ .exif.iso }}{{ end }}
-                  {{ if .exif.aperture }} &bull; f{{ .exif.aperture }}{{ end }}
-                  {{ if and (ne .exif.shutter_speed "0") (ne .exif.shutter_speed "") }} &bull; {{ .exif.shutter_speed }} sec{{ end }}
-                  {{ if .exif.focal_length }} &bull; {{ .exif.focal_length }}{{ end }}
-                </small>
-              {{ end }}
-            </div>
-          {{ end }}
+                            {{ if .created }}
+                                <small class="left">
+                                    {{ dateFormat "January 2, 2006" (time .created).Local }}
+                                </small>
+                            {{ end }}
 
-          {{ if eq .type "sound" }}
-            <div class="media-container">
-              <audio controls>
-                <source
-                  src="{{ replace .url "s3/" $.Site.Params.mediaRoot }}"
-                >
-              </audio>
-            </div>
-          {{ end }}
+                            {{ if .exif }}
+                                <small class="right">
+                                    {{ .exif.make }}
+                                    {{ replace .exif.model .exif.make "" }}
+                                    {{ if .exif.iso }} &bull; ISO {{ .exif.iso }}{{ end }}
+                                    {{ if .exif.aperture }} &bull; f{{ .exif.aperture }}{{ end }}
+                                    {{ if and (ne .exif.shutter_speed "0") (ne .exif.shutter_speed "") }} &bull; {{ .exif.shutter_speed }} sec{{ end }}
+                                    {{ if .exif.focal_length }} &bull; {{ .exif.focal_length }}{{ end }}
+                                </small>
+                            {{ end }}
+                        </div>
+                    {{ end }}
 
-          {{ if .title }}
-            <p class="title">{{ .title }}</p>
-          {{ end }}
+                    {{ if eq .type "video" }}
+                        <div class="media-container">
+                            <video
+                                src="{{ replace .url "s3/" $.Site.Params.mediaRoot }}"
+                                alt="{{ .caption }}"
+                                {{ if .poster }}poster="{{ replace .poster "s3/" $.Site.Params.mediaRoot }}"{{ end }}
+                                {{ if .controls }} controls {{ end }}
+                                {{ if .muted }} muted {{ end }}
+                                {{ if .autoplay }} autoplay {{ end }}
+                                {{ if .loop }} loop {{ end }}
+                            >
+                            </video>
 
-          {{ if .caption }}
-            <p class="caption">
-              {{ .caption | markdownify }}
-            </p>
-          {{ end }}
+                            {{ if .created }}
+                                <small class="left">
+                                    {{ dateFormat "January 2, 2006" (time .created).Local }}
+                                </small>
+                            {{ end }}
 
-        </div>
-      {{ end }}
-    </section>
-    <section>
-      {{ partial "categories" . }}
-      {{ partial "tags" . }}
-    </section>
-  </main>
+                            {{ if .exif }}
+                                <small class="right">
+                                    {{ .exif.make }}
+                                    {{ replace .exif.model .exif.make "" }}
+                                    {{ if .exif.iso }} &bull; ISO {{ .exif.iso }}{{ end }}
+                                    {{ if .exif.aperture }} &bull; f{{ .exif.aperture }}{{ end }}
+                                    {{ if and (ne .exif.shutter_speed "0") (ne .exif.shutter_speed "") }} &bull; {{ .exif.shutter_speed }} sec{{ end }}
+                                    {{ if .exif.focal_length }} &bull; {{ .exif.focal_length }}{{ end }}
+                                </small>
+                            {{ end }}
+                        </div>
+                    {{ end }}
+
+                    {{ if eq .type "sound" }}
+                        <div class="media-container">
+                            <audio controls>
+                                <source
+                                    src="{{ replace .url "s3/" $.Site.Params.mediaRoot }}"
+                                >
+                            </audio>
+                        </div>
+                    {{ end }}
+
+                    {{ if .title }}
+                        <p class="title">{{ .title }}</p>
+                    {{ end }}
+
+                    {{ if .caption }}
+                        <p class="caption">
+                            {{ .caption | markdownify }}
+                        </p>
+                    {{ end }}
+
+                </div>
+            {{ end }}
+        </section>
+        <section>
+            {{ partial "categories" . }}
+            {{ partial "tags" . }}
+        </section>
+    </main>
 {{ end }}
 
 {{ define "title" }}
-  {{ .Page.Title }} | {{ .Site.Title }}
+    {{ .Page.Title }} | {{ .Site.Title }}
 {{ end }}

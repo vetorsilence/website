@@ -1,45 +1,46 @@
 {{ define "main" }}
-  <main>
-    <h1>{{ with .Site.GetPage "section" "words" }}{{ .Title }}{{ end }}</h1>
-    <p>
-      Occasionally, I also write things.
-    </p>
-    <hr>
-    {{ range .Paginator.Pages }}
-      <section>
-        <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
-        <div>
-          <div>
-            <a href="{{ .RelPermalink }}">
-              <img src="{{ replace .Params.photo.preview "s3/" $.Site.Params.mediaRoot }}" title="{{ .Params.photo.caption }}" alt="{{ .Params.photo.caption }}">
-            </a>
-          </div>
-          <div>
-              <h2>
-                <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-              </h2>
-              <h3>
-                {{ .Description }}
-              </h3>
-              <p class="item-count">
-                <i class="far fa-file-alt"></i>
-                {{ .WordCount }} words
-              </p>
-          </div>
-        </div>
-      </section>
-      <hr>
-    {{ end }}
-  </main>
+    <main>
+        <h1>Words</h1>
+        <p>
+            Occasionally, I also write things.
+        </p>
+        <hr>
+        {{ range .Paginator.Pages }}
+            <section>
+                <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
+                <div>
+                    <div>
+                        <a href="{{ .RelPermalink }}">
+                            <img src="{{ replace .Params.photo.preview "s3/" $.Site.Params.mediaRoot }}" title="{{ .Params.photo.caption }}" alt="{{ .Params.photo.caption }}">
+                        </a>
+                    </div>
+                    <div>
+
+                        <!-- Title -->
+                        <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+
+                        <!-- Description -->
+                        <h3>{{ .Description }}</h3>
+
+                        <p class="item-count">
+                            <i class="far fa-file-alt"></i>
+                            {{ .WordCount }} words
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <hr>
+        {{ end }}
+    </main>
 {{ end }}
 
 {{ define "title" }}
-  {{ title .Section }} | {{ .Site.Title }}
+    {{ title .Section }} | {{ .Site.Title }}
 {{ end }}
 
 {{ define "rss" }}
-  {{ if .RSSLink }}
-  <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
-  <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
-  {{ end }}
+    {{ if .RSSLink }}
+        <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+        <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
+    {{ end }}
 {{ end }}

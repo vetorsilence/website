@@ -1,69 +1,71 @@
 {{ define "main" }}
-  <main>
-    <h1>Mobiles</h1>
-    <p>
-      Pictures and other things taken on the go &mdash; my own personal Instagram.
-    </p>
-    <p>
-      One of these days, I'll write a post about how (and maybe <em>why</em>) I do this,
-      because it's actually pretty cool: I take pictures with my iPhone, send them to a
-      special email address, and a parser I wrote with <a
-      href="https://www.pulumi.com">Pulumi</a> (and a handful of other things) handles the
-      message, makes all the thumbnails, creates a new page, commits it on
-      <a href="https://github.com/cnunciato/website">GitHub</a>, and deploys everything to
-      the cloud, all without any intervention from me. It even works with video and sound.
-      Neat, eh? Computers FTW.
-    </p>
-    <hr>
-    {{ range (.Paginator 50).Pages }}
-      <section>
-        <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
-        <h2>
-          <a id="{{ .UniqueID }}" href="{{ .RelPermalink }}">
-            {{ if .Title }}
-              {{ .Title }}
-            {{ else }}
-              Untitled
-            {{ end }}
-          </a>
-          <a class="anchor" id="{{ .UniqueID }}" href="#{{ .UniqueID }}">
-            #
-          </a>
-        </h2>
+    <main>
+        <h1>Mobiles</h1>
+        <p>
+            Pictures and other things taken on the go &mdash; my own personal Instagram.
+        </p>
+        <p>
+            One of these days, I'll write a post about how (and maybe <em>why</em>) I do
+            this, because it's actually pretty cool: I take pictures with my iPhone, send
+            them to a special email address, and a parser I wrote with <a
+            href="https://www.pulumi.com">Pulumi</a> (and a handful of other things)
+            handles the message, makes all the thumbnails, creates a new page, commits it on
+            <a href="https://github.com/cnunciato/website">GitHub</a>, and deploys
+            everything to the cloud, all without any intervention from me. It even works
+            with video and sound. Neat, eh? Computers FTW.
+        </p>
+        <hr>
+        {{ range (.Paginator 50).Pages }}
+            <section>
 
-        <!-- Description of the item, if any -->
-        <h3>
-          {{ .Description }}
-        </h3>
+                <!-- Date -->
+                <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
 
-        <!-- Photo item -->
-        {{ if .Params.photo }}
-          {{ partial "list-items/photo" . }}
+                <!-- Title -->
+                <h2>
+                    <a id="{{ .UniqueID }}" href="{{ .RelPermalink }}">
+                        {{ if .Title }}
+                            {{ .Title }}
+                        {{ else }}
+                            Untitled
+                        {{ end }}
+                    </a>
+                    <a class="anchor" id="{{ .UniqueID }}" href="#{{ .UniqueID }}">
+                        #
+                    </a>
+                </h2>
+
+                <!-- Description -->
+                <h3>{{ .Description }}</h3>
+
+                <!-- Photo item -->
+                {{ if .Params.photo }}
+                    {{ partial "list-items/photo" . }}
+                {{ end }}
+
+                <!-- Video item -->
+                {{ if .Params.video }}
+                    {{ partial "list-items/video" . }}
+                {{ end }}
+
+                <!-- Sound item -->
+                {{ if .Params.sound }}
+                    {{ partial "list-items/sound" . }}
+                {{ end }}
+
+            </section>
+            <hr>
         {{ end }}
-
-        <!-- Video item -->
-        {{ if .Params.video }}
-          {{ partial "list-items/video" . }}
-        {{ end }}
-
-        <!-- Sound item -->
-        {{ if .Params.sound }}
-          {{ partial "list-items/sound" . }}
-        {{ end }}
-
-      </section>
-      <hr>
-    {{ end }}
-  </main>
+    </main>
 {{ end }}
 
 {{ define "title" }}
-  {{ title .Section }} | {{ .Site.Title }}
+    {{ title .Section }} | {{ .Site.Title }}
 {{ end }}
 
 {{ define "rss" }}
-  {{ if .RSSLink }}
-  <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
-  <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
-  {{ end }}
+    {{ if .RSSLink }}
+        <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+        <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
+    {{ end }}
 {{ end }}

@@ -1,45 +1,52 @@
 {{ define "main" }}
-  <main>
-    <h1>{{ with .Site.GetPage "section" "collections" }}{{ .Title }}{{ end }}</h1>
-    <p>
-      Pictures, videos, sounds and words, all rolled up into tidy little bundles.
-    </p>
-    <hr>
-    {{ range .Paginator.Pages }}
-      <section>
-        <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
-        <h2>
-          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-        </h2>
-        <h3>
-          {{ .Description }}
-        </h3>
-        {{ if eq .Params.featured.type "photo" }}
-          <a href="{{ .RelPermalink }}" title="{{ .Title }}">
-            <img src="{{ replace .Params.featured.url "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.featured.caption }}">
-          </a>
-        {{ end }}
-        {{ if eq .Params.featured.type "video" }}
-          <video src="{{ .Params.featured.url }}" alt="{{ .Params.featured.caption }}" controls></video>
-        {{ end }}
-        <p class="item-count">
-          <i class="fas fa-images"></i>
-          {{ len .Params.items }} things
+    <main>
+        <h1>Collections</h1>
+        <p>
+            Pictures, videos, sounds and words, all rolled up into tidy little bundles.
         </p>
-        {{ partial "tags" . }}
-      </section>
-      <hr>
-    {{ end }}
-  </main>
+        <hr>
+        {{ range .Paginator.Pages }}
+            <section>
+
+                <!-- Date -->
+                <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
+
+                <!-- Title -->
+                <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+
+                <!-- Description -->
+                <h3>{{ .Description }}</h3>
+
+                <!-- Featured photo -->
+                {{ if eq .Params.featured.type "photo" }}
+                    <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+                        <img src="{{ replace .Params.featured.url "s3/" .Site.Params.mediaRoot }}" alt="{{ .Params.featured.caption }}">
+                    </a>
+                {{ end }}
+
+                <!-- Featured video -->
+                {{ if eq .Params.featured.type "video" }}
+                    <video src="{{ .Params.featured.url }}" alt="{{ .Params.featured.caption }}" controls></video>
+                {{ end }}
+
+                <p class="item-count">
+                    <i class="fas fa-images"></i>
+                    {{ len .Params.items }} things
+                </p>
+                {{ partial "tags" . }}
+            </section>
+            <hr>
+        {{ end }}
+    </main>
 {{ end }}
 
 {{ define "title" }}
-  {{ title .Section }} | {{ .Site.Title }}
+    {{ title .Section }} | {{ .Site.Title }}
 {{ end }}
 
 {{ define "rss" }}
-  {{ if .RSSLink }}
-  <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
-  <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
-  {{ end }}
+    {{ if .RSSLink }}
+        <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+        <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
+    {{ end }}
 {{ end }}

@@ -1,35 +1,41 @@
 {{ define "main" }}
-  <main>
-    <h1>Pictures</h1>
-    <p>
-      I take a lot of pictures &mdash; with my phone, of course, but also with my
-      <a href="https://www.usa.canon.com/internet/portal/us/home/products/details/cameras/dslr/eos-70d">Canon 70D</a>,
-      which I lug around with me just about everywhere I go.
-    </p>
-    <p>
-      See <a href="/collections">Collections</a> and <a href="/mobile">Mobile</a> for more.
-    </p>
-    <hr>
-    {{ range .Paginator.Pages }}
-      <section>
-        <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
-        <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
-        <h3>{{ .Description }}</h3>
+    <main>
+        <h1>Pictures</h1>
+        <p>
+            I take a lot of pictures &mdash; with my phone, of course, but also with my
+            <a href="https://www.usa.canon.com/internet/portal/us/home/products/details/cameras/dslr/eos-70d">Canon 70D</a>,
+            which I lug around with me just about everywhere I go.
+        </p>
+        <p>
+            See <a href="/collections">Collections</a> and <a href="/mobile">Mobile</a> for more.
+        </p>
+        <hr>
+        {{ range .Paginator.Pages }}
+            <section>
 
-        {{ partial "list-items/photo" . }}
-      </section>
-      <hr>
-    {{ end }}
-  </main>
+                <!-- Date -->
+                <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
+
+                <!-- Title -->
+                <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+
+                <!-- Description -->
+                <h3>{{ .Description }}</h3>
+
+                {{ partial "list-items/photo" . }}
+            </section>
+            <hr>
+        {{ end }}
+    </main>
 {{ end }}
 
 {{ define "title" }}
-  {{ title .Section }} | {{ .Site.Title }}
+    {{ title .Section }} | {{ .Site.Title }}
 {{ end }}
 
 {{ define "rss" }}
-  {{ if .RSSLink }}
-  <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
-  <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
-  {{ end }}
+    {{ if .RSSLink }}
+        <link href="{{ .Site.RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+        <link href="{{ .RSSLink }}" rel="alternate" type="application/rss+xml" title="{{ title .Section }} | {{ .Site.Title }}" />
+    {{ end }}
 {{ end }}

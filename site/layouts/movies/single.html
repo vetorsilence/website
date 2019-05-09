@@ -1,34 +1,44 @@
 {{ define "main" }}
-  <main>
-    <section>
-      <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
-      <h1>{{ .Title }}</h1>
-      <h2>
-        {{ .Params.year }}
-        {{ if .Params.director }}
-          <h3>Directed by {{ .Params.director }}</h3>
-        {{ end }}
-      </h2>
-      <h4>
-        <cdn-rating rating="{{ .Params.rating }}"></cdn-rating>
-      </h4>
-      <p>
-        {{ .Description }}
-      </p>
-    </section>
-    <section>
-      {{ .Content }}
-    </section>
-    <section>
-      {{ partial "categories" . }}
-      {{ partial "tags" . }}
-    </section>
-    <section>
-      {{ partial "links" . }}
-    </section>
-  </main>
+    <main>
+        <section>
+
+            <!-- Date -->
+            <time datetime="{{ .Date.Local.Format "2006-01-02" }}">{{ .Date.Local.Format "January 2, 2006" }}</time>
+
+            <!-- Title -->
+            <h1>{{ .Title }}</h1>
+
+            <!-- Year, director -->
+            <h2>
+                {{ .Params.year }}
+                {{ if .Params.director }}
+                    <h3>Directed by {{ .Params.director }}</h3>
+                {{ end }}
+            </h2>
+
+            <!-- Rating -->
+            <h4>
+                <cdn-rating rating="{{ .Params.rating }}"></cdn-rating>
+            </h4>
+
+            <!-- Description -->
+            <p>
+                {{ .Description }}
+            </p>
+        </section>
+        <section>
+            {{ .Content }}
+        </section>
+        <section>
+            {{ partial "categories" . }}
+            {{ partial "tags" . }}
+        </section>
+        <section>
+            {{ partial "links" . }}
+        </section>
+    </main>
 {{ end }}
 
 {{ define "title" }}
-  {{ .Page.Title }} | {{ .Site.Title }}
+    {{ .Page.Title }} | {{ .Site.Title }}
 {{ end }}
