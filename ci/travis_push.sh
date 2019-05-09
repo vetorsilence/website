@@ -3,6 +3,10 @@ echo "Travis push job"
 # Update the stack
 case ${TRAVIS_BRANCH} in
     master)
+        pushd infra
+        npm install
+        popd
+
         pulumi stack select cnunciato/website/dev --cwd infra
         pulumi update --yes --cwd infra
         ;;

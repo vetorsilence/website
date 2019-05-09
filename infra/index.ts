@@ -12,7 +12,7 @@ const bucket = new WebsiteBucket(config);
 const service = new WebsiteService(config);
 const distribution = new WebsiteDistribution(config, bucket.resource);
 
-// Export stack outputs.
+// Stack outputs.
 export const bucketName = bucket.resource.bucketDomainName;
 export const bucketURL = `http://${bucket.resource.websiteEndpoint}`;
 export const distributionID = distribution.resource.id;
