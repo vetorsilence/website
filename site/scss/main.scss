@@ -273,15 +273,16 @@ body {
 
         .item-count {
             display: flex;
+            align-items: center;
             font-family: $sans-serif;
             color: $medium-gray;
 
-            span {
-                margin-right: $default-margin;
+            svg {
+                margin-right: $default-margin / 2;
             }
 
-            svg {
-                margin-right: $default-margin / 8;
+            span {
+                margin-right: $default-margin;
             }
         }
     }

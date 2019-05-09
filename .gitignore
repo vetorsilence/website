@@ -1,5 +1,6 @@
 node_modules
 /site/public/
+/site/static/main.css
 .envrc
 website.code-workspace
 /bin/*.js*
