@@ -1,8 +1,8 @@
 node_modules
+.envrc
+/bin/*.js*
+/service/bin
+/service/uploads
 /site/public/
 /site/static/main.css
-.envrc
 website.code-workspace
-/bin/*.js*
-/process/bin
-/process/uploads

@@ -7,11 +7,11 @@ export class WebsiteService {
 
     constructor(config: pulumi.Config, ) {
 
-        // Define the processing application, which receives HTTP posts and creates new website content from them.
-        this.resource = new cloud.Service("process", {
+        // Define the service application, which receives HTTP posts and creates new website content from them.
+        this.resource = new cloud.Service("service", {
                 containers: {
-                        parse: {
-                                image: config.require("image_tag"),
+                        service: {
+                                image: config.require("service_image"),
                                 memory: 4096,
                                 cpu: 4,
                                 ports: [
