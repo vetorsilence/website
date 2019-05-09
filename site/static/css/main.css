@@ -162,8 +162,11 @@ body.home img, body.home video, body.section img, body.section video {
   max-width: 100%; }
 
 body.home .item-count, body.section .item-count {
+  display: flex;
   font-family: "rooney-sans";
   color: #666; }
+  body.home .item-count span, body.section .item-count span {
+    margin-right: 16px; }
   body.home .item-count svg, body.section .item-count svg {
     margin-right: 2px; }
 
@@ -174,11 +177,6 @@ body.home .item-count, body.section .item-count {
     body.words main section > div > div:first-child, body.sounds main section > div > div:first-child {
       max-width: 33%;
       margin-right: 16px; } }
-
-body.mobile .item-count {
-  display: flex; }
-  body.mobile .item-count span {
-    margin-right: 16px; }
 
 audio {
   width: 100%; }

@@ -12,7 +12,7 @@
         {{ ((time .Params.sound.duration).Format "04:05") }}
     </span>
     {{ if .WordCount }}
-        <span>
+        <span title="{{ .WordCount }} words">
             <i class="far fa-file-alt"></i>
             {{ .WordCount }}
         </span>
