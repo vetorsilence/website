@@ -1,10 +1,7 @@
-<h2>
-    <a id="{{ .UniqueID }}" href="{{ .RelPermalink }}">
-        {{ if .Title }}
-            {{ .Title }}
-        {{ else }}
-            Untitled
-        {{ end }}
-    </a>
-    <a class="anchor" id="{{ .UniqueID }}" href="#{{ .UniqueID }}" title="Anchor">#</a>
-</h2>
+<h1>
+    {{ if .Title }}
+        {{ .Title }}
+    {{ else }}
+        Untitled
+    {{ end }}
+</h1>
