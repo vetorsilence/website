@@ -523,7 +523,4 @@ ol, ul {
     font-weight: normal;
     margin-left: $default-margin / 2;
     color: $very-light-gray;
-    &:after {
-        content: "#";
-    }
 }
