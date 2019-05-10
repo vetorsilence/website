@@ -14,7 +14,7 @@ const distribution = new WebsiteDistribution(config, bucket.resource);
 
 // Stack outputs.
 export const bucketName = bucket.resource.bucketDomainName;
-export const bucketURL = `http://${bucket.resource.websiteEndpoint.apply(s => s)}`;
+export const bucketURL = bucket.resource.websiteEndpoint;
 export const distributionID = distribution.resource.id;
-export const distributionURL = `http://${distribution.resource.domainName.apply(s => s)}`;
+export const distributionURL = distribution.resource.domainName;
 export const serviceEndpoint = service.resource.defaultEndpoint.apply(e => `http://${e.hostname}`);
