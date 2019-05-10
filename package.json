@@ -4,6 +4,7 @@
     "author": "Christian Nunciato <christian@nunciato.org>",
     "description": "Hey, it's my website!",
     "devDependencies": {
+        "broken-link-checker": "^0.7.8",
         "node-sass": "^4.11.0"
     }
 }

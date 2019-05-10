@@ -43,6 +43,10 @@ serve:
 watch_sass:
 	node_modules/.bin/node-sass --include-path site/scss --output site/static/css site/scss/main.scss --watch
 
+.PHONY: test
+test:
+	node_modules/.bin/blc -ro http://localhost:1313
+
 .PHONY: travis
 travis: build
 	./ci/travis_push.sh
