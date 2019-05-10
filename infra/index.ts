@@ -1,20 +1,18 @@
 import * as pulumi from "@pulumi/pulumi";
 
-import { WebsiteBucket } from "./website-bucket";
+import { Website } from "./website";
 import { WebsiteService } from "./website-service";
-import { WebsiteDistribution } from "./website-distribution";
 
 // Stack configuration.
 const config = new pulumi.Config("website");
 
 // Cloud resources.
-const bucket = new WebsiteBucket(config);
+const site = new Website(config)
 const service = new WebsiteService(config);
-const distribution = new WebsiteDistribution(config, bucket.resource);
 
 // Stack outputs.
-export const bucketName = bucket.resource.bucketDomainName;
-export const bucketURL = bucket.resource.websiteEndpoint;
-export const distributionID = distribution.resource.id;
-export const distributionURL = distribution.resource.domainName;
+export const bucketName = site.bucket.resource.bucketDomainName;
+export const bucketURL = site.bucket.resource.websiteEndpoint;
+export const distributionID = site.distribution.resource.id;
+export const distributionURL = site.distribution.resource.domainName;
 export const serviceEndpoint = service.resource.defaultEndpoint.apply(e => `http://${e.hostname}`);
