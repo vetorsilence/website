@@ -609,8 +609,8 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
                     if (type === "sound") {
                         const duration = getMediaDuration(file);
 
-                        // Just copy the sound as-is. (TODO: Add fade-in/fade-out for these as well.)
-                        fs.copyFileSync(file, `${audioPath}/${mediaFilename}`);
+                        // Fade sounds in and out as well.
+                        execSync(`ffmpeg -i "${file}" -vf "fade=in:0:30,fade=out:st=${duration - 1}:d=1" -af "afade=in:st=0:d=1,afade=out:st=${duration - 1}:d=1" -acodec aac -strict -2 "${audioPath}/${mediaFilename}"`);
 
                         Object.assign(metadata, {
                             duration,
