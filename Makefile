@@ -34,6 +34,10 @@ ensure:
 
 .PHONY: serve
 serve:
+	npm run serve
+
+.PHONY: watch_site
+watch_site:
 	open "http://localhost:1313/"
 	pushd site && \
 	hugo serve && \

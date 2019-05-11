@@ -4,7 +4,8 @@
     "author": "Christian Nunciato <christian@nunciato.org>",
     "description": "Hey, it's my website!",
     "scripts": {
-        "test": "concurrently --kill-others --success first 'http-server site/public -p 9999' 'blc -ro http://localhost:9999'"
+        "test": "concurrently --kill-others --success first 'http-server site/public -p 9999' 'blc -ro http://localhost:9999'",
+        "serve": "concurrently 'make watch_site' 'make watch_sass'"
     },
     "devDependencies": {
         "broken-link-checker": "^0.7.8",
