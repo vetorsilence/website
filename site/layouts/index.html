@@ -24,18 +24,18 @@
             <div class="items">
 
                 <!-- Mobile items: A work in progress if ever there was one. -->
-                <h2><a href="/mobile">Recent Mobiles</a></h2>
+                <h2><a href="/mobile">Roaming</a></h2>
 
                 <div class="mobile">
-                    {{ range first 5 (where .Data.Pages "Section" "eq" "mobile") }}
+                    {{ range first 10 (where .Data.Pages "Section" "eq" "mobile") }}
                         {{ if not .Params.sound }}
                             <a href="{{ .RelPermalink }}" title="{{ .Params.title }}">
                                 <span>
                                     {{ if .Params.photo }}
-                                        <img src="{{ replace .Params.photo.thumb "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.photo.caption }}" alt="{{ .Params.photo.caption }}">
+                                        <img src="{{ replace .Params.photo.preview "s3/" .Site.Params.mediaRoot }}" title="{{ .Date.Local.Format "January 2, 2006" }}" alt="{{ .Date.Local.Format "January 2, 2006" }}">
                                     {{ end }}
                                     {{ if .Params.video }}
-                                        <img src="{{ replace .Params.video.thumb "s3/" .Site.Params.mediaRoot }}" title="{{ .Params.video.caption }}" alt="{{ .Params.video.caption }}">
+                                        <img src="{{ replace .Params.video.preview "s3/" .Site.Params.mediaRoot }}" title="{{ .Date.Local.Format "January 2, 2006" }}" alt="{{ .Date.Local.Format "January 2, 2006" }}">
                                     {{ end }}
                                 </span>
                             </a>
@@ -44,7 +44,7 @@
 
                 </div>
                 <div class="more">
-                    <a href="/mobile/">More&nbsp;&rarr;</a>
+                    <a href="/mobile/">More &nbsp;&rarr;</a>
                 </div>
                 <hr>
 

@@ -10,8 +10,6 @@ $off-white: #fafafa;
 
 $link-color: #5691B8;
 
-$heavier: 600;
-
 $serif: "rooney-web";
 $sans-serif: "rooney-sans";
 $monospace: "source-code-pro";
@@ -227,22 +225,29 @@ main {
     }
 
     .mobile {
-        display: flex;
         margin-bottom: 16px;
+        max-width: 100%;
+
+        @include tablet-up {
+            max-height: $tablet-width;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            overflow: hidden;
+
+            img {
+
+                // Tablet width, minus paddings on both sides of all three columns of images.
+                max-width: $tablet-width / 3 - 12px - 6px !important;
+            }
+        }
 
         a {
+            display: block;
             margin-bottom: $default-margin;
 
-            &:not(:first-child):not(:last-child) {
-                margin: 0 $default-margin / 4;
-            }
-
-            &:first-child {
-                margin-right: 4px;
-            }
-
-            &:last-child {
-                margin-left: 4px;
+            @include tablet-up {
+                margin: $default-margin / 4;
             }
         }
     }

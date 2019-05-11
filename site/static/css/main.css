@@ -134,16 +134,23 @@ main {
             main section .media-container > small.right {
               display: block; } }
   main .mobile {
-    display: flex;
-    margin-bottom: 16px; }
+    margin-bottom: 16px;
+    max-width: 100%; }
+    @media (min-width: 768px) {
+      main .mobile {
+        max-height: 768px;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        overflow: hidden; }
+        main .mobile img {
+          max-width: 238px !important; } }
     main .mobile a {
+      display: block;
       margin-bottom: 16px; }
-      main .mobile a:not(:first-child):not(:last-child) {
-        margin: 0 4px; }
-      main .mobile a:first-child {
-        margin-right: 4px; }
-      main .mobile a:last-child {
-        margin-left: 4px; }
+      @media (min-width: 768px) {
+        main .mobile a {
+          margin: 4px; } }
 
 img, video, audio {
   display: block;
