@@ -4,7 +4,7 @@
     "author": "Christian Nunciato <christian@nunciato.org>",
     "description": "Hey, it's my website!",
     "scripts": {
-        "concurrently": "concurrently"
+        "test": "concurrently --kill-others --success first 'http-server site/public -p 9999' 'blc -ro http://localhost:9999'"
     },
     "devDependencies": {
         "broken-link-checker": "^0.7.8",

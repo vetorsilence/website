@@ -45,7 +45,7 @@ watch_sass:
 
 .PHONY: test
 test: build
-	npm run concurrently 'http-server site/public -p 9999' 'blc -ro http://localhost:9999'
+	npm run test
 
 .PHONY: travis
 travis: build
