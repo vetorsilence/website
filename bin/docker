@@ -9,6 +9,6 @@ echo "Pushing..."
 docker push "$IMAGE_TAG"
 
 echo "Applying the new image to the Pulumi config..."
-pulumi config set image_tag "$IMAGE_TAG"
+pulumi config set service_image "$IMAGE_TAG"
 
 echo "Done."
