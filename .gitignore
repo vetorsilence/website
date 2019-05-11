@@ -4,5 +4,5 @@ node_modules
 /service/bin
 /service/uploads
 /site/public/
-/site/static/main.css
+/site/static/css/main.css
 website.code-workspace

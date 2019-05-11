@@ -174,7 +174,7 @@ body.home .item-count, body.section .item-count {
   font-family: "rooney-sans";
   color: #666; }
   body.home .item-count svg, body.section .item-count svg {
-    margin-right: 8px; }
+    margin-right: 4px; }
   body.home .item-count span, body.section .item-count span {
     margin-right: 16px; }
 
