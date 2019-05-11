@@ -3,7 +3,7 @@
 export IMAGE_TAG="cnunciato/process:$(date +%s)"
 
 echo "Building $IMAGE_TAG..."
-docker build --no-cache -t "$IMAGE_TAG" process
+docker build --no-cache -t "$IMAGE_TAG" service
 
 echo "Pushing..."
 docker push "$IMAGE_TAG"
