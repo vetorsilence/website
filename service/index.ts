@@ -553,8 +553,11 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
                         title: tags.Title,
                         caption: tags.Description,
                         created: moment.tz(date.toDate(), "America/Los_Angeles").toDate(),
-                        url: `s3/${s3Path}/${mediaFilename}`,
                         filename,
+
+                        // This assumes the main/large asset will always have the same
+                        // extension as the original, which we may not want.
+                        url: `s3/${s3Path}/${mediaFilename}`,
                     }
 
                     if (type === "photo" || type === "video") {
@@ -609,8 +612,10 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
                     if (type === "sound") {
                         const duration = getMediaDuration(file);
 
-                        // Fade sounds in and out as well.
-                        execSync(`ffmpeg -i "${file}" -vf "fade=in:0:30,fade=out:st=${duration - 1}:d=1" -af "afade=in:st=0:d=1,afade=out:st=${duration - 1}:d=1" -acodec aac -strict -2 "${audioPath}/${mediaFilename}"`);
+                        // Fade sounds in and out as well. Note that we're still passing
+                        // mediaFilename here, which contains the extension of the
+                        // original, rather than the format we mean to convert to.
+                        makeSound(file, path.join(audioPath, mediaFilename), duration);
 
                         Object.assign(metadata, {
                             duration,
@@ -658,6 +663,11 @@ function makeResizedImage(source: string, destination: string, width: number) {
 // Make a video thumbnail.
 function makeVideoThumbnail(source: string, destination: string, width: number) {
     execSync(`ffmpeg -i "${source}" -vf "select=gte(n\\,100),scale=${width}:-1" -vframes 1 "${destination}.jpg"`);
+}
+
+// Make a sound clip.
+function makeSound(source: string, destination: string, duration: number) {
+    execSync(`ffmpeg -i "${source}" -vf "fade=in:0:30,fade=out:st=${duration - 1}:d=1" -af "afade=in:st=0:d=1,afade=out:st=${duration - 1}:d=1" -acodec aac -strict -2 "${destination}"`);
 }
 
 function tagsToCreated(tags: Tags): ExifDateTime | undefined {
