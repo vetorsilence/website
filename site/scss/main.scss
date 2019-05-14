@@ -229,7 +229,7 @@ main {
         max-width: 100%;
 
         @include tablet-up {
-            max-height: $tablet-width * 5;
+            max-height: $tablet-width;
             display: flex;
             flex-direction: column;
             flex-wrap: wrap;

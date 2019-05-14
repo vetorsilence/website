@@ -27,7 +27,7 @@
                 <h2><a href="/mobile">Roaming</a></h2>
 
                 <div class="mobile">
-                    {{ range first 50 (where .Data.Pages "Section" "eq" "mobile") }}
+                    {{ range first 10 (where .Data.Pages "Section" "eq" "mobile") }}
                         {{ if not .Params.sound }}
                             <a href="{{ .RelPermalink }}" title="{{ .Params.title }}">
                                 <span>
