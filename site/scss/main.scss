@@ -229,7 +229,7 @@ main {
         max-width: 100%;
 
         @include tablet-up {
-            max-height: $tablet-width;
+            max-height: $tablet-width * 5;
             display: flex;
             flex-direction: column;
             flex-wrap: wrap;
@@ -524,4 +524,12 @@ ol, ul {
     font-weight: normal;
     margin-left: $default-margin / 2;
     color: $very-light-gray;
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-evenly;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
 }

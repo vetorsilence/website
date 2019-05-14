@@ -15,7 +15,7 @@
             with video and sound. Neat, eh? Computers FTW.
         </p>
         <hr>
-        {{ range (.Paginator 50).Pages }}
+        {{ range (.Paginator 20).Pages }}
             <section>
 
                 <!-- Date -->
@@ -44,7 +44,10 @@
 
             </section>
             <hr>
+
         {{ end }}
+
+        {{ template "_internal/pagination.html" . }}
     </main>
 {{ end }}
 
