@@ -247,7 +247,8 @@ main {
             margin-bottom: $default-margin;
 
             @include tablet-up {
-                margin: $default-margin / 4;
+                margin-bottom: $default-margin / 2;
+                margin-right: $default-margin / 2;
             }
         }
     }
