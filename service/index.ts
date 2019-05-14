@@ -74,7 +74,12 @@ interface WordsFrontmatter {
 }
 
 interface QuoteFrontmatter {
-
+    title: string;
+    date: Date;
+    draft: boolean;
+    description?: string
+    quotee: string;
+    links: Link[];
 }
 
 interface ItemCollection {
@@ -208,6 +213,7 @@ if (source) {
             return;
         }
 
+        // Handle book submissions
         if (toAddress.match(/books@/)) {
             const contentFilePath = `site/content/books/${slugify(messageSubject)}.md`;
             const rating = parseInt(messageBody);
@@ -228,6 +234,29 @@ if (source) {
             // Submit the book to GitHub.
             submitToGitHub(contentFilePath, frontmatter, messageBody.replace(rating, "").trim())
                 .then(() => console.log("📚 Book submitted successfully."));
+
+            return;
+        }
+
+        // Handle quote submissions.
+        if (toAddress.match(/quotes@/)) {
+            const contentFilePath = `site/content/quotes/${slugify(messageSubject)}.md`;
+
+            // The quote is the body, minus the last line, which is the quotee.
+            const lines = messageBody.split("\n");
+            const [ quote, quotee ] = [ ...lines.slice(lines.length - 1), ...lines.slice(-1) ]
+
+            const frontmatter: QuoteFrontmatter = {
+                title: messageSubject,
+                date: new Date(),
+                draft: false,
+                quotee: quotee,
+                links: [],
+            };
+
+            // Submit the quote to GitHub.
+            submitToGitHub(contentFilePath, frontmatter, quote.trim())
+                .then(() => console.log("🎓 Quote submitted successfully."));
 
             return;
         }
@@ -402,7 +431,7 @@ if (source) {
 
 function submitToGitHub(
         contentFilePath: string,
-        frontmatter: MediaItem | MovieFrontmatter | BookFrontmatter,
+        frontmatter: MediaItem | MovieFrontmatter | BookFrontmatter | QuoteFrontmatter,
         content: string = ""): Promise<any> {
 
     const username = process.env.USER || "cnunciato";
