@@ -3,7 +3,6 @@ title: "You're Only Here for a Blink"
 date: 2018-02-03T22:25:22Z
 draft: false
 quotee: Ray Carney
-photo:
 links:
   - name: Ray Carney (Wikipedia)
     url: https://en.wikipedia.org/wiki/Ray_Carney

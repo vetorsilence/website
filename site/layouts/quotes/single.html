@@ -9,10 +9,15 @@
             {{ partial "title" . }}
 
         </section>
+        <hr>
         <section>
+            <!-- Quote -->
             {{ .Content }}
-            &mdash; {{ .Params.quotee }}
+
+            <!-- Description -->
+            <h3>&mdash; {{ .Params.quotee }}</h3>
         </section>
+        <hr>
         <section>
             {{ partial "categories" . }}
             {{ partial "tags" . }}

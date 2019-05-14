@@ -10,22 +10,22 @@
 
             <!-- Year, director -->
             <h2>
-                {{ .Params.year }}
                 {{ if .Params.director }}
-                    <h3>Directed by {{ .Params.director }}</h3>
+                    Directed by {{ .Params.director }}
+                {{ end }}
+
+                {{ if .Params.year }}
+                    ({{ .Params.year }})
                 {{ end }}
             </h2>
 
             <!-- Rating -->
-            <h4>
-                <cdn-rating rating="{{ .Params.rating }}"></cdn-rating>
-            </h4>
+            <h3><cdn-rating rating="{{ .Params.rating }}"></cdn-rating></h3>
 
-            <!-- Description -->
-            <p>
-                {{ .Description }}
-            </p>
+            <!-- Description-->
+            <p>{{ .Description }}</p>
         </section>
+        <hr>
         <section>
             {{ .Content }}
         </section>
