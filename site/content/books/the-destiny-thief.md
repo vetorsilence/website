@@ -3,7 +3,7 @@ title: 'The Destiny Thief'
 date: 2019-05-16T03:48:33.833Z
 draft: false
 rating: 4
-author: null
+author: Richard Russo
 year: null
 description: ""
 links: []
