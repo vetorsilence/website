@@ -537,10 +537,7 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
                     }
 
                     // The extension to use for the rendered item. For photos, this is always JPG;
-                    // for videos, we want to have ffmpeg render MP4s, and for audio, it's M4A, but
-                    // that's only because the iPhone creates M4As by default, so when we try to do this
-                    // for other file types, like MP3s or WAVs, it's going to 💥. (TODO: Handle other
-                    // audio file types, yo.)
+                    // for videos, we want to have ffmpeg render MP4s, and for audio, it's M4A.
                     let extension: string;
 
                     // The S3 folder to which the file will be uploaded.
@@ -679,7 +676,7 @@ function processFiles(sourceDir: string, useGPS: boolean): Promise<(ProcessingRe
     })
 }
 
-// Get the duration, in seconds, of a video. (TODO: Can we use this for audio, too?)
+// Get the duration, in seconds, of a video.
 function getMediaDuration(path: string): number {
     return parseInt(execSync(`ffprobe -i "${path}" -show_entries stream=codec_type,duration -of compact=p=0:nk=1 | head -1`).toString().trim().split("|").slice(-1)[0]);
 }
