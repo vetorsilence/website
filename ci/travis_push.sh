@@ -6,11 +6,7 @@ echo "Travis push job"
 case ${TRAVIS_BRANCH} in
     master)
         pushd infra
-            npm install
-        popd
-
-        pushd components
-            npm install
+        npm install
         popd
 
         pulumi stack select cnunciato/website/dev --cwd infra

@@ -10,6 +10,7 @@ rm -rf \
     site/static/js/dist
 
 pushd components
+    npm install
     npm run build
 popd
 
