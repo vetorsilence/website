@@ -3,7 +3,7 @@
         <h1>Books</h1>
         <p>
             I read a lot (though nowhere near as much as my wife) and I like to keep a
-            record of what I've read, because my memory is terrible.
+            record of what I've read, mostly because my memory is terrible.
         </p>
         <hr>
         {{ range .Paginator.Pages }}
@@ -18,10 +18,6 @@
                 <!-- Rating -->
                 <cdn-rating rating="{{ .Params.rating }}"></cdn-rating>
 
-                <!-- Description -->
-                <h3>{{ .Description }}</h3>
-
-                {{ partial "categories" . }}
             </section>
             <hr>
         {{ end }}

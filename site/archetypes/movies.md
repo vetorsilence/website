@@ -6,7 +6,5 @@ rating: 3
 description:
 director:
 year:
-links:
-  - name: Link Text
-    url: http://somewhere
+links: []
 ---

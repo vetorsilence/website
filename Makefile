@@ -1,8 +1,6 @@
 .PHONY: build
 build:
-	rm -rf site/public
-	node_modules/.bin/node-sass --include-path site/scss --output site/static/css site/scss/main.scss
-	hugo --baseURL https://chris.nunciato.org --source site
+	bin/build
 
 .PHONY: invalidate
 invalidate:

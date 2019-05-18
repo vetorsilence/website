@@ -86,7 +86,7 @@ interface ItemCollection {
     title: string;
     date: Date;
     draft: boolean;
-    description: string;
+    description?: string;
     featured: MediaItem,
     items: MediaItem[],
     links: Link[];
@@ -97,7 +97,7 @@ interface MovieFrontmatter {
     date: Date;
     draft: boolean;
     rating: number;
-    description: string;
+    description?: string;
     director: string | null;
     year: number | null;
     links: Link[];
@@ -108,7 +108,7 @@ interface BookFrontmatter {
     date: Date;
     draft: boolean;
     rating: number;
-    description: string;
+    description?: string;
     author: string | null;
     year: number | null;
     links: Link[];
@@ -191,23 +191,24 @@ if (source) {
         // Handle movie submissions.
         if (toAddress.match(/movies@/)) {
             const contentFilePath = `site/content/movies/${slugify(messageSubject)}.md`;
-            const rating = parseInt(messageBody);
+            const lines = messageBody.split("\n");
 
-            // TODO: Allow passing in director and year.
+            // First three lines are rating, director and year. Everything after that is content.
+            const [ rating, director, year ] = lines;
+            const content = lines.slice(3).join("\n");
 
             const frontmatter: MovieFrontmatter = {
                 title: messageSubject,
                 date: new Date(),
                 draft: false,
-                rating,
-                director: null,
-                year: null,
-                description: "",
+                rating: parseInt(rating),
+                director,
+                year: parseInt(year),
                 links: [],
             };
 
             // Submit the movie to GitHub.
-            submitToGitHub(contentFilePath, frontmatter, messageBody.replace(rating, "").trim())
+            submitToGitHub(contentFilePath, frontmatter, content.trim())
                 .then(() => console.log("🍿 Movie submitted successfully."));
 
             return;
@@ -216,23 +217,24 @@ if (source) {
         // Handle book submissions
         if (toAddress.match(/books@/)) {
             const contentFilePath = `site/content/books/${slugify(messageSubject)}.md`;
-            const rating = parseInt(messageBody);
+            const lines = messageBody.split("\n");
 
-            // TODO: Allow passing in the author, year, and an image.
+            // First three lines are rating, author and year. Everything after that is content.
+            const [ rating, author, year ] = lines;
+            const content = lines.slice(3).join("\n");
 
             const frontmatter: BookFrontmatter = {
                 title: messageSubject,
                 date: new Date(),
                 draft: false,
-                rating,
-                author: null,
-                year: null,
-                description: "",
+                rating: parseInt(rating),
+                author,
+                year: parseInt(year),
                 links: [],
             };
 
             // Submit the book to GitHub.
-            submitToGitHub(contentFilePath, frontmatter, messageBody.replace(rating, "").trim())
+            submitToGitHub(contentFilePath, frontmatter, content.trim())
                 .then(() => console.log("📚 Book submitted successfully."));
 
             return;
@@ -241,10 +243,10 @@ if (source) {
         // Handle quote submissions.
         if (toAddress.match(/quotes@/)) {
             const contentFilePath = `site/content/quotes/${slugify(messageSubject)}.md`;
+            const lines = messageBody.split("\n");
 
             // The quote is the body, minus the last line, which is the quotee.
-            const lines = messageBody.split("\n");
-            const [ quote, quotee ] = [ ...lines.slice(lines.length - 1), ...lines.slice(-1) ]
+            const [ quote, quotee ] = [ ...lines.slice(lines.length - 1).join("\n"), ...lines.slice(-1) ]
 
             const frontmatter: QuoteFrontmatter = {
                 title: messageSubject,

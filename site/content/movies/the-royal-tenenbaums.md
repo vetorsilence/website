@@ -3,7 +3,7 @@ title: 'The Royal Tenenbaums'
 date: 2019-05-08T15:42:31.848Z
 draft: false
 rating: 3
-director: null
+director: Wes Anderson
 year: null
 description: ""
 links: []

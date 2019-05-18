@@ -3,7 +3,6 @@ title: "Toshiro Mifune the Last Samurai"
 date: 2018-01-28
 draft: false
 rating: 3
-description: This is a short bit, like a tag line or something.
 director: Steven Okazaki
 year: 2015
 links:

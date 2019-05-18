@@ -3,12 +3,6 @@ title: "Boss Baby"
 date: 2018-04-23T03:54:51Z
 draft: false
 rating: 3
-description: Some optional tag line.
-director: Some Human
-year: 2018
-links:
-  - name: Link Text
-    url: http://somewhere
 ---
 
 So, let me get this straight.

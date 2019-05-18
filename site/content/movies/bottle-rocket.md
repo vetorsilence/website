@@ -5,8 +5,6 @@ draft: false
 rating: 5
 director: Wes Anderson
 year: 1996
-description: ""
-links: []
 ---
 
 Better than I remembered. Still my favorite Wes Anderson — at least as of

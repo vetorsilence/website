@@ -1,12 +1,7 @@
 ---
-title: "Et the Extra Terrestrial"
+title: "ET: The Extra Terrestrial"
 date: 2018-05-05
 draft: false
 rating: 3
-description: Some optional tag line.
-director: Some Human
-year: 2018
-links:
-  - name: Link Text
-    url: http://somewhere
+director: Steven Spielberg
 ---

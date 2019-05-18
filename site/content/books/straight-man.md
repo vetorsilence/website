@@ -9,7 +9,6 @@ year: 2018
 links:
   - name: Richard Russo @ Random House
     url: 'https://www.penguinrandomhouse.com/authors/26540/richard-russo'
-  - name: null
 ---
 
 Absolutely loved it. Russo has become one of my new favorite writers.

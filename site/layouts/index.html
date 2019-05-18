@@ -5,9 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Hello! I'm Christian Nunciato.</title>
         <meta name="description" content="">
-        <link rel="stylesheet" href="/css/main.css?{{ now.Unix }}">
+        <script src="/js/dist/cdn.js?{{ now.Unix }}"></script>
         <script src="/js/main.js?{{ now.Unix }}"></script>
-        <script src="/js/app.js?{{ now.Unix }}"></script>
+        <link rel="stylesheet" href="/css/main.css?{{ now.Unix }}">
         <!-- https://fontawesome.com/icons?d=gallery -->
         <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js" integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe" crossorigin="anonymous"></script>
         {{ if .Site.RSSLink }}
@@ -24,10 +24,10 @@
             <div class="items">
 
                 <!-- Mobile items: A work in progress if ever there was one. -->
-                <h2><a href="/mobile">Roaming</a></h2>
+                <h2><a href="/mobile">Recent Mobile</a></h2>
 
                 <div class="mobile">
-                    {{ range first 10 (where .Data.Pages "Section" "eq" "mobile") }}
+                    {{ range first 20 (where .Data.Pages "Section" "eq" "mobile") }}
                         {{ if not .Params.sound }}
                             <a href="{{ .RelPermalink }}" title="{{ .Params.title }}">
                                 <span>
@@ -41,7 +41,6 @@
                             </a>
                         {{ end }}
                     {{ end }}
-
                 </div>
                 <div class="more">
                     <a href="/mobile/">More &nbsp;&rarr;</a>
