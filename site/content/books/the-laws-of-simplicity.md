@@ -11,4 +11,6 @@ links:
 ---
 
 
-It's good. I mean it starts off strong, and I love the bits about reducing, and the quote at the wind &mdash; "Simplicity is about subtracting the obvious, and adding the meaningful" &mdash; sums it up well, but it definitely falls apart in the second half. Still, a good read, and a strong bibliography at the end to boot.
+It's good. I mean it starts off strong, and I love the bits about reducing, and the quote at the end &mdash; "Simplicity is about subtracting the obvious, and adding the meaningful" &mdash; sums things up well (no pun intended), but it definitely falls apart in the second half. 
+
+Still, a good, brisk read, and a strong bibliography at the end as well.
