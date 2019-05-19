@@ -243,7 +243,7 @@ if (source) {
         // Handle quote submissions.
         if (toAddress.match(/quotes@/)) {
             const contentFilePath = `site/content/quotes/${slugify(messageSubject)}.md`;
-            const lines = messageBody.split("\n");
+            const lines = messageBody.split("\n").filter((line: string) => !!line.trim());
 
             // The quote is the body, minus the last line, which is the quotee.
             const [ quote, quotee ] = [ ...lines.slice(lines.length - 1).join("\n"), ...lines.slice(-1) ]
