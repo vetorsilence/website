@@ -241,7 +241,7 @@ if (source) {
 
         // Handle quote submissions.
         if (toAddress.match(/quotes@/)) {
-            const contentFilePath = `site/content/quotes/${slugify(messageSubject)}.md`;
+            const contentFilePath = `site/content/quotes/${dateToFilename()}.md`;
 
             // The quotee just comes with the body, because parsing is too big a pain.
             const content = messageBody.trim();
@@ -250,7 +250,7 @@ if (source) {
                 title: messageSubject,
                 date: new Date(),
                 draft: false,
-                quotee: "TBD",
+                quotee: messageSubject,
                 links: [],
             };
 
@@ -722,6 +722,11 @@ function tagsToFilename(tags: Tags): string | undefined {
     ]
     .map(n => n.toString().length < 4 ? `0${n}`.slice(-2) : n)
     .join("-");
+}
+
+// Generate a filename (sans extension) from an optional JavaScript date. Defaults to now.
+function dateToFilename(date?: Date): string {
+    return moment(date).format("YYYY-MM-DD-hh-mm-ss");
 }
 
 // Derive the submission type.
