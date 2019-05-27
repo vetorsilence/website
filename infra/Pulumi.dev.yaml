@@ -9,7 +9,7 @@ config:
   website:certificateArn: arn:aws:acm:us-east-1:639972025873:certificate/044552ff-3c88-46d8-af77-ddcb366af26c
   website:github_personal_access_token:
     secure: AAABAIujCP1ySXhjJnUmF2T4CYweF5lwwPZWpN08UOI97UNDs0fmEnrJ7kvqK+h7Y8269VfQRmyeCim22vNklo7Z0OjsTr2r
-  website:service_image: cnunciato/process:1558275304
+  website:service_image: cnunciato/process:1558969713
   website:site_bucket: cnunciato-website
   website:site_dir: ../site/public/
   website:targetDomain: chris.nunciato.org
