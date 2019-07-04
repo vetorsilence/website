@@ -57,24 +57,20 @@ export class WebsiteMediaProcessor {
                 }
 
                 for (const record of bucketArgs.Records) {
-                    console.log(JSON.stringify(record.s3.object, null, 4));
+                    console.log(`Calling the task with ${JSON.stringify(record.s3.object, null, 4)}`);
 
-                    await task.run({
-                        cluster,
-                        overrides: {
-                            containerOverrides: [
-                                {
-                                    name: "container",
-                                    environment: [
-                                        {
-                                            name: "S3_URL",
-                                            value: `s3://${bucketName}/${record.s3.object.key}`,
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    });
+                    await task
+                        .run({
+                            cluster,
+                            overrides: {
+                                containerOverrides: [
+                                    {
+                                        name: "container",
+                                        command: ["npm", "start", `s3://${bucketName.get()}/${record.s3.object.key}`],
+                                    }
+                                ]
+                            }
+                        });
                 }
             }
         });
