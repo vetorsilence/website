@@ -158,7 +158,21 @@ const source = process.argv[2];
 
 // If a source path is passed into this script, run as a script; otherwise,
 // run as an Express service.
-if (source) {
+
+if (process.env.S3_URL) {
+
+    const source = process.env.S3_URL;
+
+    // Download the file from S3.
+    console.log(`⬆️️ Downloading ${source} ...`);
+    execSync(`aws s3 cp ${source} .`);
+
+    processFiles(source.split("/").slice(-1)[0], true)
+        .then(result => console.log(result))
+        .catch(error => console.error(error))
+        .finally(() => exiftool.end());
+
+} else if (source) {
 
     processFiles(source, true)
         .then(result => console.log(result))
