@@ -52,55 +52,33 @@ export class WebsiteMediaProcessor {
                 console.log(bucketArgs);
 
                 if (!bucketArgs.Records) {
-                    console.log("No args!");
+                    console.log("No bucket arguments provided. Bailing.");
                     return;
                 }
 
                 for (const record of bucketArgs.Records) {
                     console.log(JSON.stringify(record.s3.object, null, 4));
 
-                    // await task.run({
-                    //     cluster,
-                    //     overrides: {
-                    //         containerOverrides: [
-                    //             {
-                    //                 name: "container",
-                    //                 environment: [
-                    //                     {
-                    //                         name: "S3_URL":
-                    //                     }
-                    //                 ]
-                    //             }
-                    //         ]
-                    //     }
-                    // });
-
-                    // console.log(`*** New video: file ${record.s3.object.key} was uploaded at ${record.eventTime}.`);
-                    // const file = record.s3.object.key;
-
-                    // const thumbnailFile = file.substring(0, file.indexOf('_')) + '.jpg';
-                    // const framePos = file.substring(file.indexOf('_')+1, file.indexOf('.')).replace('-',':');
-
-                    // await ffmpegThumbnailTask.run({
-                    //     cluster,
-                    //     overrides: {
-                    //         containerOverrides: [{
-                    //             name: "container",
-                    //             environment: [
-                    //                 { name: "S3_BUCKET", value: bucketName.get() },
-                    //                 { name: "INPUT_VIDEO", value: file },
-                    //                 { name: "TIME_OFFSET", value: framePos },
-                    //                 { name: "OUTPUT_FILE", value: thumbnailFile },
-                    //             ],
-                    //         }],
-                    //     },
-                    // });
+                    await task.run({
+                        cluster,
+                        overrides: {
+                            containerOverrides: [
+                                {
+                                    name: "container",
+                                    environment: [
+                                        {
+                                            name: "S3_URL",
+                                            value: `s3://${bucketName}/${record.s3.object.key}`,
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    });
                 }
             }
         });
 
-        bucket.onObjectCreated("onObjectCreated", cb);
-
-
+        this.resource.onObjectCreated("onObjectCreated", cb);
     }
 }

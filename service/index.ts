@@ -159,6 +159,8 @@ const source = process.argv[2];
 // If a source path is passed into this script, run as a script; otherwise,
 // run as an Express service.
 
+console.log(process.env);
+
 if (process.env.S3_URL) {
 
     const source = process.env.S3_URL;
