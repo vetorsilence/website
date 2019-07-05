@@ -162,13 +162,105 @@ const source = process.argv[2];
 if (source) {
 
     if (source.startsWith("s3://")) {
+        rimraf.sync("./workdir");
+        mkdirp.sync("./workdir");
 
         // Download the file from S3.
         console.log(`⬆️️ Downloading ${source} ...`);
-        execSync(`aws s3 cp ${source} .`);
+        execSync(`aws s3 cp ${source} ./workdir`);
 
-        processFiles(source.split("/").slice(-1)[0], true)
-            .then(result => console.log(result))
+        const newFilename = source.split("/").slice(-1)[0];
+        const title = "Untitled";
+
+        processFiles("./workdir", true)
+            .then(results => {
+                const [ item ] = results;
+
+                // Unprocessed items are returned by processFiles as empty arrays. For these, just
+                // resolve here with nulls, and we'll filter them out later.
+                if (!item) {
+                    return;
+                }
+
+                // The mobile item type, based on the MIME-type of the submission.
+                const fileType = fileToItemType(newFilename);
+
+                // The repo-relative path for the GitHub submission.
+                const contentFilePath = `site/content/mobile/${item.filename}.md`;
+
+                if (!fileType) {
+                    throw new Error(`💥 Unable to determine MIME type for ${newFilename}.`);
+                    return;
+                }
+
+                let frontmatter: MediaItem | undefined;
+
+                switch (fileType) {
+                    case "video":
+                        frontmatter = {
+                            title,
+                            date: item.created,
+                            draft: false,
+                            mobile: true,
+                            video: {
+                                url: item.url,
+                                thumb: item.thumb,
+                                preview: item.preview,
+                                poster: item.poster,
+                                created: item.created,
+                                exif: item.exif,
+                                title: item.title,
+                                caption: item.caption,
+                                controls: true,
+                                duration: item.duration,
+                            },
+                            links: [],
+                        };
+                        break;
+                    case "photo":
+                        frontmatter = {
+                            title,
+                            date: item.created,
+                            draft: false,
+                            mobile: true,
+                            photo: {
+                                url: item.url,
+                                thumb: item.thumb,
+                                preview: item.preview,
+                                created: item.created,
+                                exif: item.exif,
+                                title: item.title,
+                                caption: item.caption,
+                            },
+                            links: [],
+                        };
+                        break;
+                    case "sound":
+                        frontmatter = {
+                            title,
+                            date: item.created,
+                            draft: false,
+                            mobile: true,
+                            sound: {
+                                url: item.url,
+                                duration: item.duration,
+                            },
+                            links: [],
+                        };
+                        break;
+                }
+
+                if (!frontmatter) {
+                    throw new Error(`💥 Unable to derive frontmatter from processFiles result: ${toJSON(results)}.`);
+                    return;
+                }
+
+                // Resolve with a GitHubSubmission.
+                submitToGitHub(contentFilePath, frontmatter)
+                    .then(() => {
+                        console.log("🍕 Woohoo! Done.");
+                    });
+            })
             .catch(error => console.error(error))
             .finally(() => exiftool.end());
 
